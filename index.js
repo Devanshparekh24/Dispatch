@@ -5,6 +5,7 @@
 import { AppRegistry } from 'react-native';
 import App from './App';
 import { PaperProvider } from 'react-native-paper';
+import './global.css';
 
 import { name as appName } from './app.json';
 
