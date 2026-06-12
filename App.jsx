@@ -3,10 +3,10 @@ import React from 'react'
 const App = () => {
   return (
     <View className='flex-1 items-center justify-center bg-background'>
-      <Text className='text-primary font-black text-2xl'>App</Text>
-      <Text className='text-primary font-black text-2xl'>sss</Text>
-      <Text className='text-primary font-black text-2xl'>zz</Text>
-      <Text className='text-primary font-black text-2xl'>hebfhbwef</Text>
+      <Text className='text-2xl font-black text-primary'>App</Text>
+      <Text className='text-2xl font-black text-primary'>sss</Text>
+      <Text className='text-2xl font-black text-primary'>zz</Text>
+      <Text className='text-2xl font-black text-primary'>devansh</Text>
 
     </View>
   )
