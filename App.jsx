@@ -1,15 +1,18 @@
 import { View, Text } from 'react-native'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react'
+import DemoScreen from './src/screen/DemoScreen';
+const queryClient = new QueryClient();
 const App = () => {
   return (
     <View className='flex-1 items-center justify-center bg-background'>
-      <Text className='text-2xl font-black text-primary'>App</Text>
-      <Text className='text-2xl font-black text-primary'>sss</Text>
-      <Text className='text-2xl font-black text-primary'>zz</Text>
-      <Text className='text-2xl font-black text-primary'>devansh</Text>
-
+      <QueryClientProvider client={queryClient}>
+        <DemoScreen />
+      </QueryClientProvider>
     </View>
+
+
+
   )
 }
-
 export default App

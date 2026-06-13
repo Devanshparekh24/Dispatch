@@ -4,7 +4,7 @@ import MSSQL from 'react-native-mssql';
 let activeConfig = null;
 
 // ---- SQLite (local) ----
-export const getSQLiteConnection = () => {
+ const getSQLiteConnection = () => {
   return openDatabase({ name: 'Dispatch.db', location: 'default' });
 };
 
@@ -38,7 +38,7 @@ const canConnect = async (config) => {
   }
 };
 
-export const setMSSQLConnection = async () => {
+ const setMSSQLConnection = async () => {
   for (const { name, host } of SERVERS) {
     const config = makeConfig(host);
     if (await canConnect(config)) {
@@ -51,7 +51,7 @@ export const setMSSQLConnection = async () => {
   throw new Error('All MSSQL connections failed');
 };
 
-export const getMSSQLConnection = async () => {
+ const getMSSQLConnection = async () => {
   if (!activeConfig) {
     await setMSSQLConnection();
   } else {

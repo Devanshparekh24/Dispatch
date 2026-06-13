@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-native/debugger-shell/dist/electron/MainInstanceEntryPoint.js b/node_modules/@react-native/debugger-shell/dist/electron/MainInstanceEntryPoint.js
+index 59fd6c4..f718ed5 100644
+--- a/node_modules/@react-native/debugger-shell/dist/electron/MainInstanceEntryPoint.js
++++ b/node_modules/@react-native/debugger-shell/dist/electron/MainInstanceEntryPoint.js
+@@ -138,6 +138,7 @@ function setupWindowResizeListeners(browserWindow, windowKey) {
+   browserWindow.on("resized", savePosition);
+   browserWindow.on("closed", savePosition);
+ }
++app.disableHardwareAcceleration();
+ app.whenReady().then(() => {
+   handleLaunchArgs(process.argv.slice(app.isPackaged ? 1 : 2));
+   configureAppMenu();

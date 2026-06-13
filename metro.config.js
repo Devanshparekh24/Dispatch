@@ -10,6 +10,25 @@ const defaultConfig = getDefaultConfig(__dirname);
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
+    resolver: {
+        resolveRequest: (context, moduleName, platform) => {
+            if (moduleName === '@tanstack/react-query') {
+                return context.resolveRequest(
+                    context,
+                    '@tanstack/react-query/build/legacy/index.js',
+                    platform
+                );
+            }
+            if (moduleName === '@tanstack/query-core') {
+                return context.resolveRequest(
+                    context,
+                    '@tanstack/query-core/build/legacy/index.js',
+                    platform
+                );
+            }
+            return context.resolveRequest(context, moduleName, platform);
+        },
+    },
 };
 
 const mergedConfig = mergeConfig(defaultConfig, config);
