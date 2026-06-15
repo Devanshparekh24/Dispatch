@@ -1,18 +1,24 @@
 import React from 'react';
-import { Alert, Button, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Applogo from '../assets/images/Dispatch_Logo.png';
 import { appHeaderName } from '../constant/HeaderName';
 import Input from '../components/Input/Input';
 import PasswordInput from '../components/Input/PasswordInput';
 import FullButton from '../components/Buttoon/FullButton';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
-
+    const navigation = useNavigation();
     const handleLogin = () => {
-        Alert.alert("Devansh");
+        try {
 
 
 
+
+            // navigation.navigate('Main');
+        } catch (error) {
+            Alert.alert(error.message);
+        }
     };
 
 

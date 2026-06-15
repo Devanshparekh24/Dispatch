@@ -1,22 +1,24 @@
-import { View, Text, TextInput } from 'react-native'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react'
-import DemoScreen from './src/screen/DemoScreen';
 import LoginScreen from './src/auth/LoginScreen';
-const queryClient = new QueryClient();
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab';
+
+const Stack = createNativeStackNavigator();
+
 const App = () => {
+  const navigationRef = useNavigationContainerRef();
+
   return (
-    <View style={{ flex: 1 }} className='flex-1'>
-      <QueryClientProvider client={queryClient}>
-
-
-        <LoginScreen />
-        {/* <DemoScreen /> */}
-      </QueryClientProvider>
-    </View>
-
-
-
+    <SafeAreaProvider>
+      <NavigationContainer ref={navigationRef}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Main" component={BottomNavigationTab} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   )
 }
-export default App
+export default App
