@@ -1,0 +1,380 @@
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/8659dea425e72624dcf7a61c743ef137/results.bin b/node_modules/react-native-mssql/android/build/.transforms/8659dea425e72624dcf7a61c743ef137/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/.transforms/8659dea425e72624dcf7a61c743ef137/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/8659dea425e72624dcf7a61c743ef137/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-mssql/android/build/.transforms/8659dea425e72624dcf7a61c743ef137/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..a912e90
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/8659dea425e72624dcf7a61c743ef137/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/results.bin b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/ArrayUtil$1.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/ArrayUtil$1.dex
+new file mode 100644
+index 0000000..4f20a89
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/ArrayUtil$1.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/ArrayUtil.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/ArrayUtil.dex
+new file mode 100644
+index 0000000..e40342c
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/ArrayUtil.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/MapUtil$1.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/MapUtil$1.dex
+new file mode 100644
+index 0000000..ce3513b
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/MapUtil$1.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/MapUtil.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/MapUtil.dex
+new file mode 100644
+index 0000000..b7fa06e
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/iodine/start/MapUtil.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/BuildConfig.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/BuildConfig.dex
+new file mode 100644
+index 0000000..0eee8c4
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/BuildConfig.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/JSON.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/JSON.dex
+new file mode 100644
+index 0000000..fe1e4bd
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/JSON.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLModule$1.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLModule$1.dex
+new file mode 100644
+index 0000000..b23aaea
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLModule$1.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLModule.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLModule.dex
+new file mode 100644
+index 0000000..1c07ba0
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLModule.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLPackage.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLPackage.dex
+new file mode 100644
+index 0000000..1fa236d
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/MSSQLPackage.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/Query.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/Query.dex
+new file mode 100644
+index 0000000..5feaad2
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/Query.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/Update.dex b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/Update.dex
+new file mode 100644
+index 0000000..6d6df74
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/stonem/mssql/Update.dex differ
+diff --git a/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..8043a21
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/.transforms/a210cb701e6d85280cc1a40cbb1601a3/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/react-native-mssql/android/build/generated/source/buildConfig/debug/com/stonem/mssql/BuildConfig.java b/node_modules/react-native-mssql/android/build/generated/source/buildConfig/debug/com/stonem/mssql/BuildConfig.java
+new file mode 100644
+index 0000000..16acf7e
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/generated/source/buildConfig/debug/com/stonem/mssql/BuildConfig.java
+@@ -0,0 +1,10 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.stonem.mssql;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.stonem.mssql";
++  public static final String BUILD_TYPE = "debug";
++}
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-mssql/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..e3c62cb
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.stonem.mssql" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-mssql/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..4b6be53
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.stonem.mssql",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-mssql/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-mssql/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-mssql/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..a205cac
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-mssql/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..8d3748a
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-mssql/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-mssql/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..79ae849
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Mon Jun 15 10:20:31 IST 2026
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-mssql/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..70a51d1
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\build\generated\res\resValues\debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugAssets/merger.xml b/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+new file mode 100644
+index 0000000..4e0542a
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\debug\assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\build\intermediates\shader_assets\debug\compileDebugShaders\out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..d5385c8
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\debug\jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..b4a2566
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\RN\Dispatch\node_modules\react-native-mssql\android\src\debug\shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/ArrayUtil$1.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/ArrayUtil$1.class
+new file mode 100644
+index 0000000..41c2396
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/ArrayUtil$1.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/ArrayUtil.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/ArrayUtil.class
+new file mode 100644
+index 0000000..01fd8fc
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/ArrayUtil.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/MapUtil$1.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/MapUtil$1.class
+new file mode 100644
+index 0000000..e164b70
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/MapUtil$1.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/MapUtil.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/MapUtil.class
+new file mode 100644
+index 0000000..f738e48
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/iodine/start/MapUtil.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/BuildConfig.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/BuildConfig.class
+new file mode 100644
+index 0000000..bade2b4
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/BuildConfig.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/JSON.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/JSON.class
+new file mode 100644
+index 0000000..3bab5b9
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/JSON.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLModule$1.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLModule$1.class
+new file mode 100644
+index 0000000..4c0671a
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLModule$1.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLModule.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLModule.class
+new file mode 100644
+index 0000000..edf0ca7
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLModule.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLPackage.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLPackage.class
+new file mode 100644
+index 0000000..1c3566d
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/MSSQLPackage.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/Query.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/Query.class
+new file mode 100644
+index 0000000..df46ad1
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/Query.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/Update.class b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/Update.class
+new file mode 100644
+index 0000000..f21b0a4
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/stonem/mssql/Update.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-mssql/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-mssql/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..641e181
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.stonem.mssql" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7</manifest>
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-mssql/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..e3c62cb
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.stonem.mssql" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-mssql/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-mssql/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/ArrayUtil$1.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/ArrayUtil$1.class
+new file mode 100644
+index 0000000..41c2396
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/ArrayUtil$1.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/ArrayUtil.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/ArrayUtil.class
+new file mode 100644
+index 0000000..01fd8fc
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/ArrayUtil.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/MapUtil$1.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/MapUtil$1.class
+new file mode 100644
+index 0000000..e164b70
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/MapUtil$1.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/MapUtil.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/MapUtil.class
+new file mode 100644
+index 0000000..f738e48
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/iodine/start/MapUtil.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/BuildConfig.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/BuildConfig.class
+new file mode 100644
+index 0000000..bade2b4
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/BuildConfig.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/JSON.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/JSON.class
+new file mode 100644
+index 0000000..3bab5b9
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/JSON.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLModule$1.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLModule$1.class
+new file mode 100644
+index 0000000..4c0671a
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLModule$1.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLModule.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLModule.class
+new file mode 100644
+index 0000000..edf0ca7
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLModule.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLPackage.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLPackage.class
+new file mode 100644
+index 0000000..1c3566d
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/MSSQLPackage.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/Query.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/Query.class
+new file mode 100644
+index 0000000..df46ad1
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/Query.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/Update.class b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/Update.class
+new file mode 100644
+index 0000000..f21b0a4
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/stonem/mssql/Update.class differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..186018f
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-mssql/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-mssql/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..89f1f20
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.stonem.mssql
+diff --git a/node_modules/react-native-mssql/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-mssql/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..76abd98
+--- /dev/null
++++ b/node_modules/react-native-mssql/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,17 @@
++-- Merging decision tree log ---
++manifest
++ADDED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml:1:1-4:12
++INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml:1:1-4:12
++	package
++		ADDED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml:2:11-37
++		INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml
++	xmlns:android
++		ADDED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml:1:11-69
++uses-sdk
++INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml
++INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from D:\RN\Dispatch\node_modules\react-native-mssql\android\src\main\AndroidManifest.xml
+diff --git a/node_modules/react-native-mssql/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-mssql/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..5155f43
+Binary files /dev/null and b/node_modules/react-native-mssql/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-mssql/index.js b/node_modules/react-native-mssql/index.js
+new file mode 100644
+index 0000000..cdce90a
+--- /dev/null
++++ b/node_modules/react-native-mssql/index.js
+@@ -0,0 +1,2 @@
++var { NativeModules } = require('react-native');
++module.exports = NativeModules.MSSQL;
