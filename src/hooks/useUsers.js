@@ -12,6 +12,7 @@ import { fetchUserMasterList } from '../service/userService';
         queryKey: ['users'],
         queryFn: async () => {
             try {
+
                 const data = await fetchUserMasterList();
                 return { data, isMock: false, errorMsg: null };
             } catch (err) {
@@ -28,7 +29,6 @@ import { fetchUserMasterList } from '../service/userService';
         staleTime: 1000 * 60 * 5, // Cache stays fresh for 5 minutes
     });
 };
-
 export{
     useUsersQuery
 }

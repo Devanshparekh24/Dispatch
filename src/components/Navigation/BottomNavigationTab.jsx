@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Screens
 import HomeScreen from '../../screen/HomeScreen';
 import SettingScreen from '../../screen/SettingScreen';
+import DemoScreen from '../../screen/DemoScreen';
+
 // import AttendanceScreen from '../../screen/AttendanceScreen';
 // import VisitScreen from '../../screen/VisitScreen';
 // import ProfileScreen from '../../screen/ProfileScreen';
@@ -23,6 +25,11 @@ const SCREENS = {
     component: SettingScreen,
     label: 'Settings',
     icon: 'settings',
+  },
+  Demo: {
+    component: DemoScreen,
+    label: 'Demo',
+    icon: 'list',
   },
   // Visit: {
   //   component: VisitScreen,

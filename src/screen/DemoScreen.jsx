@@ -16,7 +16,8 @@ import { useUsersQuery } from '../hooks/useUsers';
 
 const DemoScreen = () => {
     const { data: queryResult, isLoading, isRefetching, refetch } = useUsersQuery();
-    
+    console.log("🚀 ~ DemoScreen ~ queryResult:", useUsersQuery)
+
     // Extract server state managed by React Query hook
     const users = queryResult?.data;
     const isMock = queryResult?.isMock || false;

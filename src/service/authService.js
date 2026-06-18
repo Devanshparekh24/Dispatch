@@ -19,9 +19,9 @@ const userServerExist = async (mobile, password) => {
             AND Password='${password}'
         `;
 
-        const result = await serverConn.query(query);
+        const result = await serverConn.executeQuery(query);
 
-        if (result[0].rows[0].Total > 0) {
+        if (result && result.length > 0 && result[0].Total > 0) {
             // Save locally for future offline login
             await inserUserMasterTable(mobile, password);
 
@@ -50,28 +50,35 @@ const userLocalExist = async (mobile, password) => {
         const query = 'SELECT count(1) as Total FROM User_Local WHERE Mobile = ? and password = ?';
         const result = await connection.executeQuery(query, [mobile, password]);
 
-        if (result[0].rows.length > 0) {
+        if (result && result.length > 0 && result[0].Total > 0) {
             return true;
         } else {
             return false;
         }
     } catch (error) {
         console.error('Error checking user Local:', error);
+        return false;
     }
 }
+
 
 
 const createUserMasterTable = async () => {
     try {
         const connection = await getSQLiteConnection();
-        const query = 'CREATE TABLE IF NOT EXISTS User_Local (ID INTEGER PRIMARY KEY AUTOINCREMENT,Mobile TEXT, Password TEXT)';
+        const query = `
+            CREATE TABLE IF NOT EXISTS User_Local (
+            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Mobile TEXT UNIQUE,
+            Password TEXT
+        )
+        `;
         await connection.executeQuery(query);
     } catch (error) {
         console.error('Error creating user Local table:', error);
+        throw error;
     }
 }
-
-
 
 export {
     createUserMasterTable,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Applogo from '../assets/images/Dispatch_Logo.png';
 import { appHeaderName } from '../constant/HeaderName';
@@ -6,18 +6,32 @@ import Input from '../components/Input/Input';
 import PasswordInput from '../components/Input/PasswordInput';
 import FullButton from '../components/Buttoon/FullButton';
 import { useNavigation } from '@react-navigation/native';
+import { useAuthentication } from '../hooks/useloginCreateUser';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
-    const handleLogin = () => {
+    const { mutateAsync: login, isPending, isError, error } = useAuthentication();
+
+    const [mobile, setMobile] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async () => {
         try {
-
-
-
-
-            // navigation.navigate('Main');
+            debugger;
+            if (!mobile || !password) {
+                Alert.alert('Error', 'Please fill in both fields');
+                return;
+            }
+            debugger;
+            const success = await login({ mobile, password });
+            console.log("🚀 ~ handleLogin ~ success:", success)
+            if (success) {
+                navigation.navigate('Main');
+            } else {
+                Alert.alert('Login Failed', 'Invalid credentials');
+            }
         } catch (error) {
-            Alert.alert(error.message);
+            Alert.alert('Error', error.message);
         }
     };
 
@@ -54,17 +68,21 @@ const LoginScreen = () => {
                             </Text>
                         </View>
                         <Input
-                            label="User Name"
+                            label="Mobile No"
+                            value={mobile}
+                            onChangeText={setMobile}
                             placeholder="User Name" />
 
                         <PasswordInput
                             label="Password"
-                            value={''}
+                            value={password}
+                            onChangeText={setPassword}
                             placeholder="Enter The Password" />
 
                         <View className='mt-4'>
-                            <FullButton title="Login" onPress={handleLogin} disabled={false} />
+                            <FullButton title="Login" onPress={handleLogin} disabled={isPending} />
                         </View>
+
                     </View>
                 </SafeAreaView>
             </ScrollView>
