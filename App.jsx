@@ -1,32 +1,64 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { View, ActivityIndicator } from 'react-native';
 import LoginScreen from './src/auth/LoginScreen';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab';
 import { createUserMasterTable } from './src/service/authService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const navigationRef = useNavigationContainerRef();
+  const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
-    const initDB = async () => {
+    const initApp = async () => {
       try {
-        await createUserMasterTable();
-        console.log('[SQLite] Local database initialized successfully');
-      } catch (error) {
-        console.error('[SQLite] Database initialization failed:', error);
+        // Run database initialization and session check in parallel
+        const [_, storedData] = await Promise.all([
+          createUserMasterTable(),
+          AsyncStorage.getItem("userData")
+        ]);
+        console.log('App initialization tasks finished');
+
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          if (parsedData.mobileNo && parsedData.userPass) {
+            setInitialRoute('Main');
+            return;
+          }
+          else {
+            setInitialRoute('Login');
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Initialization error:', err);
+      } finally {
+        setInitialRoute(prev => prev || 'Login');
       }
     };
-    initDB();
+
+    initApp();
   }, []);
+
+  if (initialRoute === null) {
+    return (
+      <SafeAreaProvider>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F5F5' }}>
+          <ActivityIndicator size="large" color="#3B82F6" />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Main" component={BottomNavigationTab} />
         </Stack.Navigator>
@@ -34,4 +66,4 @@ const App = () => {
     </SafeAreaProvider>
   )
 }
-export default App
+export default App

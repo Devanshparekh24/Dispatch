@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Applogo from '../assets/images/Dispatch_Logo.png';
 import { appHeaderName } from '../constant/HeaderName';
 import Input from '../components/Input/Input';
@@ -7,26 +7,86 @@ import PasswordInput from '../components/Input/PasswordInput';
 import FullButton from '../components/Buttoon/FullButton';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthentication } from '../hooks/useloginCreateUser';
+import { isEmpty, isValidMobile } from '../utils/validation';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const LoginScreen = () => {
     const navigation = useNavigation();
     const { mutateAsync: login, isPending, isError, error } = useAuthentication();
 
     const [mobile, setMobile] = useState('');
+    const [mobileError, setMobileError] = useState('');
     const [password, setPassword] = useState('');
+
+
+
+    const handleForgotPassword=()=>{
+        try {
+            navigation.navigate('ForgotPassword');
+        } catch (error) {
+            Alert.alert('Error', error.message);
+
+        }
+    }
+    const handleMobileChange = (text) => {
+        // Remove non-digit characters
+        const cleaned = text.replace(/[^0-9]/g, '');
+
+        // Only allow updating state if length is <= 10
+        if (cleaned.length <= 10) {
+            setMobile(cleaned);
+        }
+
+        // Live validation as the user types
+        if (cleaned.length === 0) {
+            setMobileError('');
+        } else if (!/^[6-9]\d{9}$/.test(cleaned)) {
+            setMobileError('Enter a valid 10-digit mobile number starting with 6-9');
+        } else {
+            setMobileError('');
+        }
+    };
+    
 
     const handleLogin = async () => {
         try {
-            debugger;
-            if (!mobile || !password) {
+            if (isEmpty(mobile) || isEmpty(password)) {
                 Alert.alert('Error', 'Please fill in both fields');
                 return;
             }
-            debugger;
+            if (mobileError || !isValidMobile(mobile)) {
+                Alert.alert('Validation Error', 'Please enter a valid 10-digit mobile number');
+                return;
+            }
             const success = await login({ mobile, password });
             console.log("🚀 ~ handleLogin ~ success:", success)
             if (success) {
-                navigation.navigate('Main');
+                const userData = {
+                    mobileNo: mobile,
+                    userPass: password,
+                };
+                console.log("🚀 ~ handleLogin ~ userData:", userData)
+
+                // STORE
+                await AsyncStorage.setItem("userData", JSON.stringify(userData));
+                console.log("✅ Stored in AsyncStorage");
+
+
+                // READ BACK
+                const storedData = await AsyncStorage.getItem("userData");
+                console.log("🚀 ~ handleLogin ~ storedData:", storedData)
+                if (storedData) {
+                    const parsedData = JSON.parse(storedData);
+                    console.log("👤 Mobile:", parsedData.mobileNo);
+                    console.log("🔐 Password:", parsedData.userPass);
+                    navigation.replace('Main');
+
+                } else {
+                    console.log("No data found in AsyncStorage");
+                    navigation.navigate('Login');
+                }
+
+
             } else {
                 Alert.alert('Login Failed', 'Invalid credentials');
             }
@@ -34,7 +94,6 @@ const LoginScreen = () => {
             Alert.alert('Error', error.message);
         }
     };
-
 
     return (
         <KeyboardAvoidingView
@@ -70,14 +129,28 @@ const LoginScreen = () => {
                         <Input
                             label="Mobile No"
                             value={mobile}
-                            onChangeText={setMobile}
-                            placeholder="User Name" />
+                            onChangeText={handleMobileChange}
+                            placeholder="Mobile No"
+                            keyboardType="phone-pad"
+                            maxLength={10}
+                            error={mobileError}
+                        />
 
                         <PasswordInput
                             label="Password"
                             value={password}
                             onChangeText={setPassword}
                             placeholder="Enter The Password" />
+
+                        <TouchableOpacity
+                            onPress={handleForgotPassword}
+                            className="self-start mt-1 mb-4"
+                            // disabled={loading}
+                        >
+                            <Text className="text-sm font-semibold text-blue-600">
+                                Forgot Password?
+                            </Text>
+                        </TouchableOpacity>
 
                         <View className='mt-4'>
                             <FullButton title="Login" onPress={handleLogin} disabled={isPending} />

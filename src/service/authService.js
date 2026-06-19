@@ -11,6 +11,7 @@ const userServerExist = async (mobile, password) => {
 
         // Check server
         const serverConn = await getMSSQLConnection();
+        console.log("🚀 ~ userServerExist ~ serverConn:", serverConn)
 
         const query = `
             SELECT COUNT(1) AS Total
@@ -20,6 +21,7 @@ const userServerExist = async (mobile, password) => {
         `;
 
         const result = await serverConn.executeQuery(query);
+        console.log("🚀 ~ userServerExist ~ result:", result)
 
         if (result && result.length > 0 && result[0].Total > 0) {
             // Save locally for future offline login
@@ -41,7 +43,8 @@ const inserUserMasterTable = async (mobile, password) => {
         const query = 'INSERT INTO User_Local (Mobile, Password) VALUES (?, ?)';
         await connection.executeQuery(query, [mobile, password]);
     } catch (error) {
-        console.error('Error inserting user Local:', error);
+    console.log("🚀 ~ inserUserMasterTable ~ error:", error)
+        
     }
 }
 const userLocalExist = async (mobile, password) => {
@@ -49,6 +52,7 @@ const userLocalExist = async (mobile, password) => {
         const connection = await getSQLiteConnection();
         const query = 'SELECT count(1) as Total FROM User_Local WHERE Mobile = ? and password = ?';
         const result = await connection.executeQuery(query, [mobile, password]);
+        console.log("🚀 ~ userLocalExist ~ result:", result)
 
         if (result && result.length > 0 && result[0].Total > 0) {
             return true;
@@ -64,24 +68,52 @@ const userLocalExist = async (mobile, password) => {
 
 
 const createUserMasterTable = async () => {
-    try {
-        const connection = await getSQLiteConnection();
-        const query = `
-            CREATE TABLE IF NOT EXISTS User_Local (
-            ID INTEGER PRIMARY KEY AUTOINCREMENT,
-            Mobile TEXT UNIQUE,
-            Password TEXT
-        )
-        `;
-        await connection.executeQuery(query);
-    } catch (error) {
-        console.error('Error creating user Local table:', error);
-        throw error;
-    }
-}
+  try {
+    const connection = await getSQLiteConnection();
+
+    const query = `
+      CREATE TABLE IF NOT EXISTS User_Local (
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Mobile TEXT UNIQUE,
+        Password TEXT
+      )
+    `;
+
+    connection.transaction(tx => {
+      tx.executeSql(
+        query,
+        [],
+        () => {
+          console.log('User_Local table created successfully');
+        },
+        (txOrError, error) => {
+          console.log("🚀 ~ createUserMasterTable ~ error:", error || txOrError)
+        }
+      );
+    });
+
+  } catch (error) {
+  console.log("🚀 ~ createUserMasterTable ~ error:", error)
+
+    throw error;
+  }
+};
+
+const getLocalUsers = async () => {
+  try {
+    const connection = await getSQLiteConnection();
+    const query = 'SELECT * FROM User_Local';
+    const result = await connection.executeQuery(query);
+    return result;
+  } catch (error) {
+    console.log("🚀 ~ getLocalUsers ~ error:", error)
+    return [];
+  }
+};
 
 export {
     createUserMasterTable,
     inserUserMasterTable,
-    userServerExist
+    userServerExist,
+    getLocalUsers
 }

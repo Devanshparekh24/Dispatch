@@ -13,6 +13,7 @@ const Input = ({
     placeholderTextColor = '#9CA3AF',
     label = 'Name',
     rightElement,
+    error,
     ...props
 }) => {
     return (
@@ -20,7 +21,7 @@ const Input = ({
             <Text className="text-sm font-semibold text-gray-700 mb-2">
                 {label}
             </Text>
-            <View className="flex-row items-center bg-gray-50 border border-gray-300 rounded-lg">
+            <View className={`flex-row items-center bg-gray-50 border rounded-lg ${error ? 'border-red-500' : 'border-gray-300'}`}>
                 <TextInput
                     className="flex-1 px-4 py-3 text-base text-gray-800"
                     placeholder={placeholder}
@@ -40,6 +41,11 @@ const Input = ({
                     </View>
                 )}
             </View>
+            {error && (
+                <Text className="text-xs text-red-500 mt-1 pl-1 font-medium">
+                    {error}
+                </Text>
+            )}
         </View>
     );
 };

@@ -3,9 +3,45 @@ import MSSQL from 'react-native-mssql';
 
 let activeConfig = null;
 
-// ---- SQLite (local) ----
- const getSQLiteConnection = () => {
-  return openDatabase({ name: 'Dispatch.db', location: 'default' });
+let sqliteDb = null;
+
+const getSQLiteConnection = () => {
+  if (sqliteDb) {
+    return sqliteDb;
+  }
+
+  sqliteDb = openDatabase({ name: 'Dispatch.db', location: 'default' }, () => {
+    console.log('Database Created Success');
+  }, error => console.log('Database Created Error', error));
+
+  if (sqliteDb && !sqliteDb.executeQuery) {
+    sqliteDb.executeQuery = (query, params = []) => {
+      return new Promise((resolve, reject) => {
+        sqliteDb.transaction((tx) => {
+          tx.executeSql(
+            query,
+            params,
+            (tx, results) => {
+              const rows = [];
+              if (results && results.rows) {
+                for (let i = 0; i < results.rows.length; i++) {
+                  rows.push(results.rows.item(i));
+                }
+              }
+              resolve(rows);
+            },
+            (txOrError, error) => {
+              reject(error || txOrError);
+            }
+          );
+        }, (txError) => {
+          reject(txError);
+        });
+      });
+    };
+  }
+
+  return sqliteDb;
 };
 
 // ---- MSSQL (remote) ----
