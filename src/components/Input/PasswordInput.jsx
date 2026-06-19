@@ -12,7 +12,7 @@ const PasswordInput = ({
     ...props
 }) => {
 
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(true);
 
     return (
         <Input

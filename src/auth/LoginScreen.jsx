@@ -18,9 +18,7 @@ const LoginScreen = () => {
     const [mobileError, setMobileError] = useState('');
     const [password, setPassword] = useState('');
 
-
-
-    const handleForgotPassword=()=>{
+    const handleForgotPassword = () => {
         try {
             navigation.navigate('ForgotPassword');
         } catch (error) {
@@ -41,12 +39,11 @@ const LoginScreen = () => {
         if (cleaned.length === 0) {
             setMobileError('');
         } else if (!/^[6-9]\d{9}$/.test(cleaned)) {
-            setMobileError('Enter a valid 10-digit mobile number starting with 6-9');
+            setMobileError('Enter a valid 10-digit mobile number');
         } else {
             setMobileError('');
         }
     };
-    
 
     const handleLogin = async () => {
         try {
@@ -85,7 +82,6 @@ const LoginScreen = () => {
                     console.log("No data found in AsyncStorage");
                     navigation.navigate('Login');
                 }
-
 
             } else {
                 Alert.alert('Login Failed', 'Invalid credentials');
@@ -144,8 +140,8 @@ const LoginScreen = () => {
 
                         <TouchableOpacity
                             onPress={handleForgotPassword}
-                            className="self-start mt-1 mb-4"
-                            // disabled={loading}
+                            className="self-end mt-1 mb-4"
+                        // disabled={loading}
                         >
                             <Text className="text-sm font-semibold text-blue-600">
                                 Forgot Password?

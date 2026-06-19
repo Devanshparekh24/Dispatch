@@ -26,7 +26,10 @@ const userServerExist = async (mobile, password) => {
         if (result && result.length > 0 && result[0].Total > 0) {
             // Save locally for future offline login
             await inserUserMasterTable(mobile, password);
+        }
 
+         // Check local DB first
+        if (await userLocalExist(mobile, password)) {
             return true;
         }
 
