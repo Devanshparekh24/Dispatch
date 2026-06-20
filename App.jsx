@@ -6,7 +6,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab';
 import { createUserMasterTable } from './src/service/authService';
+import QRCodeScreen from './src/screen/QRCodeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Camera  } from 'react-native-vision-camera';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +37,7 @@ const App = () => {
             return;
           }
         }
+
       } catch (err) {
         console.error('Initialization error:', err);
       } finally {
@@ -61,6 +64,8 @@ const App = () => {
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Main" component={BottomNavigationTab} />
+          <Stack.Screen name="ScanQRCode" component={QRCodeScreen} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

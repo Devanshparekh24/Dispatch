@@ -1,14 +1,16 @@
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
-import FullButton from '../components/Buttoon/FullButton';
-import { ActivityIndicator } from 'react-native-paper';
-import { getStartupTimeSync } from 'react-native-device-info';
-
+import { Camera  } from 'react-native-vision-camera';
+import StatesButton from '../components/Buttoon/StatesButton';
+import { useNavigation } from '@react-navigation/native';
 
 const ScanQRCodeScreen = () => {
-const [isScanned, setIsScanned] = useState(false);
+    const navigation = useNavigation();
 
+    const handleOpenScanner = () => {
+        navigation.navigate('ScanQRCode');
+        console.log('Navigating to ScanQRCode screen');
+    }
 
     useEffect(() => {
         (async () => {
@@ -17,60 +19,18 @@ const [isScanned, setIsScanned] = useState(false);
             // setHasPermission(getStartupTimeSync === 'granted');
         })();
     }, []);
-    const device = useCameraDevice('back');
-    // 2. Configure the code scanner with a throttle/lock
-    const codeScanner = useCodeScanner({
-        codeTypes: ['qr'],
-        onCodeScanned: (codes) => {
-            if (isScanned) return; // Prevent multiple scans at once
-            
-            const qrValue = codes[0]?.value;
-            if (qrValue) {
-                setIsScanned(true); 
-                console.log('QR Code Scanned:', qrValue);
-                
-                // Do something with the QR code data here (e.g., navigate, API call)
-                
-                // Reset scanner after 3 seconds so the user can scan again if needed
-                setTimeout(() => setIsScanned(false), 3000);
-            }
-        },
-    });
-    
-
-
-    // 2. Handle loading state
-    if (device == null ) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large" color="#FFF" />
-            </View>
-        );
-    }
-
-
+  
     return (
 
-        <View style={styles.container}>
-            <Camera
-                style={StyleSheet.absoluteFill}
-                device={device}
-                isActive={true} // Set to false to save battery when not focused
-                photo={true} // Enable photo capture
-                codeScanner={codeScanner}
-
+        <View className='flex-row  flex-wrap gap-4 px-4 justify-around  mt-4 mb-3'>
+            <StatesButton
+                bg={'bg-primary-50'}
+                text={"QR Code"}
+                icon={"qr-code-outline"}
+                onPress={() => handleOpenScanner()}
             />
-
-           <FullButton
-           title={'Open QR Scanner'}
-           onPress={()=>{}}
-           />
-
         </View>
+
     )
 }
-
 export default ScanQRCodeScreen;
-const styles = StyleSheet.create({
-    container: { flex: 1/2, backgroundColor: 'black' },
-});
