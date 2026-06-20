@@ -18,7 +18,7 @@ const StatesButton = (
                     activeOpacity={0.7}>
                     <View className='flex-col items-center '>
                         <View className={`  ${bg} rounded-xl shadow-sm px-5 py-6 items-center  `}>
-                            <Ionicons  name={icon} size={40} color={color} />
+                            <Ionicons name={icon} size={40} color={color} />
                         </View>
                         <Text className='text-primary-600 text-sm font-semibold'> {text}  </Text>
                     </View>

@@ -31,6 +31,7 @@
     "react-native-css-interop": "^0.2.5",
     "react-native-date-picker": "^5.0.13",
     "react-native-device-info": "^15.0.2",
+    "react-native-element-dropdown": "^2.12.4",
     "react-native-mssql": "^0.1.4",
     "react-native-nitro-image": "^0.15.1",
     "react-native-nitro-modules": "^0.35.9",
