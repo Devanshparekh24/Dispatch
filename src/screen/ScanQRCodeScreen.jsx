@@ -3,49 +3,80 @@ import React, { useEffect, useState } from 'react'
 import { Camera } from 'react-native-vision-camera';
 import StatesButton from '../components/Buttoon/StatesButton';
 import { useNavigation } from '@react-navigation/native';
-
 import SearchDropDown from '../components/Input/SearchDropDown';
-
+import { Button } from 'react-native-paper';
+import { syncVechileTable } from '../service/syncService';
+import useVechicle from '../hooks/useVechical';
 
 const ScanQRCodeScreen = () => {
-   const [vehicle, setVehicle] = useState(null);
-
+    const [vehicle, setVehicle] = useState(null);
+    const [isSyncing, setIsSyncing] = useState(false);
     const navigation = useNavigation();
+
+    const { data: queryResult, refetch } = useVechicle();
 
     const handleOpenScanner = () => {
         navigation.navigate('ScanQRCode');
         console.log('Navigating to ScanQRCode screen');
     }
 
+    const handleSync = async () => {
+        setIsSyncing(true);
+        try {
+            await syncVechileTable();
+            await refetch(); // Refresh dropdown list with newly synced data from SQLite
+        } catch (error) {
+            console.error('Sync failed:', error);
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
-    const data = [
-        { label: 'Item 1', value: '1' },
-        { label: 'Item 2', value: '2' },
-        { label: 'Item 3', value: '3' },
-        { label: 'Item 4', value: '4' },
-        { label: 'Item 5', value: '5' },
-        { label: 'Item 6', value: '6' },
-        { label: 'Item 7', value: '7' },
-        { label: 'Item 8', value: '8' },
-    ];
     useEffect(() => {
         (async () => {
-            await Camera.requestCameraPermission();
-            await Camera.requestMicrophonePermission();
+            try {
+                if (Camera && typeof Camera.requestCameraPermission === 'function') {
+                    await Camera.requestCameraPermission();
+                }
+                if (Camera && typeof Camera.requestMicrophonePermission === 'function') {
+                    await Camera.requestMicrophonePermission();
+                }
+            } catch (err) {
+                console.warn('Permissions request failed:', err.message);
+            }
         })();
     }, []);
+
+    // Format list of vehicles from React Query cache for the Dropdown component
+    const vehicleData = queryResult?.data || [];
+    const formattedVehicles = vehicleData.map(item => ({
+        label: item.VehicleID,
+        value: item.VehicleID
+    }));
+    console.log("🚀 ~ ScanQRCodeScreen ~ formattedVehicles:", formattedVehicles)
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className='px-4 py-6'>
                 <View>
                     <SearchDropDown
-                        data={data}
+                        data={formattedVehicles}
                         value={vehicle}
                         setValue={setVehicle}
                         label="Vehicle"
                         iconName="car-outline"
                     />
+
+
+                    <Button
+                        mode="contained"
+                        loading={isSyncing}
+                        disabled={isSyncing}
+                        onPress={handleSync}
+                        style={{ marginTop: 15 }}
+                    >
+                        Sync Vehicle
+                    </Button>
                 </View>
                 {/* <StatesButton
                 bg={'bg-primary-50'}

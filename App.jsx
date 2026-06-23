@@ -5,10 +5,10 @@ import { NavigationContainer, useNavigationContainerRef } from '@react-navigatio
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab';
-import { createUserMasterTable } from './src/service/authService';
+import initTable from './src/service/localTableinit'
 import QRCodeScreen from './src/screen/QRCodeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Camera  } from 'react-native-vision-camera';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +21,7 @@ const App = () => {
       try {
         // Run database initialization and session check in parallel
         const [_, storedData] = await Promise.all([
-          createUserMasterTable(),
+          initTable(),
           AsyncStorage.getItem("userData")
         ]);
         console.log('App initialization tasks finished');

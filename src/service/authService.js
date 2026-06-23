@@ -70,37 +70,7 @@ const userLocalExist = async (mobile, password) => {
 
 
 
-const createUserMasterTable = async () => {
-  try {
-    const connection = await getSQLiteConnection();
 
-    const query = `
-      CREATE TABLE IF NOT EXISTS User_Local (
-        ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        Mobile TEXT UNIQUE,
-        Password TEXT
-      )
-    `;
-
-    connection.transaction(tx => {
-      tx.executeSql(
-        query,
-        [],
-        () => {
-          console.log('User_Local table created successfully');
-        },
-        (txOrError, error) => {
-          console.log("🚀 ~ createUserMasterTable ~ error:", error || txOrError)
-        }
-      );
-    });
-
-  } catch (error) {
-  console.log("🚀 ~ createUserMasterTable ~ error:", error)
-
-    throw error;
-  }
-};
 
 const getLocalUsers = async () => {
   try {
@@ -115,7 +85,6 @@ const getLocalUsers = async () => {
 };
 
 export {
-    createUserMasterTable,
     inserUserMasterTable,
     userServerExist,
     getLocalUsers
