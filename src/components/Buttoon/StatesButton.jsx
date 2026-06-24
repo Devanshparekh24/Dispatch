@@ -6,7 +6,9 @@ const StatesButton = (
         color = '#000fff',
         text = "null",
         icon = 'document-text-outline',
-        onPress
+        onPress,
+        disabled
+
     }
 ) => {
     return (
@@ -14,6 +16,7 @@ const StatesButton = (
 
             <View className=''>
                 <TouchableOpacity
+                disabled={false}
                     onPress={onPress}
                     activeOpacity={0.7}>
                     <View className='flex-col items-center '>
