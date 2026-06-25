@@ -28,8 +28,8 @@ const QRCodeScreen = () => {
 
                 // Do something with the QR code data here (e.g., navigate, API call)
 
-                // Reset scanner after 3 seconds so the user can scan again if needed
-                setTimeout(() => setIsScanned(false), 3000);
+                // Reset scanner  5 seconds 
+                setTimeout(() => setIsScanned(false), 5000);
             }
         },
     });
@@ -71,15 +71,13 @@ const QRCodeScreen = () => {
                         className=' bg-black p-2 rounded-full'
                         onPress={() => setTorch(torch === 'off' ? 'on' : 'off')}>
                         <Ionicons name={torch === 'on' ? 'flashlight' : 'flashlight-outline'}
-                            size={35} color={'white'} />
-
+                            size={35} color={torch === 'on' ? '#FFD700' : 'white'} />
                     </TouchableOpacity>
                 </View>
-                {/* QR Overlay */}
             </View>
 
+            {/* QR Overlay */}
             <View className='flex items-center justify-center'>
-
                 <View style={styles.overlay}>
                     {/* Top Dark Area */}
                     <View style={styles.topOverlay} />
@@ -109,7 +107,7 @@ const styles = StyleSheet.create({
     },
     topOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        // backgroundColor: 'rgba(0,0,0,0.6)',
     },
 
     middleRow: {
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
 
     sideOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        // backgroundColor: 'rgba(0,0,0,0.6)',
     },
 
     scanBox: {
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
 
     bottomOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        // backgroundColor: 'rgba(0,0,0,0.6)',
     },
 }
 );
