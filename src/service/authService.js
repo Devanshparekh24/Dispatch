@@ -14,7 +14,7 @@ const userServerExist = async (mobile, password) => {
         console.log("🚀 ~ userServerExist ~ serverConn:", serverConn)
 
         const query = `
-            SELECT COUNT(1) AS Total
+            SELECT Mobile,Password,UserName
             FROM User_Master
             WHERE Mobile='${mobile}'
             AND Password='${password}'
@@ -23,11 +23,13 @@ const userServerExist = async (mobile, password) => {
         const result = await serverConn.executeQuery(query);
         console.log("🚀 ~ userServerExist ~ result:", result)
 
-        if (result && result.length > 0 && result[0].Total > 0) {
-            // Save locally for future offline login
-            await inserUserMasterTable(mobile, password);
-        }
-
+if (result?.length > 0) 
+    { await inserUserMasterTable( 
+        result[0].Mobile, 
+        result[0].Password, 
+        result[0].UserName ); 
+        return true; 
+    }
          // Check local DB first
         if (await userLocalExist(mobile, password)) {
             return true;
@@ -40,11 +42,11 @@ const userServerExist = async (mobile, password) => {
         return false;
     }
 };
-const inserUserMasterTable = async (mobile, password) => {
+const inserUserMasterTable = async (mobile, password,username) => {
     try {
         const connection = await getSQLiteConnection();
-        const query = 'INSERT INTO User_Local (Mobile, Password) VALUES (?, ?)';
-        await connection.executeQuery(query, [mobile, password]);
+        const query = 'INSERT INTO User_Local (Mobile, Password,UserName) VALUES (?, ?,?)';
+        await connection.executeQuery(query, [mobile, password,username]);
     } catch (error) {
     console.log("🚀 ~ inserUserMasterTable ~ error:", error)
         

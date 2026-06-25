@@ -23,7 +23,27 @@ const HomeScreen = () => {
 
   return (
     <View>
-      <Text className='text-blue-600'>{localUsers.Mobile}</Text>
+
+      <View className="bg-primary-600 shadow-md p-6 rounded-b-3xl pb-24">
+        <View className='flex flex-row justify-between items-center'>
+
+          <Text className="text-white text-2xl font-bold">
+            Welcome Back ✌
+          </Text>
+        </View>
+        {localUsers ? (
+          <View className="mt-4">
+            <Text className="text-white text-xl font-bold">
+              <Text className='text-white'>{localUsers.UserName}</Text>
+            </Text>
+
+          </View>
+        ) : (
+          <Text className="text-white/70 mt-4">
+            Loading...
+          </Text>
+        )}
+      </View>
     </View>
   );
 };

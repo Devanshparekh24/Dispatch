@@ -8,7 +8,8 @@ const createUserMasterTable = async () => {
       CREATE TABLE IF NOT EXISTS User_Local (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
         Mobile TEXT UNIQUE,
-        Password TEXT
+        Password TEXT,
+        UserName Text
       )
     `;
 
