@@ -1,4 +1,4 @@
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View,Dimensions, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Camera } from 'react-native-vision-camera';
 import StatesButton from '../components/Buttoon/StatesButton';
@@ -9,6 +9,9 @@ import { syncVechileTable, barcodeDataSync } from '../service/syncService';
 import useVechicle from '../hooks/useVechical';
 import useCustomer from '../hooks/useCustomer';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+
+
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
     const [customer, setCustomer] = useState(null);
@@ -17,6 +20,10 @@ const ScanQRCodeScreen = () => {
 
     const { data: queryResult, refetch } = useVechicle();
     const { data: customerData, refetch: refetch1 } = useCustomer();
+
+
+ const isAndroid = Platform.OS === 'android';
+
 
     const handleOpenScanner = () => {
         if (!vehicle || !customer) {

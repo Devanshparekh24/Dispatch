@@ -99,12 +99,45 @@ const createBarcodeDatatTable = async () => {
   }
 }
 
+const createScaningQRDatatTable = async () => {
+  try {
+
+    const Localconnection = await getSQLiteConnection();
+    const query = `
+     CREATE TABLE IF NOT EXISTS Dis_Scaning_QR_Data_Local (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    BarCode TEXT,
+    CustID INTEGER,
+    IsSynced INTEGER DEFAULT 0,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`;
+
+    Localconnection.transaction(tx => {
+      tx.executeSql(
+        query,
+        [],
+        () => {
+          console.log('Scaning_QR_Data_Local table created successfully');
+        },
+        (txOrError, error) => {
+          console.log("🚀 ~ createScaningQRDatatTable ~ error:", error || txOrError)
+        }
+      );
+    });
+  } catch (error) {
+    console.log("🚀 ~ createScaningQRDatatTable ~ error:", error)
+    throw error;
+  }
+}
+
+
 const initTable = async () => {
   try {
     await createUserMasterTable();
     await createVechileMaster();
     await createBarcodeDatatTable();
-
+    await createScaningQRDatatTable();
   } catch (error) {
     console.log("🚀 ~ initTable ~ error:", error)
 

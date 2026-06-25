@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import {TouchableOpacity } from 'react-native';
 import { Feather as Icon } from '@react-native-vector-icons/feather';
 import Input from './Input';
-import { Text } from 'react-native-paper';
 
 const PasswordInput = ({
     placeholder = 'Password',
