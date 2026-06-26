@@ -61,7 +61,7 @@ const QRCodeScreen = ({ route }) => {
                 enableNativeTapToFocusGesture={true}
             />
 
-            <View className='absolute top-10 w-full flex-row justify-between px-5'>
+            <View className='absolute bottom-10 w-full flex-row justify-between px-5'>
                 {/*  Back Btn */}
                 <View className=''>
                     <TouchableOpacity
@@ -82,7 +82,10 @@ const QRCodeScreen = ({ route }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
+            <View className='absolute bottom-10'>
+                <Text className='text-white bg-black text-lg px-4'>Customer: {customerName}</Text>
+                {/* <Text>Customer: {customer}</Text> */}
+            </View>
             {/* QR Overlay */}
             <View className='flex items-center justify-center'>
                 <View style={styles.overlay}>
@@ -102,9 +105,8 @@ const QRCodeScreen = ({ route }) => {
             </View>
 
             <View className='absolute bottom-10'>
-                <Text className='text-white bg-black text-lg px-4'>Customer: {customerName}</Text>
-                <Text className='text-white text-lg bg-black px-4 '>Vehicle: {vehicle}</Text>
-                {/* <Text>Customer: {customer}</Text> */}
+                <Text className='text-white text-lg px-4'>Customer: {customerName}</Text>
+                <Text className='text-white text-lg px-4 '>Vehicle: {vehicle}</Text>
             </View>
         </View>
     )

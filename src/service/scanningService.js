@@ -3,8 +3,7 @@ import { getSQLiteConnection } from '../backend/DB/db';
 const getlocalVechical = async () => {
     try {
         let localConnection = getSQLiteConnection();
-        const localQuery = `select distinct VehicleID From Barcode_Data_Local`;
-        // const localQuery = `select VehicleID From Vechile_Master_Local`;
+        const localQuery = `select distinct VehicleID From Vechile_Master_Local`;
         const result = await localConnection.executeQuery(localQuery);
         console.log("🚀 ~ getlocalVechical ~ result:", result)
 

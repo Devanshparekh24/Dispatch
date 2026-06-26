@@ -25,19 +25,19 @@ const SCREENS = {
   },
   QRScan: {
     component: ScanQRCodeScreen,
-    label: 'QR',
-    icon: 'scan',
+    label: 'Cust List',
+    icon: 'list',
   },
   Setting: {
     component: SettingScreen,
     label: 'Settings',
     icon: 'settings',
   },
-  Demo: {
-    component: DemoScreen,
-    label: 'Demo',
-    icon: 'list',
-  },
+  // Demo: {
+  //   component: DemoScreen,
+  //   label: 'Demo',
+  //   icon: 'list',
+  // },
   // Visit: {
   //   component: VisitScreen,
   //   label: 'Visit',

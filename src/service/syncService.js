@@ -1,8 +1,10 @@
 import { getSQLiteConnection, getMSSQLConnection } from '../backend/DB/db';
 import isInternet from '../utils/network';
-
+import { isEmpty } from '../utils/validation'
 
 let localConnection = getSQLiteConnection();
+
+
 
 const syncVechileTable = async () => {
     try {
@@ -29,7 +31,7 @@ const syncVechileTable = async () => {
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT INTO Vechile_Master_Local (VehicleID) VALUES (?)',
+                    'INSERT OR REPLACE INTO Vechile_Master_Local (VehicleID) VALUES (?)',
                     [item.VehicleID]
                 );
             });
@@ -42,7 +44,7 @@ const syncVechileTable = async () => {
 };
 
 
-const barcodeDataSync = async() => {
+const barcodeDataSync = async (vehicleID) => {
     try {
         const connect = await isInternet();
         if (!connect) {
@@ -50,7 +52,12 @@ const barcodeDataSync = async() => {
             return;
         }
         const mssqlConn = await getMSSQLConnection();
-        const serverquery = `select * From Dis_vw_BarCodeData`;
+        if (isEmpty(vehicleID)) {
+            console.log('Vehicle not selected...');
+            throw new Error('Vehicle not selected...');
+        }
+        const serverquery = `select * From Dis_vw_BarCodeData where VehicleID = '${vehicleID}'`;
+
         const result = await mssqlConn.executeQuery(serverquery);
         console.log("🚀 ~ barcodeDataSync ~ result:", result)
         if (!result || result.length === 0) {
@@ -74,9 +81,10 @@ const barcodeDataSync = async() => {
 
     } catch (error) {
         console.log("🚀 ~ barcodeDataSync ~ error:", error)
+        throw error;
 
     }
-}
+};
 
 
 
