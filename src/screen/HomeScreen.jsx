@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getLocalUsers } from '../service/authService';
-
+import { requestLocationPermission } from '../utils/requestLocationPermission';
+import { getErrorLog } from '../service/Log';
+import HeaderCard from '../components/Card/HeaderCard';
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
+  const [errorLog, setErrorLog] = useState([]);
+
   const logLocalUsers = async () => {
     try {
       console.log('[SQLite] Fetching local users...');
@@ -17,33 +21,30 @@ const HomeScreen = () => {
     }
   };
 
+  const ErrorLog = async () => {
+    try {
+      console.log('[SQLite] Fetching error logs...');
+      const error_data = await getErrorLog();
+      console.log("🚀 ~ ErrorLog ~ error_data:", error_data)
+      setErrorLog(error_data[0]);
+      console.log('[SQLite] Error Logs:', JSON.stringify(error_data, null, 2));
+    } catch (error) {
+      console.error('[SQLite] Error logging error logs:', error);
+    }
+  };
+
   useEffect(() => {
     logLocalUsers();
+    requestLocationPermission();
+    ErrorLog();
   }, []);
-
+  const userName = localUsers.UserName
   return (
     <View>
-
-      <View className="bg-primary-600 shadow-md p-6 rounded-b-3xl pb-24">
-        <View className='flex flex-row justify-between items-center'>
-
-          <Text className="text-white text-2xl font-bold">
-            Welcome Back ✌
-          </Text>
-        </View>
-        {localUsers ? (
-          <View className="mt-4">
-            <Text className="text-white text-xl font-bold">
-              <Text className='text-white'>{localUsers.UserName}</Text>
-            </Text>
-
-          </View>
-        ) : (
-          <Text className="text-white/70 mt-4">
-            Loading...
-          </Text>
-        )}
-      </View>
+      <HeaderCard
+        lg_label={"Welcome Back ✌"}
+        md_label={userName}
+      />
     </View>
   );
 };

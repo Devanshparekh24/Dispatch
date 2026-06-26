@@ -1,4 +1,4 @@
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, View,Dimensions, Linking } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View, Dimensions, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Camera } from 'react-native-vision-camera';
 import StatesButton from '../components/Buttoon/StatesButton';
@@ -15,16 +15,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
     const [customer, setCustomer] = useState(null);
+    const [customerName, setCustomerName] = useState(null);
     const [isSyncing, setIsSyncing] = useState(false);
+
     const navigation = useNavigation();
 
     const { data: queryResult, refetch } = useVechicle();
     const { data: customerData, refetch: refetch1 } = useCustomer();
-
-
- const isAndroid = Platform.OS === 'android';
-
-
     const handleOpenScanner = () => {
         if (!vehicle || !customer) {
             Alert.alert('Alert', 'Please select vehicle and customer');
@@ -32,8 +29,10 @@ const ScanQRCodeScreen = () => {
         }
         navigation.navigate('ScanQRCode', {
             vehicle,
-            customer
+            customer,
+            customerName: selectedCustomer?.CustName
         });
+
         console.log('Navigating to ScanQRCode screen');
     }
 
@@ -79,8 +78,11 @@ const ScanQRCodeScreen = () => {
     const custData = customerData?.data || [];
     const formattedCustomer = custData.map(item => ({
         label: item.CustName,
-        value: item.CustID
+        value: item.CustID,
     }));
+    const selectedCustomer = custData.find(
+        item => item.CustID === customer
+    );
     console.log("🚀 ~ ScanQRCodeScreen ~ formattedCustomer:", formattedCustomer)
 
     return (

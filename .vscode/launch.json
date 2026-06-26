@@ -6,10 +6,13 @@
     "configurations": [
 
         {
-            "name": "Attach to Hermes application",
-            "cwd": "${workspaceFolder}",
-            "type": "reactnativedirect",
-            "request": "attach",
+            "name": "Debug Android",
+            "type": "reactnative",
+            "request": "launch",
+            "platform": "android",
+            "sourceMaps": true,
+            "outDir": "${workspaceFolder}/.vscode/.react",
+            "enableDebug": true
         }
     ]
 }

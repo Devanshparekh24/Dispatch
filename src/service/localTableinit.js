@@ -9,7 +9,8 @@ const createUserMasterTable = async () => {
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
         Mobile TEXT UNIQUE,
         Password TEXT,
-        UserName Text
+        UserName Text,
+        UserID INTEGER
       )
     `;
 
@@ -108,9 +109,10 @@ const createScaningQRDatatTable = async () => {
      CREATE TABLE IF NOT EXISTS Dis_Scaning_QR_Data_Local (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     BarCode TEXT,
+    VehicleID TEXT,
     CustID INTEGER,
     IsSynced INTEGER DEFAULT 0,
-    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    CreatedAt TEXT
   )
 `;
 
@@ -120,6 +122,37 @@ const createScaningQRDatatTable = async () => {
         [],
         () => {
           console.log('Scaning_QR_Data_Local table created successfully');
+        },
+        (txOrError, error) => {
+          console.log("🚀 ~ createScaningQRDatatTable ~ error:", error || txOrError)
+        }
+      );
+    });
+  } catch (error) {
+    console.log("🚀 ~ createScaningQRDatatTable ~ error:", error)
+    throw error;
+  }
+}
+const customErrorLog = async () => {
+  try {
+
+    const Localconnection = await getSQLiteConnection();
+    const query = `
+     CREATE TABLE IF NOT EXISTS Dis_Error_Log (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    ErrorType TEXT,
+    ErrorMessage TEXT,
+    Screen Text,
+    CreatedAt Text
+  )
+`;
+
+    Localconnection.transaction(tx => {
+      tx.executeSql(
+        query,
+        [],
+        () => {
+          console.log('Dis_Error_Log table created successfully');
         },
         (txOrError, error) => {
           console.log("🚀 ~ createScaningQRDatatTable ~ error:", error || txOrError)

@@ -46,9 +46,9 @@ const getSQLiteConnection = () => {
 
 // ---- MSSQL (remote) ----
 const SERVERS = [
-  { name: 'Primary', host: 'pgserver' },
-  { name: 'Jio', host: '136.232.118.110' },
   { name: 'GTPL', host: '103.217.85.79' },
+  { name: 'Jio', host: '136.232.118.110' },
+  { name: 'Primary', host: 'pgserver' },
 ];
 
 const makeConfig = (host) => ({

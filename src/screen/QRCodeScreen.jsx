@@ -5,19 +5,22 @@ import React, { useState } from 'react'
 import { ActivityIndicator, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
+import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 
-const QRCodeScreen = () => {
+const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
-    const { width, height } = Dimensions.get('window');
+
+    const { vehicle, customer, customerName } = route.params;
 
     const device = useCameraDevice('back');
     const navigation = useNavigation();
 
+
     // 2. Configure the code scanner with a throttle/lock
     const codeScanner = useCodeScanner({
         codeTypes: ['qr'],
-        onCodeScanned: (codes) => {
+        onCodeScanned: async (codes) => {
             if (isScanned) return; // Prevent multiple scans at once
 
             const qrValue = codes[0]?.value;
@@ -25,6 +28,8 @@ const QRCodeScreen = () => {
                 setIsScanned(true);
                 Vibration.vibrate(500); // Vibrate for 500ms to give feedback to the user
                 console.log('QR Code Scanned:', qrValue);
+                const locationData = await getCurrentLocationPromise();
+                console.log("🚀 ~ QRCodeScreen ~ locationData:", locationData)
 
                 // Do something with the QR code data here (e.g., navigate, API call)
 
@@ -52,6 +57,8 @@ const QRCodeScreen = () => {
                 photo={true} // Enable photo capture
                 codeScanner={codeScanner}
                 torch={torch}
+                enableNativeZoomGesture={true}
+                enableNativeTapToFocusGesture={true}
             />
 
             <View className='absolute top-10 w-full flex-row justify-between px-5'>
@@ -92,6 +99,12 @@ const QRCodeScreen = () => {
                     {/* Bottom Dark Area */}
                     <View style={styles.bottomOverlay} />
                 </View>
+            </View>
+
+            <View className='absolute bottom-10'>
+                <Text className='text-white bg-black text-lg px-4'>Customer: {customerName}</Text>
+                <Text className='text-white text-lg bg-black px-4 '>Vehicle: {vehicle}</Text>
+                {/* <Text>Customer: {customer}</Text> */}
             </View>
         </View>
     )

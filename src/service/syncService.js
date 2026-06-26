@@ -78,6 +78,47 @@ const barcodeDataSync = async() => {
     }
 }
 
+
+
+//offline to online Sync
+const qrScanningDataSync = async() => {
+    try {
+        const connect = await isInternet();
+        if (!connect) {
+            console.log('Internet Is not connected .....');
+            return;
+        }
+        const localConnection = await getSQLiteConnection();
+        const locaQuery = `select * From Dis_Scaning_QR_Data_Local`;
+        const result = await localConnection.executeQuery(locaQuery);
+        console.log("🚀 ~ qrScanningDataSync ~ result:", result)
+        if (!result || result.length === 0) {
+            console.log('No vehicle data found on remote server.');
+            return;
+        }
+
+        await localConnection.transaction(tx => {
+            // Optional: clear old data
+            tx.executeSql('DELETE FROM Barcode_Data_Local');
+
+            result.forEach(item => {
+                tx.executeSql(
+                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, CustName) VALUES (?, ?, ?,?,?,?)',
+                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.CustName]
+                );
+            });
+        });
+
+        console.log('BarcodeData sync completed 🔥🔥🔥');
+
+    } catch (error) {
+        console.log("🚀 ~ barcodeDataSync ~ error:", error)
+
+    }
+}
+
+
+
 export {
     syncVechileTable,
     barcodeDataSync

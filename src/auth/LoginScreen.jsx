@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuthentication } from '../hooks/useloginCreateUser';
 import { isEmpty, isValidMobile } from '../utils/validation';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import saveError from '../service/Log'
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -88,6 +89,7 @@ const LoginScreen = () => {
             }
         } catch (error) {
             Alert.alert('Error', error.message);
+            saveError('Login Error', error.message, 'LoginScreen');
         }
     };
 
