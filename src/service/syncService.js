@@ -15,8 +15,9 @@ const syncVechileTable = async () => {
         }
 
         const mssqlConn = await getMSSQLConnection();
-        const serverquery = `select distinct Tm.VehicleID From Trip_Master_New as Tm
-                        where VehicleType='Internal'`;
+        // const serverquery = `select distinct Tm.VehicleID From Trip_Master_New as Tm
+        //                 where VehicleType='Internal'`;
+        const serverquery = `select distinct VehicleID From Dis_vw_BarCodeData`;
         const result = await mssqlConn.executeQuery(serverquery);
         console.log("🚀 ~ syncVechileTable ~ result:", result);
 
@@ -71,8 +72,8 @@ const barcodeDataSync = async (vehicleID) => {
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, CustName) VALUES (?, ?, ?,?,?,?)',
-                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.CustName]
+                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,CustName) VALUES (?, ?, ?,?,?,?,?)',
+                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.CustName]
                 );
             });
         });
@@ -111,8 +112,8 @@ const qrScanningDataSync = async() => {
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, CustName) VALUES (?, ?, ?,?,?,?)',
-                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.CustName]
+                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,CustName) VALUES (?, ?, ?,?,?,?,?)',
+                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.CustName]
                 );
             });
         });

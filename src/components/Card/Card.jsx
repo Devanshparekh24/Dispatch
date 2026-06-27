@@ -5,7 +5,7 @@ const Card = ({
     children
 }) => {
     return (
-        <View className={`bg-green-700 rounded-2xl p-4 shadow-md elevation-2 ${className}`} >
+        <View className={`bg-secondary-50 rounded-2xl p-4 shadow-md ${className}`} >
             {children}
         </View>
     )

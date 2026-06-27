@@ -77,6 +77,7 @@ const createBarcodeDatatTable = async () => {
     VehicleID TEXT,
     EInvoice_Number TEXT,
     CustID INTEGER,
+    Qty  REAL,
     CustName TEXT,
     IsSynced INTEGER DEFAULT 0,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP

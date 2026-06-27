@@ -4,7 +4,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 const StatesButton = (
     { bg = '#000fff',
         color = '#000fff',
-        text = "null",
+        text = null,
         icon = 'document-text-outline',
         onPress,
         disabled
@@ -16,7 +16,7 @@ const StatesButton = (
 
             <View className=''>
                 <TouchableOpacity
-                disabled={false}
+                    disabled={false}
                     onPress={onPress}
                     activeOpacity={0.7}>
                     <View className='flex-col items-center '>

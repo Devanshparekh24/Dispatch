@@ -10,3 +10,14 @@ export const goToSettings = () => {
     Linking.openSettings();
   }
 };
+
+
+export const printError = (error) => {
+    console.log("========== ERROR ==========");
+    console.log("Name:", error.name);
+    console.log("Message:", error.message);
+    console.log("Stack:", error.stack);
+    console.log("===========================");
+};
+
+

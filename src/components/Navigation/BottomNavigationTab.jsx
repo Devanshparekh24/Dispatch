@@ -25,7 +25,7 @@ const SCREENS = {
   },
   QRScan: {
     component: ScanQRCodeScreen,
-    label: 'Cust List',
+    label: 'Customer List',
     icon: 'list',
   },
   Setting: {

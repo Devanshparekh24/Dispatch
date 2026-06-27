@@ -12,6 +12,7 @@ import { Button } from 'react-native-paper';
 import { syncVechileTable, barcodeDataSync } from '../service/syncService';
 import { Camera } from 'react-native-vision-camera';
 import { isEmpty } from '../utils/validation';
+import { printError } from '../utils/helper';
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
@@ -68,6 +69,7 @@ const HomeScreen = () => {
       Alert.alert('Sync completed successfully');
     } catch (error) {
       console.error('Sync failed:', error);
+      printError(error);
       Alert.alert('Sync failed');
     } finally {
       setIsSyncing(false);
@@ -90,7 +92,7 @@ const HomeScreen = () => {
     requestLocationPermission();
     ErrorLog();
     loadData();
-  }, []);
+  }, [refetch]);
 
 
   useEffect(() => {
@@ -105,6 +107,8 @@ const HomeScreen = () => {
         }
       } catch (err) {
         console.warn('Permissions request failed:', err.message);
+        printError(err);
+
       }
     })();
   }, []);
