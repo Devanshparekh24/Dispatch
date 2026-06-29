@@ -21,7 +21,7 @@ const getPartyName = async () => {
     try {
         let localConnection = getSQLiteConnection();
         // const localQuery = `select distinct CustID, CustName, VehicleID From Barcode_Data_Local`;
-        const localQuery = `select CustID,CustName, VehicleID,sum(Qty) as Total_Bags  From Barcode_Data_Local  group by CustID,CustName,VehicleID`;
+        const localQuery = `select CustID,CustName, VehicleID,sum(Qty) as Total_Bags,count(*)as No_of_Item  From Barcode_Data_Local  group by CustID,CustName,VehicleID`;
         const result = await localConnection.executeQuery(localQuery);
         console.log("🚀 ~ getPartyName ~ result:", result)
         if (Array.isArray(result)) {

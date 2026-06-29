@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Touchable, TouchableOpacity, Vibration, Modal } from 'react-native'
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 import Ionicons from '@react-native-vector-icons/ionicons';
-import React, { useState } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import { ActivityIndicator, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
@@ -11,7 +11,13 @@ const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
 
-    const { vehicle, customer, customerName } = route.params;
+    const { vehicle, custID, customerName } = route.params;
+    console.log("🚀 ~ QRCodeScreen ~ customerName:", customerName)
+    console.log("🚀 ~ QRCodeScreen ~ custID:", custID)
+    console.log("🚀 ~ QRCodeScreen ~ vehicle:", vehicle)
+
+    const bottomSheetRef = useRef(null);
+    const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     const device = useCameraDevice('back');
     const navigation = useNavigation();
@@ -68,7 +74,7 @@ const QRCodeScreen = ({ route }) => {
                         onPress={() => navigation.goBack()}
                         className=' bg-black p-2 rounded-full'
                     >
-                        <Ionicons name='close-outline' size={35} color={'white'} />
+                        <Ionicons name='close-outline' size={25} color={'white'} />
 
                     </TouchableOpacity>
                 </View>
@@ -78,13 +84,9 @@ const QRCodeScreen = ({ route }) => {
                         className=' bg-black p-2 rounded-full'
                         onPress={() => setTorch(torch === 'off' ? 'on' : 'off')}>
                         <Ionicons name={torch === 'on' ? 'flashlight' : 'flashlight-outline'}
-                            size={35} color={torch === 'on' ? '#FFD700' : 'white'} />
+                            size={25} color={torch === 'on' ? '#FFD700' : 'white'} />
                     </TouchableOpacity>
                 </View>
-            </View>
-            <View className='absolute bottom-10'>
-                <Text className='text-white bg-black text-lg px-4'>Customer: {customerName}</Text>
-                {/* <Text>Customer: {customer}</Text> */}
             </View>
             {/* QR Overlay */}
             <View className='flex items-center justify-center'>
@@ -102,11 +104,6 @@ const QRCodeScreen = ({ route }) => {
                     {/* Bottom Dark Area */}
                     <View style={styles.bottomOverlay} />
                 </View>
-            </View>
-
-            <View className='absolute bottom-10'>
-                <Text className='text-white text-lg px-4'>Customer: {customerName}</Text>
-                <Text className='text-white text-lg px-4 '>Vehicle: {vehicle}</Text>
             </View>
         </View>
     )

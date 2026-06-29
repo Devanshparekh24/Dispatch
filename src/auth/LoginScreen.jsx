@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Applogo from '../assets/images/Dispatch_Logo.png';
 import { appHeaderName } from '../constant/HeaderName';
 import Input from '../components/Input/Input';
@@ -19,6 +20,9 @@ const LoginScreen = () => {
     const [mobileError, setMobileError] = useState('');
     const [password, setPassword] = useState('');
 
+
+    console.log('start login screen');
+    
     const handleForgotPassword = () => {
         try {
             navigation.navigate('ForgotPassword');

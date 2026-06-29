@@ -28,15 +28,15 @@ const ScanQRCodeScreen = () => {
         return customerData?.data?.filter(item => item.CustName.toLowerCase().includes(search.toLowerCase()));
     }, [customerData, search]);
 
-    const handleOpenScanner = () => {
+    const handleOpenScanner = (CustName, VehicleID, CustID) => {
         if (!vehicle) {
             Alert.alert('Alert', 'Please select vehicle');
             return;
         }
         navigation.navigate('ScanQRCode', {
-            vehicle,
-            customer,
-            customerName: selectedCustomer?.CustName
+            vehicle: VehicleID,
+            custID: CustID,
+            customerName: CustName
         });
 
         console.log('Navigating to ScanQRCode screen');
@@ -61,6 +61,7 @@ const ScanQRCodeScreen = () => {
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+
         >
             <SafeAreaView>
                 <View className='px-4 pt-5 '>
@@ -94,6 +95,7 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-sm font-semibold'>{item.CustName}</Text>
                                                 <Text className='text-xs text-gray-600'>{item.VehicleID}</Text>
                                                 <Text className='text-xs text-gray-600'>{item.CustID}</Text>
+                                                <Text className='text-xs text-gray-600'> No of Item: {item.No_of_Item}</Text>
                                             </View>
 
                                             {/* Right side - QR button */}
@@ -102,19 +104,16 @@ const ScanQRCodeScreen = () => {
                                                     bg={'bg-primary-50'}
                                                     // text={"QR Code"}
                                                     icon={"qr-code-outline"}
-                                                    onPress={() => handleOpenScanner()}
+                                                    onPress={() => handleOpenScanner(item.CustName, item.VehicleID, item.CustID)}
                                                 />
                                             </View>
 
                                         </View>
 
                                         <View className=' mt-2 flex-row space-x-7'>
-                                            <View className='items-center justify-center w-10 h-10 bg-primary-600 '>
-                                                <Text className='text-white text-sm'>{item.Total_Bags}</Text>
-                                            </View>
-                                            <View className='items-center justify-center w-10 h-10 bg-primary-600 '>
-                                                <Text className='text-white text-sm'>{item.Total_Bags}</Text>
-                                            </View>
+                                            <Text className='text-blue-600 text-sm'>{item.Total_Bags}</Text>
+                                            <Text className='text-gray-400 text-sm'> / </Text>
+                                            <Text className='text-red-500 text-sm'>{item.No_of_Item}</Text>
                                         </View>
                                     </Card>
                                 </>

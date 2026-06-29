@@ -72,8 +72,8 @@ const barcodeDataSync = async (vehicleID) => {
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,CustName) VALUES (?, ?, ?,?,?,?,?)',
-                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.CustName]
+                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,ItemName,CustName) VALUES (?, ?, ?,?,?,?,?,?)',
+                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.ItemName,item.CustName]
                 );
             });
         });
@@ -86,7 +86,6 @@ const barcodeDataSync = async (vehicleID) => {
 
     }
 };
-
 
 
 //offline to online Sync
