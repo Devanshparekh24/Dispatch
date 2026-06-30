@@ -22,7 +22,7 @@ const LoginScreen = () => {
 
 
     console.log('start login screen');
-    
+
     const handleForgotPassword = () => {
         try {
             navigation.navigate('ForgotPassword');
@@ -106,6 +106,7 @@ const LoginScreen = () => {
 
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
+                keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps="handled"
             >
                 <SafeAreaView className="flex-1 bg-[#F5F5F5]">

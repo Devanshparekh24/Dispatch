@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeScreen from '../../screen/HomeScreen';
 import SettingScreen from '../../screen/SettingScreen';
 import DemoScreen from '../../screen/DemoScreen';
-import ScanQRCodeScreen from '../../screen/ScanQRCodeScreen';
+import ScanQRCodeScreen from '../../screen/CustomerQRList';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // import AttendanceScreen from '../../screen/AttendanceScreen';

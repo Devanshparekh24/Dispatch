@@ -55,7 +55,6 @@ const ScanQRCodeScreen = () => {
     const selectedCustomer = custData.find(
         item => item.CustID === customer
     );
-    // console.log("🚀 ~ ScanQRCodeScreen ~ formattedCustomer:", formattedCustomer)
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -86,16 +85,25 @@ const ScanQRCodeScreen = () => {
                         keyboardDismissMode='on-drag'
                         contentContainerStyle={{ paddingBottom: 80 }}
                         renderItem={({ item, index }) => {
+
+                            const custName = item.CustName || "N/A";
+                            const vehicleNo = item.VehicleID || "N/A";
+                            const custID = item.CustID || "N/A";
+                            const total_qty = item.Total_Qty || "N/A";
+                            const no_of_items = item.No_of_Items || "N/A";
+                            const total_qr_code = item.Total_QR_Code || "N/A";
+                            const scanningQRCode = item.scanningQRCode || "N/A";
                             return (
                                 <>
                                     <Card className="mb-4 bg-light-600">
                                         <View className='flex-row justify-between items-center'>
                                             {/* Left side */}
                                             <View style={{ flex: 1, marginRight: 12 }}>
-                                                <Text className='text-sm font-semibold'>{item.CustName}</Text>
-                                                <Text className='text-xs text-gray-600'>{item.VehicleID}</Text>
-                                                <Text className='text-xs text-gray-600'>{item.CustID}</Text>
-                                                <Text className='text-xs text-gray-600'> No of Item: {item.No_of_Item}</Text>
+                                                <Text className='text-sm font-semibold'>{custName}</Text>
+                                                <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
+                                                {/* <Text className='text-xs text-gray-600'>{item.CustID}</Text> */}
+                                                <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty(kg): </Text>{total_qty}</Text >
+                                                <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
 
                                             {/* Right side - QR button */}
@@ -104,16 +112,16 @@ const ScanQRCodeScreen = () => {
                                                     bg={'bg-primary-50'}
                                                     // text={"QR Code"}
                                                     icon={"qr-code-outline"}
-                                                    onPress={() => handleOpenScanner(item.CustName, item.VehicleID, item.CustID)}
+                                                    onPress={() => handleOpenScanner(custName, vehicleNo, custID)}
                                                 />
                                             </View>
 
                                         </View>
 
                                         <View className=' mt-2 flex-row space-x-7'>
-                                            <Text className='text-blue-600 text-sm'>{item.Total_Bags}</Text>
+                                            <Text className='text-blue-600 text-sm'>{total_qr_code}</Text>
                                             <Text className='text-gray-400 text-sm'> / </Text>
-                                            <Text className='text-red-500 text-sm'>{item.No_of_Item}</Text>
+                                            <Text className='text-red-500 text-sm'>{scanningQRCode}</Text>
                                         </View>
                                     </Card>
                                 </>

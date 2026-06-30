@@ -7,9 +7,16 @@ import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
 import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 import BottomSheet from '../components/Sheet/BottomSheet';
+import useScanQRCodeData from '../hooks/useScanQRCodeData';
+import useGetScannedData from '../hooks/useGetScannedData';
+
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
+    const [sheetIndex, setSheetIndex] = useState(0);
+    const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
+    const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
+
     const { vehicle, custID, customerName } = route.params;
     console.log("🚀 ~ QRCodeScreen ~ customerName:", customerName)
     console.log("🚀 ~ QRCodeScreen ~ custID:", custID)
@@ -21,28 +28,17 @@ const QRCodeScreen = ({ route }) => {
 
     const device = useCameraDevice('back');
     const navigation = useNavigation();
-
     useEffect(() => {
-
         if (device) {
-
             setTimeout(() => {
-
                 bottomSheetRef.current?.present();
             }, 500);
         }
-    }, []);
+    }, [device]);
 
-    const qrPosition = useRef(new Animated.Value(0)).current;
     const handleSheetChanges = useCallback((index) => {
-
-        Animated.timing(qrPosition, {
-            toValue: index === 2 ? -120 : 0,
-            duration: 250,
-            useNativeDriver: true,
-        }).start();
         console.log('BottomSheet index:', index);
-
+        setSheetIndex(index);
         // Prevent full close — snap it back open if something forces it shut
         if (index === -1) {
             requestAnimationFrame(() => {
@@ -64,8 +60,15 @@ const QRCodeScreen = ({ route }) => {
                 const locationData = await getCurrentLocationPromise();
                 console.log("🚀 ~ QRCodeScreen ~ locationData:", locationData)
 
-                // Open the bottom sheet
-                bottomSheetRef.current?.present();
+                insertQRData({
+                    CustId: custID,
+                    VehicleID: vehicle,
+                    BarCode: qrValue,
+                    Latitude: locationData.latitude,
+                    Longitude: locationData.longitude,
+                });
+
+                console.log("🚀 ~ QRCodeScreen ~ insertQRData:", insertQRData)
 
                 // Reset scanner  5 seconds 
                 setTimeout(() => setIsScanned(false), 5000);
@@ -83,6 +86,7 @@ const QRCodeScreen = ({ route }) => {
             </View>
         );
     }
+    console.log("🚀 ~ QRCodeScreen ~ sheetIndex:", sheetIndex)
     return (
         <View style={styles.container}>
             <Camera
@@ -96,7 +100,7 @@ const QRCodeScreen = ({ route }) => {
                 enableNativeTapToFocusGesture={true}
             />
 
-            <View className='absolute bottom-10 w-full flex-row justify-between items-center px-5'>
+            <View className='absolute top-10 w-full flex-row justify-between items-center px-5'>
                 {/*  Back Btn */}
                 <View className=''>
                     <TouchableOpacity
@@ -145,15 +149,21 @@ const QRCodeScreen = ({ route }) => {
                 enableDynamicSizing={false}    // prevents auto-collapse-to-close on content change
                 onChange={handleSheetChanges}
             >
-                <View className='flex-row justify-center items-center px-4'>
-                    <Text className='text-xl font-semibold'>{customerName}</Text>
-                </View>
-                <View className='flex justify-start px-4'>
-                    <Text className='text-md font-semibold'>{vehicle}</Text>
-                </View>
+                {sheetIndex === 0 ? (
+                    <View>
+                        <View className=' px-4'>
+                            <Text className='text-lg text-left font-semibold'>{customerName}</Text>
+                            <Text className='text-md font-semibold'>{vehicle}</Text>
+                        </View>
+                    </View>) : (
+
+                    <View>
+                        <Text className='text-md text-center font-semibold'>{customerName}</Text>
+                        <Text className='text-sm text-center font-semibold'>{vehicle}</Text>
+                        <Text>List of Item</Text>
+                    </View>)}
             </BottomSheet>
         </View>
-
     )
 }
 

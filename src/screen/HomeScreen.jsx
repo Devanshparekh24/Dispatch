@@ -146,7 +146,7 @@ const HomeScreen = () => {
                 className='mt-6'
                 mode="contained"
                 loading={isSyncing}
-                disabled={isSyncing}
+                disabled={isSyncing || !vehicle}
                 onPress={handleSync}
               >
                 Online to offline  Sync Data

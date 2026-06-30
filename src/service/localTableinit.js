@@ -78,6 +78,7 @@ const createBarcodeDatatTable = async () => {
     EInvoice_Number TEXT,
     CustID INTEGER,
     Qty  REAL,
+    ItemID INTEGER,
     ItemName TEXT,
     CustName TEXT,
     IsSynced INTEGER DEFAULT 0,
@@ -108,11 +109,13 @@ const createScaningQRDatatTable = async () => {
 
     const Localconnection = await getSQLiteConnection();
     const query = `
-     CREATE TABLE IF NOT EXISTS Dis_Scaning_QR_Data_Local (
+    CREATE TABLE IF NOT EXISTS Dis_Scaned_QR_Data_Local (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    BarCode TEXT,
-    VehicleID TEXT,
     CustID INTEGER,
+    VehicleID TEXT,
+    BarCode TEXT,
+    Latitude REAL,
+    Longitude REAL,
     IsSynced INTEGER DEFAULT 0,
     CreatedAt TEXT
   )
