@@ -15,6 +15,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/geolocation": "^3.4.0",
     "@react-native-community/netinfo": "^12.0.1",
@@ -33,6 +34,7 @@
     "react-native-css-interop": "^0.2.5",
     "react-native-device-info": "^15.0.2",
     "react-native-element-dropdown": "^2.12.4",
+    "react-native-gesture-handler": "^3.0.2",
     "react-native-mssql": "^0.1.4",
     "react-native-nitro-modules": "^0.35.9",
     "react-native-paper": "^5.15.3",
