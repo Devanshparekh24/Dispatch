@@ -11,11 +11,11 @@ const defaultConfig = getDefaultConfig(__dirname);
  */
 const config = {
     resolver: {
-        // blockList: [
-        //     /.*[/\\]android[/\\]\.cxx[/\\]/,
-        //     /.*[/\\]android[/\\]build[/\\]/,
-        //     /.*[/\\]ios[/\\]build[/\\]/,
-        // ],
+        blockList: [
+            /.*[/\\]android[/\\]\.cxx[/\\]/,
+            /.*[/\\]android[/\\]build[/\\]/,
+            /.*[/\\]ios[/\\]build[/\\]/,
+        ],
         resolveRequest: (context, moduleName, platform) => {
             if (moduleName === '@tanstack/react-query') {
                 return context.resolveRequest(
