@@ -20,25 +20,25 @@ const getlocalVechical = async () => {
 const getPartyName = async () => {
     try {
         let localConnection = getSQLiteConnection();
-        // const localQuery = `select CustID,
-        // CustName, 
-        // VehicleID,
-        // sum(Qty) as Total_Bags,
-        // count(*)as No_of_Item
-        // From Barcode_Data_Local
-        // group by CustID,CustName,VehicleID`;
         const localQuery = `SELECT
-    CustName,
-    CustID,
-    VehicleID,
-    SUM(Qty) AS Total_Qty,
-    COUNT(distinct ItemName) AS No_of_Items,
-    COUNT(BarCode) AS Total_QR_Code
-FROM Barcode_Data_Local 
-GROUP BY
-    CustID,
-    CustName,
-    VehicleID;`;
+                            AA.CustName,
+                            AA.OrderID,
+                            AA.CustID,
+                            AA.VehicleID,
+                            SUM(AA.Qty) AS Total_Qty,
+                            COUNT(distinct AA.ItemName) AS No_of_Items,
+                            COUNT(AA.BarCode) AS Total_QR_Code,
+                            COUNT(BB.BarCode) AS Scanned_QR_Code
+                        FROM Barcode_Data_Local as AA
+                        LEFT JOIN Dis_Scaned_QR_Data_Local as BB 
+                            ON BB.OrderID = AA.OrderID 
+                        AND BB.BarCode = AA.BarCode
+                        GROUP BY
+                            AA.CustID,
+                            AA.CustName,
+                            AA.VehicleID,
+                            AA.OrderID;
+                        `;
         const result = await localConnection.executeQuery(localQuery);
         console.log("🚀 ~ getPartyName ~ result:", result)
         if (Array.isArray(result)) {
@@ -51,6 +51,41 @@ GROUP BY
         return [];
     }
 };
+
+
+const getItemDataScannedInfo = async (CustID,VehicleID) => {
+    try {
+        let localConnection = getSQLiteConnection();
+        const localQuery = `SELECT
+                            AA.ItemName,
+                            AA.OrderID,
+                            AA.VehicleID,
+                            SUM(AA.Qty) AS Total_Qty,
+                            COUNT(distinct AA.ItemName) AS No_of_Items,
+                            COUNT(AA.BarCode) AS Total_QR_Code,
+                            COUNT(BB.BarCode) AS Scanned_QR_Code
+                            FROM Dis_vw_BarCodeData as AA 
+                            left join Dis_Scaned_QR_Data_Local as BB 
+                            on AA.OrderID=BB.OrderID
+                            where AA.CustID=${CustID} and AA.VehicleID=${VehicleID}
+                            GROUP BY
+                            AA.ItemName,
+                            AA.VehicleID,
+                            AA.OrderID
+                            `;
+        const result = await localConnection.executeQuery(localQuery);
+        console.log("🚀 ~ getItemDataScannedInfo ~ result:", result)
+        if (Array.isArray(result)) {
+            return result;
+        }
+        throw new Error('Database query did not return a list of rows');
+        
+    } catch (error) {
+        console.log("🚀 ~ getItemName ~ error:", error);
+        return [];
+    }
+};
+
 
 const getlocalBarCodeData = async () => {
     try {
@@ -70,18 +105,17 @@ const getlocalBarCodeData = async () => {
 };
 
 
-const insertLocalScanningQRData=async(CustID,VehicleID,BarCode,Latitude,Longitude)=>{
+const insertLocalScanningQRData=async(OrderID,CustID,VehicleID,BarCode,Latitude,Longitude)=>{
     try {
         
         let localConnection=getSQLiteConnection();
-
-        const localQuery=`INSERT INTO Dis_Scaned_QR_Data_Local (CustID,VehicleID,BarCode,Latitude,Longitude)
-                            values(?,?,?,?,?)
-    `
+        const localQuery=`INSERT INTO Dis_Scaned_QR_Data_Local (OrderID,CustID,VehicleID,BarCode,Latitude,Longitude)
+                            values(?,?,?,?,?,?)`;
+                            
         await localConnection.transaction(tx => {
       tx.executeSql(
         localQuery,
-        [CustID,VehicleID,BarCode,Latitude,Longitude],
+        [OrderID,CustID,VehicleID,BarCode,Latitude,Longitude],
         () => {
           console.log('Dis_Scaned_QR_Data_Local table insert successfully');
         },
@@ -114,12 +148,14 @@ const getScannendData = async () => {
     }
 };
 
+
 export {
     getlocalVechical,
     getlocalBarCodeData,
     getPartyName,
     insertLocalScanningQRData,
-    getScannendData
+    getScannendData,
+    getItemDataScannedInfo
 };
 
 

@@ -15,20 +15,26 @@ const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
     const [customer, setCustomer] = useState(null);
     const [search, setSearch] = useState('');
-    const [customerName, setCustomerName] = useState(null);
-    const [isSyncing, setIsSyncing] = useState(false);
     const navigation = useNavigation();
-    const { data: customerData, refetch: customerRefetch } = useCustomer();
+    const { data: customerData, refetch: customerRefetch,isRefetching } = useCustomer();
 
 
     const filterCustData = useMemo(() => {
-        if (!customerData?.data) {
+        if (isEmpty(customerData?.data) ) {
             return [];
         }
         return customerData?.data?.filter(item => item.CustName.toLowerCase().includes(search.toLowerCase()));
     }, [customerData, search]);
 
-    const handleOpenScanner = (CustName, VehicleID, CustID) => {
+
+    const onRefresh = () => {
+        try {
+            customerRefetch();
+        } catch (error) {
+            printError("Error in onRefresh:", error);
+        }
+    }
+    const handleOpenScanner = (CustName, VehicleID, CustID, OrderID) => {
         if (!vehicle) {
             Alert.alert('Alert', 'Please select vehicle');
             return;
@@ -36,7 +42,9 @@ const ScanQRCodeScreen = () => {
         navigation.navigate('ScanQRCode', {
             vehicle: VehicleID,
             custID: CustID,
-            customerName: CustName
+            customerName: CustName,
+            OrderID: OrderID,
+
         });
 
         console.log('Navigating to ScanQRCode screen');
@@ -52,9 +60,7 @@ const ScanQRCodeScreen = () => {
     //     label: item.CustName,
     //     value: item.CustID,
     // }));
-    const selectedCustomer = custData.find(
-        item => item.CustID === customer
-    );
+  
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -82,6 +88,8 @@ const ScanQRCodeScreen = () => {
                             }
                         }
                         data={filterCustData}
+                        refreshing={isRefetching}
+                        onRefresh={onRefresh}
                         keyboardDismissMode='on-drag'
                         contentContainerStyle={{ paddingBottom: 80 }}
                         renderItem={({ item, index }) => {
@@ -92,7 +100,8 @@ const ScanQRCodeScreen = () => {
                             const total_qty = item.Total_Qty || "N/A";
                             const no_of_items = item.No_of_Items || "N/A";
                             const total_qr_code = item.Total_QR_Code || "N/A";
-                            const scanningQRCode = item.scanningQRCode || "N/A";
+                            const scanningQRCode = item.Scanned_QR_Code || "0";
+                            const orderID = item.OrderID || "N/A";
                             return (
                                 <>
                                     <Card className="mb-4 bg-light-600">
@@ -101,7 +110,8 @@ const ScanQRCodeScreen = () => {
                                             <View style={{ flex: 1, marginRight: 12 }}>
                                                 <Text className='text-sm font-semibold'>{custName}</Text>
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
-                                                {/* <Text className='text-xs text-gray-600'>{item.CustID}</Text> */}
+                                                <Text className='text-xs text-gray-600'>{custID}</Text>
+                                                <Text className='text-xs text-gray-600'>orderID :{orderID}</Text>
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty(kg): </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
@@ -112,7 +122,7 @@ const ScanQRCodeScreen = () => {
                                                     bg={'bg-primary-50'}
                                                     // text={"QR Code"}
                                                     icon={"qr-code-outline"}
-                                                    onPress={() => handleOpenScanner(custName, vehicleNo, custID)}
+                                                    onPress={() => handleOpenScanner(custName, vehicleNo, custID, orderID)}
                                                 />
                                             </View>
 

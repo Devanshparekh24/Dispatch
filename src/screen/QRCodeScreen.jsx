@@ -14,16 +14,17 @@ const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
     const [sheetIndex, setSheetIndex] = useState(0);
+    const bottomSheetRef = useRef(null);
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
     const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
+    const { vehicle, custID, customerName, OrderID } = route.params;
 
-    const { vehicle, custID, customerName } = route.params;
     console.log("🚀 ~ QRCodeScreen ~ customerName:", customerName)
     console.log("🚀 ~ QRCodeScreen ~ custID:", custID)
     console.log("🚀 ~ QRCodeScreen ~ vehicle:", vehicle)
 
-
-    const bottomSheetRef = useRef(null);
+    const sData = scannedData?.data || [];
+    console.log("🚀 ~ QRCodeScreen ~ sData:", sData)
     const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     const device = useCameraDevice('back');
@@ -61,15 +62,14 @@ const QRCodeScreen = ({ route }) => {
                 console.log("🚀 ~ QRCodeScreen ~ locationData:", locationData)
 
                 insertQRData({
+                    OrderID: OrderID,
                     CustId: custID,
                     VehicleID: vehicle,
                     BarCode: qrValue,
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
                 });
-
-                console.log("🚀 ~ QRCodeScreen ~ insertQRData:", insertQRData)
-
+                refetchScannedData();
                 // Reset scanner  5 seconds 
                 setTimeout(() => setIsScanned(false), 5000);
             }
@@ -113,7 +113,7 @@ const QRCodeScreen = ({ route }) => {
                 </View>
 
                 {/* Flashlight Toggle */}
-                <View>
+                <View className=''>
                     <TouchableOpacity
                         className=' bg-black p-2 rounded-full'
                         onPress={() => setTorch(torch === 'off' ? 'on' : 'off')}>
@@ -123,11 +123,11 @@ const QRCodeScreen = ({ route }) => {
                 </View>
             </View>
             {/* QR Overlay */}
-            <View className='flex items-center justify-center'>
+            <View
+                className={` ${sheetIndex === 0 ? 'flex justify-center items-center' : ' py-24 '}`}>
                 <View style={styles.overlay}>
                     {/* Top Dark Area */}
                     <View style={styles.topOverlay} />
-
                     {/* Middle Section */}
                     <View style={styles.middleRow}>
                         <View style={styles.sideOverlay} />
@@ -139,8 +139,6 @@ const QRCodeScreen = ({ route }) => {
                     <View style={styles.bottomOverlay} />
                 </View>
             </View>
-
-
             <BottomSheet
                 ref={bottomSheetRef}
                 snapPoints={snapPoints}
@@ -154,6 +152,7 @@ const QRCodeScreen = ({ route }) => {
                         <View className=' px-4'>
                             <Text className='text-lg text-left font-semibold'>{customerName}</Text>
                             <Text className='text-md font-semibold'>{vehicle}</Text>
+                            <Text className='text-md font-semibold'>{OrderID}</Text>
                         </View>
                     </View>) : (
 
@@ -166,7 +165,6 @@ const QRCodeScreen = ({ route }) => {
         </View>
     )
 }
-
 export default QRCodeScreen
 
 const styles = StyleSheet.create({

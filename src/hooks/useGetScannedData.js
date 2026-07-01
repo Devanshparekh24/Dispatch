@@ -7,6 +7,7 @@ const useGetScannedData = () => {
         queryFn: async () => {
             try {
                 const data = await getScannendData();
+                console.log("🚀 ~ useGetScannedData ~ data:", data)
                 return {
                     data,
                     errorMsg: null

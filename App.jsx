@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator,LogBox  } from 'react-native';
 import LoginScreen from './src/auth/LoginScreen';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,7 +8,7 @@ import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab
 import initTable from './src/service/localTableinit'
 import QRCodeScreen from './src/screen/QRCodeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+LogBox.ignoreAllLogs();
 
 const Stack = createNativeStackNavigator();
 

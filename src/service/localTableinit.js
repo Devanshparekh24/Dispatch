@@ -111,6 +111,7 @@ const createScaningQRDatatTable = async () => {
     const query = `
     CREATE TABLE IF NOT EXISTS Dis_Scaned_QR_Data_Local (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    OrderID TEXT,
     CustID INTEGER,
     VehicleID TEXT,
     BarCode TEXT,
