@@ -22,23 +22,22 @@ const getPartyName = async () => {
         let localConnection = getSQLiteConnection();
         const localQuery = `SELECT
                             AA.CustName,
-                            AA.OrderID,
                             AA.CustID,
                             AA.VehicleID,
                             SUM(AA.Qty) AS Total_Qty,
                             COUNT(distinct AA.ItemName) AS No_of_Items,
                             COUNT(AA.BarCode) AS Total_QR_Code,
-                            COUNT(BB.BarCode) AS Scanned_QR_Code
-                        FROM Barcode_Data_Local as AA
-                        LEFT JOIN Dis_Scaned_QR_Data_Local as BB 
-                            ON BB.OrderID = AA.OrderID 
-                        AND BB.BarCode = AA.BarCode
-                        GROUP BY
+                            (select count(BarCode)
+                             From Dis_Scaned_QR_Data_Local as qq 
+                             Where qq.CustID=aa.CustID) as Scanned_QR_Code
+                            FROM Barcode_Data_Local as AA
+                            GROUP BY
                             AA.CustID,
                             AA.CustName,
-                            AA.VehicleID,
-                            AA.OrderID;
+                            AA.VehicleID;
                         `;
+     
+
         const result = await localConnection.executeQuery(localQuery);
         console.log("🚀 ~ getPartyName ~ result:", result)
         if (Array.isArray(result)) {
@@ -54,26 +53,35 @@ const getPartyName = async () => {
 
 
 const getItemDataScannedInfo = async (CustID,VehicleID) => {
+    console.log("🚀 ~ getItemDataScannedInfo ~ CustID:", CustID)
     try {
         let localConnection = getSQLiteConnection();
+        // const localQuery = `SELECT 
+        //                     aa.ItemName,
+        //                     COUNT(aa.BarCode) AS Total_Qty,
+        //                     COUNT(bb.BarCode) AS Scanned_Qty
+        //                     FROM Barcode_Data_Local as aa
+        //                     LEFT JOIN (
+        //                         SELECT DISTINCT OrderID, BarCode
+        //                         FROM Dis_Scaned_QR_Data_Local
+        //                     ) as bb
+        //                         ON TRIM(aa.BarCode) = TRIM(bb.BarCode)
+        //                         AND TRIM(aa.OrderID) = TRIM(bb.OrderID)
+        //                     WHERE aa.CustID = ? AND aa.VehicleID = ?
+        //                     GROUP BY aa.ItemName`;
         const localQuery = `SELECT
-                            AA.ItemName,
-                            AA.OrderID,
-                            AA.VehicleID,
-                            SUM(AA.Qty) AS Total_Qty,
-                            COUNT(distinct AA.ItemName) AS No_of_Items,
-                            COUNT(AA.BarCode) AS Total_QR_Code,
-                            COUNT(BB.BarCode) AS Scanned_QR_Code
-                            FROM Dis_vw_BarCodeData as AA 
-                            left join Dis_Scaned_QR_Data_Local as BB 
-                            on AA.OrderID=BB.OrderID
-                            where AA.CustID=${CustID} and AA.VehicleID=${VehicleID}
-                            GROUP BY
-                            AA.ItemName,
-                            AA.VehicleID,
-                            AA.OrderID
-                            `;
-        const result = await localConnection.executeQuery(localQuery);
+                        aa.ItemName,
+                        COUNT(aa.BarCode) AS Total_Qty,
+                        (
+                            SELECT COUNT(oo.BarCode)
+                            FROM Dis_Scaned_QR_Data_Local AS oo
+                            WHERE oo.CustID = aa.CustID
+                        ) AS Scanned_Qty
+                    FROM Barcode_Data_Local AS aa
+                    WHERE aa.CustID = ?
+                    AND aa.VehicleID = ?
+                    GROUP BY aa.ItemName, aa.ItemID;`;
+        const result = await localConnection.executeQuery(localQuery, [CustID, VehicleID]);
         console.log("🚀 ~ getItemDataScannedInfo ~ result:", result)
         if (Array.isArray(result)) {
             return result;
@@ -147,7 +155,6 @@ const getScannendData = async () => {
         return [];
     }
 };
-
 
 export {
     getlocalVechical,

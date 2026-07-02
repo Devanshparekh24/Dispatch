@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Touchable, TouchableOpacity, Vibration, Animated } from 'react-native'
+import { View, Text, StyleSheet, Touchable, TouchableOpacity, Vibration, Animated, FlatList } from 'react-native'
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
@@ -9,24 +9,21 @@ import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 import BottomSheet from '../components/Sheet/BottomSheet';
 import useScanQRCodeData from '../hooks/useScanQRCodeData';
 import useGetScannedData from '../hooks/useGetScannedData';
+import useCustomerItemWise from '../hooks/useCustomerItemWise';
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
     const [sheetIndex, setSheetIndex] = useState(0);
     const bottomSheetRef = useRef(null);
+    const { vehicle, custID, customerName, OrderID } = route.params;
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
     const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
-    const { vehicle, custID, customerName, OrderID } = route.params;
-
-    console.log("🚀 ~ QRCodeScreen ~ customerName:", customerName)
-    console.log("🚀 ~ QRCodeScreen ~ custID:", custID)
-    console.log("🚀 ~ QRCodeScreen ~ vehicle:", vehicle)
+    const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, vehicle);
 
     const sData = scannedData?.data || [];
-    console.log("🚀 ~ QRCodeScreen ~ sData:", sData)
-    const snapPoints = useMemo(() => ['25%', '50%'], []);
 
+    const snapPoints = useMemo(() => ['25%', '50%'], []);
     const device = useCameraDevice('back');
     const navigation = useNavigation();
     useEffect(() => {
@@ -59,9 +56,8 @@ const QRCodeScreen = ({ route }) => {
                 Vibration.vibrate(500); // Vibrate for 500ms to give feedback to the user
                 console.log('QR Code Scanned:', qrValue);
                 const locationData = await getCurrentLocationPromise();
-                console.log("🚀 ~ QRCodeScreen ~ locationData:", locationData)
 
-                insertQRData({
+                await insertQRData({
                     OrderID: OrderID,
                     CustId: custID,
                     VehicleID: vehicle,
@@ -70,6 +66,7 @@ const QRCodeScreen = ({ route }) => {
                     Longitude: locationData.longitude,
                 });
                 refetchScannedData();
+                refetchItemWiseData();
                 // Reset scanner  5 seconds 
                 setTimeout(() => setIsScanned(false), 5000);
             }
@@ -86,7 +83,6 @@ const QRCodeScreen = ({ route }) => {
             </View>
         );
     }
-    console.log("🚀 ~ QRCodeScreen ~ sheetIndex:", sheetIndex)
     return (
         <View style={styles.container}>
             <Camera
@@ -147,20 +143,35 @@ const QRCodeScreen = ({ route }) => {
                 enableDynamicSizing={false}    // prevents auto-collapse-to-close on content change
                 onChange={handleSheetChanges}
             >
-                {sheetIndex === 0 ? (
-                    <View>
-                        <View className=' px-4'>
-                            <Text className='text-lg text-left font-semibold'>{customerName}</Text>
-                            <Text className='text-md font-semibold'>{vehicle}</Text>
-                            <Text className='text-md font-semibold'>{OrderID}</Text>
-                        </View>
-                    </View>) : (
+                {/* Header (Renders once at the top of the BottomSheet) */}
+                <View className='px-4 pb-3 border-b border-gray-200'>
+                    <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{vehicle}</Text>
+                </View>
 
-                    <View>
-                        <Text className='text-md text-center font-semibold'>{customerName}</Text>
-                        <Text className='text-sm text-center font-semibold'>{vehicle}</Text>
-                        <Text>List of Item</Text>
-                    </View>)}
+                {/* List of Items */}
+                <FlatList
+                    data={itemWiseData}
+                    keyExtractor={(item, index) => index.toString()}
+                    contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 }}
+                    renderItem={({ item }) => {
+                        const itemName = item.ItemName || "N/A";
+                        const noOfQty = item.Total_Qty || 0;
+                        const scannedQty = item.Scanned_Qty || 0;
+                        return (
+                            <View className='py-2.5 flex-row justify-between items-center border-b border-gray-100'>
+                                <Text className='text-base font-medium text-gray-700'>
+                                    {itemName}
+                                </Text>
+                                <Text className='text-base font-semibold text-blue-600 text-right' >
+                                    {noOfQty} / {scannedQty}
+                                </Text>
+                            </View>
+                        );
+                    }}
+                />
+
+
             </BottomSheet>
         </View>
     )

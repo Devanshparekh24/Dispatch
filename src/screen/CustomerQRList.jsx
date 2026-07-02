@@ -16,11 +16,11 @@ const ScanQRCodeScreen = () => {
     const [customer, setCustomer] = useState(null);
     const [search, setSearch] = useState('');
     const navigation = useNavigation();
-    const { data: customerData, refetch: customerRefetch,isRefetching } = useCustomer();
+    const { data: customerData, refetch: customerRefetch, isRefetching } = useCustomer();
 
 
     const filterCustData = useMemo(() => {
-        if (isEmpty(customerData?.data) ) {
+        if (isEmpty(customerData?.data)) {
             return [];
         }
         return customerData?.data?.filter(item => item.CustName.toLowerCase().includes(search.toLowerCase()));
@@ -60,7 +60,7 @@ const ScanQRCodeScreen = () => {
     //     label: item.CustName,
     //     value: item.CustID,
     // }));
-  
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -97,10 +97,10 @@ const ScanQRCodeScreen = () => {
                             const custName = item.CustName || "N/A";
                             const vehicleNo = item.VehicleID || "N/A";
                             const custID = item.CustID || "N/A";
-                            const total_qty = item.Total_Qty || "N/A";
-                            const no_of_items = item.No_of_Items || "N/A";
-                            const total_qr_code = item.Total_QR_Code || "N/A";
-                            const scanningQRCode = item.Scanned_QR_Code || "0";
+                            const total_qty = item.Total_Qty || 0;
+                            const no_of_items = item.No_of_Items || 0;
+                            const total_qr_code = item.Total_QR_Code || 0;
+                            const scanningQRCode = item.Scanned_QR_Code || 0;
                             const orderID = item.OrderID || "N/A";
                             return (
                                 <>
@@ -111,7 +111,7 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-sm font-semibold'>{custName}</Text>
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
                                                 <Text className='text-xs text-gray-600'>{custID}</Text>
-                                                <Text className='text-xs text-gray-600'>orderID :{orderID}</Text>
+                                                {/* <Text className='text-xs text-gray-600'>orderID :{orderID}</Text> */}
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty(kg): </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
@@ -129,9 +129,9 @@ const ScanQRCodeScreen = () => {
                                         </View>
 
                                         <View className=' mt-2 flex-row space-x-7'>
-                                            <Text className='text-blue-600 text-sm'>{total_qr_code}</Text>
-                                            <Text className='text-gray-400 text-sm'> / </Text>
-                                            <Text className='text-red-500 text-sm'>{scanningQRCode}</Text>
+                                            <Text className='text-blue-600 text-sm font-semibold'>{total_qr_code}</Text>
+                                            <Text className='text-gray-400 text-sm font-semibold'> / </Text>
+                                            <Text className='text-red-500 text-sm font-bold'>{scanningQRCode}</Text>
                                         </View>
                                     </Card>
                                 </>
