@@ -89,7 +89,6 @@ try{
 
                                 const result = await mssqlConn.executeQuery(serverquery);
                                 console.log("🚀 ~ existVehileFetch ~ result:", result)
-                    
 
                                 if (result.length >0) {
                                     return result[0].UserName;
@@ -142,8 +141,8 @@ const barcodeDataSync = async (vehicleID,androidID,userID) => {
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,ItemName,CustName,UserID,AndroidID) VALUES (?, ?, ?,?,?,?,?,?,?,?)',
-                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.ItemName,item.CustName,userID,androidID]
+                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty,ItemID,ItemName,CustName,UserID,AndroidID) VALUES (?, ?, ?,?,?,?,?,?,?,?,?)',
+                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty,item.ItemID,item.ItemName,item.CustName,userID,androidID]
                 );
             });
         });

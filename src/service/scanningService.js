@@ -56,31 +56,21 @@ const getItemDataScannedInfo = async (CustID,VehicleID) => {
     console.log("🚀 ~ getItemDataScannedInfo ~ CustID:", CustID)
     try {
         let localConnection = getSQLiteConnection();
-        // const localQuery = `SELECT 
-        //                     aa.ItemName,
-        //                     COUNT(aa.BarCode) AS Total_Qty,
-        //                     COUNT(bb.BarCode) AS Scanned_Qty
-        //                     FROM Barcode_Data_Local as aa
-        //                     LEFT JOIN (
-        //                         SELECT DISTINCT OrderID, BarCode
-        //                         FROM Dis_Scaned_QR_Data_Local
-        //                     ) as bb
-        //                         ON TRIM(aa.BarCode) = TRIM(bb.BarCode)
-        //                         AND TRIM(aa.OrderID) = TRIM(bb.OrderID)
-        //                     WHERE aa.CustID = ? AND aa.VehicleID = ?
-        //                     GROUP BY aa.ItemName`;
         const localQuery = `SELECT
                         aa.ItemName,
+                        aa.ItemID,
                         COUNT(aa.BarCode) AS Total_Qty,
                         (
                             SELECT COUNT(oo.BarCode)
                             FROM Dis_Scaned_QR_Data_Local AS oo
                             WHERE oo.CustID = aa.CustID
+                            AND oo.VehicleID = aa.VehicleID
                         ) AS Scanned_Qty
                     FROM Barcode_Data_Local AS aa
                     WHERE aa.CustID = ?
                     AND aa.VehicleID = ?
-                    GROUP BY aa.ItemName, aa.ItemID;`;
+                    GROUP BY aa.ItemName,
+                     aa.ItemID;`;
         const result = await localConnection.executeQuery(localQuery, [CustID, VehicleID]);
         console.log("🚀 ~ getItemDataScannedInfo ~ result:", result)
         if (Array.isArray(result)) {
@@ -111,6 +101,7 @@ const getlocalBarCodeData = async () => {
         return [];
     }
 };
+
 
 
 const insertLocalScanningQRData=async(OrderID,CustID,VehicleID,BarCode,Latitude,Longitude)=>{

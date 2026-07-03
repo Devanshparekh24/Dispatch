@@ -77,8 +77,8 @@ const QRCodeScreen = ({ route }) => {
 
                 // Auto zoom logic like GPay
                 if (codes.length > 0 && codes[0].frame && device) {
-                    const  code = codes[0];
-                    const{ width, height } = code.frame;
+                    const code = codes[0];
+                    const { width, height } = code.frame;
                     const codeSize = Math.max(width, height);
                     const frameSize = Math.min(frame.width, frame.height);
                     const ratio = codeSize / frameSize;
@@ -248,15 +248,22 @@ const QRCodeScreen = ({ route }) => {
                         const itemName = item.ItemName || "N/A";
                         const noOfQty = item.Total_Qty || 0;
                         const scannedQty = item.Scanned_Qty || 0;
+                        const itemID = item.ItemID || "N/A";
                         return (
-                            <View className='py-2.5 flex-row justify-between items-center border-b border-gray-100'>
-                                <Text className='text-base font-medium text-gray-700'>
-                                    {itemName}
-                                </Text>
-                                <Text className='text-base font-semibold text-blue-600 text-right' >
-                                    {noOfQty} / {scannedQty}
-                                </Text>
-                            </View>
+                            <>
+                                <View className='py-2.5 flex-row justify-between items-center border-b border-gray-100'>
+                                    <Text className='text-base font-medium text-gray-700'>
+                                        {itemName}
+                                    </Text>
+                                    <Text className='text-base font-semibold text-blue-600 text-right' >
+                                        {noOfQty} / {scannedQty}
+                                    </Text>
+                                </View>
+                                <View>
+                                    <Text>{itemID}</Text>
+                                </View>
+                            </>
+
                         );
                     }}
                 />
