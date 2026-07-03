@@ -17,7 +17,6 @@ const useCustomer = () => {
                     data: [],
                     errorMsg: error.message || 'All database connections failed.'
                 }
-
             }
         },
         retry: 1,

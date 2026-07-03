@@ -29,15 +29,15 @@ const getPartyName = async () => {
                             COUNT(AA.BarCode) AS Total_QR_Code,
                             (select count(BarCode)
                              From Dis_Scaned_QR_Data_Local as qq 
-                             Where qq.CustID=aa.CustID) as Scanned_QR_Code
+                             Where qq.CustID=AA.CustID) as Scanned_QR_Code
                             FROM Barcode_Data_Local as AA
                             GROUP BY
                             AA.CustID,
                             AA.CustName,
                             AA.VehicleID;
                         `;
+        
      
-
         const result = await localConnection.executeQuery(localQuery);
         console.log("🚀 ~ getPartyName ~ result:", result)
         if (Array.isArray(result)) {

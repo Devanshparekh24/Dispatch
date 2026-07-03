@@ -11,17 +11,13 @@ import { useAuthentication } from '../hooks/useloginCreateUser';
 import { isEmpty, isValidMobile } from '../utils/validation';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import saveError from '../service/Log'
+import { useAuth } from '../context/AuthContex';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
+    const { mobile, setMobile, password, setPassword } = useAuth();
     const { mutateAsync: login, isPending, isError, error } = useAuthentication();
-    
-    const [mobile, setMobile] = useState('');
     const [mobileError, setMobileError] = useState('');
-    const [password, setPassword] = useState('');
-
-
-    console.log('start login screen');
 
     const handleForgotPassword = () => {
         try {
@@ -53,11 +49,11 @@ const LoginScreen = () => {
     const handleLogin = async () => {
         try {
             if (isEmpty(mobile) || isEmpty(password)) {
-                Alert.alert('Error', 'Please fill in both fields');
+                Alert.alert('Validation', 'Please fill in both fields');
                 return;
             }
             if (mobileError || !isValidMobile(mobile)) {
-                Alert.alert('Validation Error', 'Please enter a valid 10-digit mobile number');
+                Alert.alert('Validation', 'Please enter a valid 10-digit mobile number');
                 return;
             }
             const success = await login({ mobile, password });
@@ -145,7 +141,7 @@ const LoginScreen = () => {
                             onChangeText={setPassword}
                             placeholder="Enter The Password" />
 
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             onPress={handleForgotPassword}
                             className="self-end mt-1 mb-4"
                         // disabled={loading}
@@ -153,10 +149,14 @@ const LoginScreen = () => {
                             <Text className="text-sm font-semibold text-blue-600">
                                 Forgot Password?
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         <View className='mt-4'>
-                            <FullButton title="Login" onPress={handleLogin} disabled={isPending} />
+                            <FullButton
+                                title="Login"
+                                onPress={handleLogin}
+                                disabled={!mobile || !password || Boolean(mobileError)}
+                            />
                         </View>
 
                     </View>

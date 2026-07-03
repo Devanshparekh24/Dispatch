@@ -6,8 +6,8 @@ const FullButton = ({ title, onPress, disabled }) => {
         <TouchableOpacity
             onPress={onPress}
             disabled={disabled}
-            className="bg-blue-500 py-3 px-4 rounded-lg justify-center items-center"
-        >
+            className={`py-3 px-4 rounded-lg justify-center items-center ${disabled ? 'bg-gray-400' : 'bg-blue-500'
+                }`}>
             <Text className="text-white text-base font-semibold">{title}</Text>
         </TouchableOpacity>
     );

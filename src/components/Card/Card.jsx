@@ -2,10 +2,11 @@ import { View, Text } from 'react-native'
 
 const Card = ({
     className = '',
+    style,
     children
 }) => {
     return (
-        <View className={`bg-secondary-50 rounded-2xl p-4 shadow-md ${className}`} >
+        <View className={`bg-secondary-50 rounded-2xl p-4 shadow-md ${className}`} style={style} >
             {children}
         </View>
     )

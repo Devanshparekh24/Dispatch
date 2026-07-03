@@ -1,27 +1,37 @@
-import { View, Text, StyleSheet, Touchable, TouchableOpacity, Vibration, Animated, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Vibration, FlatList } from 'react-native'
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
-import { ActivityIndicator, Button } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { Dimensions } from 'react-native';
 import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 import BottomSheet from '../components/Sheet/BottomSheet';
 import useScanQRCodeData from '../hooks/useScanQRCodeData';
 import useGetScannedData from '../hooks/useGetScannedData';
 import useCustomerItemWise from '../hooks/useCustomerItemWise';
+import useCustomer from '../hooks/useCustomer';
+import ToastMessage from '../utils/ToastBox/TotastMessage'
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
     const [sheetIndex, setSheetIndex] = useState(0);
+    const [showSuccess, setShowSuccess] = useState(false);
     const bottomSheetRef = useRef(null);
     const { vehicle, custID, customerName, OrderID } = route.params;
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
     const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
     const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, vehicle);
+    const { refetch: customerRefetch } = useCustomer();
 
-    const sData = scannedData?.data || [];
+    const handleGoBack = () => {
+        try {
+            navigation.goBack();
+            customerRefetch();
+        } catch (error) {
+
+        }
+    }
 
     const snapPoints = useMemo(() => ['25%', '50%'], []);
     const device = useCameraDevice('back');
@@ -65,6 +75,14 @@ const QRCodeScreen = ({ route }) => {
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
                 });
+
+                setShowSuccess(true);
+
+                setTimeout(() => {
+                    setShowSuccess(false);
+                }, 2000);
+
+                ToastMessage(qrValue.toString());
                 refetchScannedData();
                 refetchItemWiseData();
                 // Reset scanner  5 seconds 
@@ -72,8 +90,6 @@ const QRCodeScreen = ({ route }) => {
             }
         },
     });
-
-
 
     // 2. Handle loading state
     if (device == null) {
@@ -100,7 +116,7 @@ const QRCodeScreen = ({ route }) => {
                 {/*  Back Btn */}
                 <View className=''>
                     <TouchableOpacity
-                        onPress={() => navigation.goBack()}
+                        onPress={handleGoBack}
                         className=' bg-black p-2 rounded-full'
                     >
                         <Ionicons name='close-outline' size={25} color={'white'} />
@@ -108,6 +124,20 @@ const QRCodeScreen = ({ route }) => {
                     </TouchableOpacity>
                 </View>
 
+                {showSuccess && (
+                    <View
+                        style={{
+                            padding: 10,
+                            borderRadius: 10,
+                        }}
+                    >
+                        <Ionicons
+                            name="checkmark-circle"
+                            size={40}
+                            color="#4BB543"
+                        />
+                    </View>
+                )}
                 {/* Flashlight Toggle */}
                 <View className=''>
                     <TouchableOpacity
@@ -135,6 +165,8 @@ const QRCodeScreen = ({ route }) => {
                     <View style={styles.bottomOverlay} />
                 </View>
             </View>
+
+
             <BottomSheet
                 ref={bottomSheetRef}
                 snapPoints={snapPoints}

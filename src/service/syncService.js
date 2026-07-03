@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { getSQLiteConnection, getMSSQLConnection } from '../backend/DB/db';
 import isInternet from '../utils/network';
 import { isEmpty } from '../utils/validation'
@@ -26,6 +27,7 @@ const syncVechileTable = async () => {
             return;
         }
 
+
         await localConnection.transaction(tx => {
             // Optional: clear old data
             tx.executeSql('DELETE FROM Vechile_Master_Local');
@@ -45,8 +47,74 @@ const syncVechileTable = async () => {
 };
 
 
-const barcodeDataSync = async (vehicleID) => {
+const updateTripMaster = async (vehicleID, androidID,userID ) => {
     try {
+        const mssqlConn = await getMSSQLConnection();
+
+        const query = `
+            UPDATE Trip_Master_New
+            SET
+                AndroidID = '${androidID}',
+                UserID = '${userID}'
+            WHERE
+                VehicleID = '${vehicleID}'
+                AND CAST(TDate AS DATE) = CAST(GETDATE() AS DATE)
+        `;
+
+        const result = await mssqlConn.executeUpdate(query);
+        console.log("🚀 ~ updateTripMaster ~ result:", result)
+
+        
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+const existVehileFetch= async(vehicleID)=>{
+try{
+    const connect = await isInternet();
+        if (!connect) {
+            console.log('Internet Is not connected .....');
+            return;
+        }
+        const mssqlConn = await getMSSQLConnection();
+        if (isEmpty(vehicleID)) {
+            console.log('Vehicle not selected...');
+            throw new Error('Vehicle not selected...');
+        }
+        const serverquery = `
+                            select UserName From User_Master as um
+                            where um.UserID in (select UserID from Dis_vw_BarCodeData where  VehicleID= '${vehicleID}')`;  
+
+                                const result = await mssqlConn.executeQuery(serverquery);
+                                console.log("🚀 ~ existVehileFetch ~ result:", result)
+                    
+
+                                if (result.length >0) {
+                                    return result[0].UserName;
+                                    
+                                }else{
+                                    return null;
+                                }
+
+    } catch (error) {
+        console.log("🚀 ~ existVehileFetch ~ error:", error)
+        
+    }
+}
+ 
+
+
+const barcodeDataSync = async (vehicleID,androidID,userID) => {
+    try {
+
+
+     const existingUser = await existVehileFetch(vehicleID);
+
+       if (existingUser) {
+    throw new Error(`This vehicle is already assigned to ${existingUser}.`);
+        }
         const connect = await isInternet();
         if (!connect) {
             console.log('Internet Is not connected .....');
@@ -66,14 +134,16 @@ const barcodeDataSync = async (vehicleID) => {
             return;
         }
 
+       await updateTripMaster(vehicleID,androidID,userID);
+
         await localConnection.transaction(tx => {
             // Optional: clear old data
             tx.executeSql('DELETE FROM Barcode_Data_Local');
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,ItemName,CustName) VALUES (?, ?, ?,?,?,?,?,?)',
-                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.ItemName,item.CustName]
+                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,ItemName,CustName,UserID,AndroidID) VALUES (?, ?, ?,?,?,?,?,?,?,?)',
+                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.ItemName,item.CustName,userID,androidID]
                 );
             });
         });

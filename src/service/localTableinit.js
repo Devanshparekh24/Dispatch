@@ -81,6 +81,8 @@ const createBarcodeDatatTable = async () => {
     ItemID INTEGER,
     ItemName TEXT,
     CustName TEXT,
+    UserID INTEGER,
+    AndroidID TEXT,
     IsSynced INTEGER DEFAULT 0,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getAndroidId } from 'react-native-device-info';
 import { getLocalUsers } from '../service/authService';
 import { requestLocationPermission } from '../utils/requestLocationPermission';
 import { getErrorLog } from '../service/Log';
@@ -13,21 +14,30 @@ import { syncVechileTable, barcodeDataSync } from '../service/syncService';
 import { Camera } from 'react-native-vision-camera';
 import { isEmpty } from '../utils/validation';
 import { printError } from '../utils/helper';
+import { useAuth } from '../context/AuthContex';
+
+
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
   const [errorLog, setErrorLog] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
-
+  const { mobile, setMobile, userID, setUserID, password, setPassword, userName, setUserName } = useAuth();
   const { data: queryResult, refetch } = useVechicle();
-  const { data: customerData, refetch: refetch1 } = useCustomer();
-
+  const { data: customerData, refetch: refetch1 } = useCustomer()
 
   const logLocalUsers = async () => {
     try {
       console.log('[SQLite] Fetching local users...');
       const data = await getLocalUsers();
-      setLocalUsers(data[0]);
+      if (data && data.length > 0) {
+        const user = data[0];
+        setLocalUsers(user);
+        setUserName(user.UserName);
+        setUserID(user.UserID || user.userID);
+        setMobile(user.Mobile || user.mobile);
+        setPassword(user.Password || user.password);
+      }
       console.log('[SQLite] User_Local Records:', JSON.stringify(data, null, 2));
     } catch (error) {
       console.error('[SQLite] Error logging local users:', error);
@@ -63,14 +73,16 @@ const HomeScreen = () => {
         setIsSyncing(false);
         return;
       }
-      await barcodeDataSync(vehicle);
+      const androidId = await getAndroidId();
+      await barcodeDataSync(vehicle, androidId,userID);
+      console.log("🚀 ~ handleSync ~ userID:", userID)
       await refetch(); // Refresh dropdown list with newly synced data from SQLite
       await refetch1();
       Alert.alert('Sync completed successfully');
     } catch (error) {
       console.error('Sync failed:', error);
       printError(error);
-      Alert.alert('Sync failed');
+    Alert.alert("Sync Failed", error.message);
     } finally {
       setIsSyncing(false);
     }
@@ -112,7 +124,9 @@ const HomeScreen = () => {
       }
     })();
   }, []);
-  const userName = localUsers.UserName
+
+
+
   return (
     <SafeAreaView>
 
