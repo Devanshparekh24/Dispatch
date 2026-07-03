@@ -11,15 +11,27 @@ import useGetScannedData from '../hooks/useGetScannedData';
 import useCustomerItemWise from '../hooks/useCustomerItemWise';
 import useCustomer from '../hooks/useCustomer';
 import ToastMessage from '../utils/ToastBox/TotastMessage'
-import { isEmpty, isNumeric,isValidQRCode } from '../utils/validation';
+import { isEmpty, isValidQRCode } from '../utils/validation';
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
     const [sheetIndex, setSheetIndex] = useState(0);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [zoom, setZoom] = useState(1);
+    const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
     const { vehicle, custID, customerName, OrderID } = route.params;
+
+    const device = useCameraDevice('back');
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        if (device) {
+            setZoom(device.minZoom);
+            baseZoom.current = device.minZoom;
+        }
+    }, [device]);
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
     const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
     const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, vehicle);
@@ -35,8 +47,6 @@ const QRCodeScreen = ({ route }) => {
     }
 
     const snapPoints = useMemo(() => ['25%', '50%'], []);
-    const device = useCameraDevice('back');
-    const navigation = useNavigation();
     useEffect(() => {
         if (device) {
             setTimeout(() => {
@@ -58,11 +68,29 @@ const QRCodeScreen = ({ route }) => {
     // 2. Configure the code scanner with a throttle/lock
     const codeScanner = useCodeScanner({
         codeTypes: ['qr'],
-        onCodeScanned: async (codes) => {
+        onCodeScanned: async (codes, frame) => {
             const qrValue = codes[0]?.value;
             try {
                 if (isScanned || !qrValue || isEmpty(qrValue)) {
-                    return; 
+                    return;
+                }
+
+                // Auto zoom logic like GPay
+                if (codes.length > 0 && codes[0].frame && device) {
+                    const  code = codes[0];
+                    const{ width, height } = code.frame;
+                    const codeSize = Math.max(width, height);
+                    const frameSize = Math.min(frame.width, frame.height);
+                    const ratio = codeSize / frameSize;
+
+                    // If the QR code takes up less than 15% of the frame size, it's far away.
+                    // Automatically zoom in to help the camera scan it.
+                    if (ratio < 0.15 && zoom === device.minZoom) {
+                        const targetZoom = Math.min(device.minZoom * 2.5, device.maxZoom);
+                        console.log(`🚀 ~ Auto-zooming from ${device.minZoom} to ${targetZoom} (Ratio: ${ratio})`);
+                        setZoom(targetZoom);
+                        return; // Return early, let the camera zoom in on the next frames
+                    }
                 }
 
                 if (!isValidQRCode(qrValue)) {
@@ -94,18 +122,27 @@ const QRCodeScreen = ({ route }) => {
                 ToastMessage(qrValue.toString());
                 refetchScannedData();
                 refetchItemWiseData();
-                
-                // Reset scanner lock after 5 seconds of success
-                setTimeout(() => setIsScanned(false), 5000);
+
+                // Reset scanner lock and zoom after 5 seconds of success
+                setTimeout(() => {
+                    setIsScanned(false);
+                    if (device) setZoom(device.minZoom);
+                }, 5000);
 
             } catch (error) {
                 console.log("🚀 ~ QRCodeScreen ~ error:", error);
                 Vibration.vibrate([100, 100, 100]); // Short vibration error pattern
-                
-                // Lock scanner during Alert popup, unlock when user clicks OK
+
+                // Lock scanner during Alert popup, unlock and reset zoom when user clicks OK
                 setIsScanned(true);
                 Alert.alert("Invalid QR Code", error.message, [
-                    { text: "OK", onPress: () => setIsScanned(false) }
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            setIsScanned(false);
+                            if (device) setZoom(device.minZoom);
+                        }
+                    }
                 ]);
             }
         },
@@ -128,6 +165,7 @@ const QRCodeScreen = ({ route }) => {
                 photo={true} // Enable photo capture
                 codeScanner={codeScanner}
                 torch={torch}
+                zoom={zoom}
                 enableNativeZoomGesture={true}
                 enableNativeTapToFocusGesture={true}
             />
