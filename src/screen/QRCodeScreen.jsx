@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Vibration, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Vibration, FlatList, Alert } from 'react-native'
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
@@ -11,6 +11,7 @@ import useGetScannedData from '../hooks/useGetScannedData';
 import useCustomerItemWise from '../hooks/useCustomerItemWise';
 import useCustomer from '../hooks/useCustomer';
 import ToastMessage from '../utils/ToastBox/TotastMessage'
+import { isEmpty, isNumeric,isValidQRCode } from '../utils/validation';
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
@@ -58,12 +59,20 @@ const QRCodeScreen = ({ route }) => {
     const codeScanner = useCodeScanner({
         codeTypes: ['qr'],
         onCodeScanned: async (codes) => {
-            if (isScanned) return; // Prevent multiple scans at once
-
             const qrValue = codes[0]?.value;
-            if (qrValue) {
+            try {
+                if (isScanned || !qrValue || isEmpty(qrValue)) {
+                    return; 
+                }
+
+                if (!isValidQRCode(qrValue)) {
+                    throw new Error('Invalid QR Code');
+                }
+
+                // 2. Lock the scanner so subsequent camera frames are ignored
                 setIsScanned(true);
-                Vibration.vibrate(500); // Vibrate for 500ms to give feedback to the user
+
+                Vibration.vibrate(200); // Vibrate for 500ms to give feedback to the user
                 console.log('QR Code Scanned:', qrValue);
                 const locationData = await getCurrentLocationPromise();
 
@@ -85,8 +94,19 @@ const QRCodeScreen = ({ route }) => {
                 ToastMessage(qrValue.toString());
                 refetchScannedData();
                 refetchItemWiseData();
-                // Reset scanner  5 seconds 
+                
+                // Reset scanner lock after 5 seconds of success
                 setTimeout(() => setIsScanned(false), 5000);
+
+            } catch (error) {
+                console.log("🚀 ~ QRCodeScreen ~ error:", error);
+                Vibration.vibrate([100, 100, 100]); // Short vibration error pattern
+                
+                // Lock scanner during Alert popup, unlock when user clicks OK
+                setIsScanned(true);
+                Alert.alert("Invalid QR Code", error.message, [
+                    { text: "OK", onPress: () => setIsScanned(false) }
+                ]);
             }
         },
     });

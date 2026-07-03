@@ -20,9 +20,30 @@ const isEmpty = (value) => {
   return String(value).trim().length === 0;
 };
 
+const isNumeric = (value) => {
+    if (!value) return false;
+    return /^[0-9]+$/.test(String(value).trim());
+};
+
+const isAlphaNumeric = (value) => {
+  if (!value) return true;
+  return /^[A-Za-z0-9]+$/.test(String(value).trim());
+};
+
+const isValidQRCode = (value, minLength = 15) => {
+    if (!value) return false;
+
+    const qr = String(value).trim();
+
+    return /^[0-9]+$/.test(qr) && qr.length >= minLength;
+};
+
 export {
   isValidMobile,
   isValidEmail,
   isValidPassword,
-  isEmpty
+  isEmpty,
+  isNumeric,
+  isAlphaNumeric,
+  isValidQRCode
 };
