@@ -158,7 +158,7 @@ const barcodeDataSync = async (vehicleID,androidID,userID) => {
 
 
 //offline to online Sync
-const qrScanningDataSync = async() => {
+const qrCodeScannedDataSync = async() => {
     try {
         const connect = await isInternet();
         if (!connect) {
@@ -168,25 +168,39 @@ const qrScanningDataSync = async() => {
         const localConnection = await getSQLiteConnection();
         const locaQuery = `select * From Dis_Scaning_QR_Data_Local`;
         const result = await localConnection.executeQuery(locaQuery);
-        console.log("🚀 ~ qrScanningDataSync ~ result:", result)
+        console.log("🚀 ~ qrCodeScannedDataSync ~ result:", result)
         if (!result || result.length === 0) {
             console.log('No vehicle data found on remote server.');
             return;
         }
 
-        await localConnection.transaction(tx => {
-            // Optional: clear old data
-            tx.executeSql('DELETE FROM Barcode_Data_Local');
+        const serverConnection =await getMSSQLConnection();
+
+        await serverConnection.transaction(tx => {
+            // // Optional: clear old data
+            tx.executeSql(`update Dis_Scaning_QR_Data_Local 
+                            set IsSynced=1
+                            where IsSynced=0             
+                `);
 
             result.forEach(item => {
                 tx.executeSql(
-                    'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty ,CustName) VALUES (?, ?, ?,?,?,?,?)',
+                    `INSERT OR REPLACE INTO Dis_Scaned_QR_Data (OrderID,
+                                                                ItemID,
+                                                                CustID,
+                                                                VehicleID,
+                                                                BarCode,
+                                                                Latitude,
+                                                                Longitude,
+                                                                IsSynced,
+                                                                mobileCreatedTime,
+                                                                CreatedAt) VALUES (?, ?, ?,?,?,?,?,?,?,?)`,
                     [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.CustName]
                 );
             });
         });
 
-        console.log('BarcodeData sync completed 🔥🔥🔥');
+        console.log('Data sync for scaning QR code completed 🔥🔥🔥');
 
     } catch (error) {
         console.log("🚀 ~ barcodeDataSync ~ error:", error)

@@ -9,6 +9,9 @@ import { isEmpty } from '../utils/validation';
 import SearchInput from '../components/Input/SearchInput'
 import { COLORS } from '../constant/index'
 import { useScanningContex } from '../context/ScanningContex';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MiniButton from '../components/Buttoon/MiniButton'
+
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
     const [search, setSearch] = useState('');
@@ -71,7 +74,25 @@ const ScanQRCodeScreen = () => {
 
         >
             <SafeAreaView>
-                <View className='px-4 pt-5 '>
+                <View className='px-4 pt-5 mx-4   '>
+
+
+
+                    <View className="flex-row justify-between items-center mb-5">
+                        <View className="flex-row items-center">
+                            <Ionicons name="person" size={20} color="#000fff" />
+                            <Text className="text-xl font-semibold ml-2">
+                                Customer List
+                            </Text>
+                        </View>
+
+                        <MiniButton
+                            title="Sync"
+                            icon="sync"
+                        // onPress={handleSync}
+                        />
+                    </View>
+
                     <SearchInput
                         value={search}
                         onChangeText={setSearch}
@@ -103,7 +124,7 @@ const ScanQRCodeScreen = () => {
                             const no_of_items = item.No_of_Items || 0;
                             const total_qr_code = item.Total_QR_Code || 0;
                             const scanningQRCode = item.Scanned_QR_Code || 0;
-                            const orderID = item.OrderID ||item.orderID || "N/A";
+                            const orderID = item.OrderID || item.orderID || "N/A";
 
                             let cardColor = COLORS.white;
 
@@ -118,7 +139,7 @@ const ScanQRCodeScreen = () => {
                             return (
                                 <>
                                     <View
-                                        className="rounded-xl mb-4 shadow-lg p-4 mx-4 my-2"
+                                        className="rounded-xl mb-4 shadow-lg p-4 my-2"
                                         style={{ backgroundColor: cardColor }}
                                     >
                                         <View className='flex-row justify-between items-center'>
