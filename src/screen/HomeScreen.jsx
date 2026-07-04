@@ -17,7 +17,7 @@ import { printError } from '../utils/helper';
 import { useAuth } from '../context/AuthContex';
 import { useScanningContex } from '../context/ScanningContex'
 import FullButton from '../components/Buttoon/FullButton';
-
+import useSelectVehileID from '../hooks/useCurrentVehileID';
 
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
@@ -25,16 +25,11 @@ const HomeScreen = () => {
   const [errorLog, setErrorLog] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const { mobile, setMobile, userID, setUserID, password, setPassword, userName, setUserName } = useAuth();
-  const { currentVehicleID, setVehileID } = useScanningContex();
-
-  useEffect(() => {
-    if (currentVehicleID) {
-      setVehicle(currentVehicleID);
-    }
-  }, [currentVehicleID]);
-
-  const { data: queryResult, refetch, isRefetching} = useVechicle();
+  const { currentVehicleID, setCurrentVehicleID } = useScanningContex();
+  const { data: selectedVehileID, refetch: selectedVehileIDRefetch, isRefetching: selectedVehileIDIsRefetching } = useSelectVehileID();
+  const { data: queryResult, refetch, isRefetching } = useVechicle();
   const { data: customerData, refetch: customerRefetch } = useCustomer()
+
 
   const logLocalUsers = async () => {
     try {
@@ -54,6 +49,9 @@ const HomeScreen = () => {
     }
   };
 
+  const formattedVehileID = selectedVehileID[0]?.VehicleID || [];
+  console.log("🚀 ~ HomeScreen ~ formattedVehileID:", formattedVehileID)
+  setCurrentVehicleID(formattedVehileID)
 
   const vehicleData = queryResult?.data || [];
   const formattedVehicles = vehicleData.map(item => ({
@@ -166,18 +164,16 @@ const HomeScreen = () => {
             <HeaderCard
               lg_label={"Welcome Back✌"}
               md_label={userName}
+              sm_label={currentVehicleID}
             />
           </View>
-          <Text className='text-red-500 text-2xl'>{currentVehicleID}</Text>
+          {/* <Text className='text-red-500 text-2xl'>{currentVehicleID}</Text> */}
           <View className='px-4 py-6'>
             <View className='mb-6'>
               <SearchDropDown
                 data={formattedVehicles}
                 value={vehicle}
-                setValue={(val) => {
-                  setVehicle(val);
-                  setVehileID(val);
-                }}
+                setValue={setVehicle}
                 label="Vehicle"
                 iconName="car-outline"
                 placeholder='select the vehicle'

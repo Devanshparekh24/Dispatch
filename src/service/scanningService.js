@@ -181,6 +181,21 @@ const getScannendData = async () => {
   }
 };
 
+const getSelectVehileData = async () => {
+  try {
+    const connection = await getSQLiteConnection();
+    const query = 'SELECT distinct VehicleID FROM  Barcode_Data_Local';
+    const result = await connection.executeQuery(query);
+    if (Array.isArray(result)) {
+      return result;
+    }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    console.error("Error in getSelectVehileData:", error);
+    return [];
+  }
+};
+
 export {
   getlocalVechical,
   getlocalBarCodeData,
@@ -188,4 +203,5 @@ export {
   insertLocalScanningQRData,
   getScannendData,
   getItemDataScannedInfo,
+  getSelectVehileData
 };
