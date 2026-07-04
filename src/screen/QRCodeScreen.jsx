@@ -12,6 +12,7 @@ import useCustomerItemWise from '../hooks/useCustomerItemWise';
 import useCustomer from '../hooks/useCustomer';
 import ToastMessage from '../utils/ToastBox/TotastMessage'
 import { isEmpty, isValidQRCode } from '../utils/validation';
+import {currentDateTime} from '../utils/TimeHelp'
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
@@ -111,6 +112,7 @@ const QRCodeScreen = ({ route }) => {
                     BarCode: qrValue,
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
+                    CreatedAt:currentDateTime,
                 });
 
                 setShowSuccess(true);

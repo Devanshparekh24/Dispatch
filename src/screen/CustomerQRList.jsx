@@ -11,6 +11,7 @@ import { COLORS } from '../constant/index'
 import { useScanningContex } from '../context/ScanningContex';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import MiniButton from '../components/Buttoon/MiniButton'
+import { qrCodeScannedDataSync } from '../service/syncService';
 
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
@@ -18,6 +19,21 @@ const ScanQRCodeScreen = () => {
     const { data: customerData, refetch: customerRefetch, isRefetching } = useCustomer();
     const { currentVehicleID, setCurrentVehicleID } = useScanningContex();
     const navigation = useNavigation();
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    const handleSync = async () => {
+        setIsSyncing(true);
+        try {
+            await qrCodeScannedDataSync();
+            Alert.alert('Success', 'Sync completed successfully');
+            customerRefetch();
+        } catch (error) {
+            console.error('Sync failed:', error);
+            Alert.alert('Sync Failed', error.message || 'Unknown error');
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -89,7 +105,8 @@ const ScanQRCodeScreen = () => {
                         <MiniButton
                             title="Sync"
                             icon="sync"
-                        // onPress={handleSync}
+                            disabled={isSyncing}
+                            onPress={handleSync}
                         />
                     </View>
 

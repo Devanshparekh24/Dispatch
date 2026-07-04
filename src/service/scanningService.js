@@ -229,6 +229,7 @@ const insertLocalScanningQRData = async (
   BarCode,
   Latitude,
   Longitude,
+  CreatedAt,
 ) => {
   try {
     // 1. Get ItemID from BarCode (specifically for this customer and vehicle)
@@ -258,10 +259,10 @@ const insertLocalScanningQRData = async (
 
     let localConnection = getSQLiteConnection();
     
-    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude,CreatedAt)
+                        VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
 
-    await localConnection.executeQuery(localQuery, [OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude]);
+    await localConnection.executeQuery(localQuery, [OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude, CreatedAt]);
     console.log('Dis_Scaned_QR_Data_Local table insert successfully');
   } catch (error) {
     console.log("🚀 ~ insertLocalScanningQRData ~ error:", error.message);
