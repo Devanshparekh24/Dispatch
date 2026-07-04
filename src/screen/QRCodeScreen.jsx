@@ -237,6 +237,7 @@ const QRCodeScreen = ({ route }) => {
                 <View className='px-4 pb-3 border-b border-gray-200'>
                     <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
                     <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{vehicle}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text>
                 </View>
 
                 {/* List of Items */}

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ScanningContex = createContext();
 
 export const StateProvider = ({ children }) => {
-    const [currentVehicleID, setCurrentVehicleID] = useState([{}])
+    const [currentVehicleID, setCurrentVehicleID] = useState("")
 
 
 

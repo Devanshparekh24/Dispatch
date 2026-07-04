@@ -42,6 +42,9 @@ const HomeScreen = () => {
         setUserID(user.UserID || user.userID);
         setMobile(user.Mobile || user.mobile);
         setPassword(user.Password || user.password);
+
+        const formattedVehileID = selectedVehileID[0]?.VehicleID || "";
+        setCurrentVehicleID(formattedVehileID);
       }
       console.log('[SQLite] User_Local Records:', JSON.stringify(data, null, 2));
     } catch (error) {
@@ -49,9 +52,9 @@ const HomeScreen = () => {
     }
   };
 
-  const formattedVehileID = selectedVehileID[0]?.VehicleID || [];
-  console.log("🚀 ~ HomeScreen ~ formattedVehileID:", formattedVehileID)
-  setCurrentVehicleID(formattedVehileID)
+
+
+
 
   const vehicleData = queryResult?.data || [];
   const formattedVehicles = vehicleData.map(item => ({
@@ -84,7 +87,9 @@ const HomeScreen = () => {
       const androidId = await getAndroidId();
       await barcodeDataSync(vehicle, androidId, userID);
       await refetch(); // Refresh dropdown list with newly synced data from SQLite
-      await customerRefetch();
+      selectedVehileIDRefetch(),
+
+        await customerRefetch();
       Alert.alert('Sync completed successfully');
     } catch (error) {
       console.error('Sync failed:', error);
@@ -111,7 +116,7 @@ const HomeScreen = () => {
     requestLocationPermission();
     ErrorLog();
     loadData();
-  }, [refetch]);
+  }, [refetch, selectedVehileID]);
 
 
   useEffect(() => {
@@ -136,10 +141,10 @@ const HomeScreen = () => {
   const onRefresh = async () => {
     try {
       await syncVechileTable();
-
       await Promise.all([
         refetch(),
         customerRefetch(),
+        selectedVehileIDRefetch(),
       ])
     } catch (error) {
       console.error('Error refreshing vehicle table:', error);

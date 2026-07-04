@@ -24,6 +24,9 @@ const getPartyName = async () => {
                             SUM(AA.Qty) AS Total_Qty,
                             COUNT(distinct AA.ItemName) AS No_of_Items,
                             COUNT(AA.BarCode) AS Total_QR_Code,
+                            (select OrderID
+                             From Barcode_Data_Local as qq 
+                             Where qq.CustID=AA.CustID) as orderID,
                             (select count(BarCode)
                              From Dis_Scaned_QR_Data_Local as qq 
                              Where qq.CustID=AA.CustID) as Scanned_QR_Code
@@ -113,14 +116,15 @@ const isBarcodeExist = async (BarCode, CustID, VehicleID) => {
 };  
 
 
-const isItemExist = async (ItemID, CustID, VehicleID) => {
+
+
+const isItemExist = async (BarCode, VehicleID) => {
   try {
     let localConnection = getSQLiteConnection();
     const localQuery = `SELECT count(ItemID) AS Total FROM Barcode_Data_Local
-                        WHERE TRIM(BarCode) = TRIM(?) AND CustID = ? AND VehicleID = ?`;
+                        WHERE TRIM(BarCode) = TRIM(?) AND VehicleID = TRIM(?)`;
     const result = await localConnection.executeQuery(localQuery, [
-      ItemID,
-      CustID,
+      BarCode,
       VehicleID,
     ]);
 
@@ -135,6 +139,8 @@ const isItemExist = async (ItemID, CustID, VehicleID) => {
   }
 };  
 
+
+
 const insertLocalScanningQRData = async (
   OrderID,
   CustID,
@@ -145,7 +151,7 @@ const insertLocalScanningQRData = async (
 ) => {
   try {
     const isExistQRCode = await isBarcodeExist(BarCode, CustID, VehicleID);
-    const itemData= await isItemExist(BarCode, CustID, VehicleID);
+    const itemData= await isItemExist(BarCode, VehicleID);
     if (isExistQRCode) {
       throw new Error('Barcode is Already Exist');
     }

@@ -31,7 +31,7 @@ const HeaderCard = ({ lg_label, md_label, sm_label }) => {
 
                         </View>
                     ) : (<Text className="text-white/70 mt-4">
-                        Loading...
+                        No Data Of Vehicle
                     </Text>)
                 }
             </View>

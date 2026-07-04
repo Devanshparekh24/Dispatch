@@ -103,7 +103,7 @@ const ScanQRCodeScreen = () => {
                             const no_of_items = item.No_of_Items || 0;
                             const total_qr_code = item.Total_QR_Code || 0;
                             const scanningQRCode = item.Scanned_QR_Code || 0;
-                            const orderID = item.OrderID || "N/A";
+                            const orderID = item.OrderID ||item.orderID || "N/A";
 
                             let cardColor = COLORS.white;
 
@@ -127,7 +127,7 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-sm font-semibold'>{custName}</Text>
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
                                                 <Text className='text-xs text-gray-600'>{custID}</Text>
-                                                {/* <Text className='text-xs text-gray-600'>orderID :{orderID}</Text> */}
+                                                <Text className='text-xs text-gray-600'>orderID :{orderID}</Text>
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty (kg) : </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
