@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAndroidId } from 'react-native-device-info';
 import { getLocalUsers } from '../service/authService';
@@ -15,6 +15,8 @@ import { Camera } from 'react-native-vision-camera';
 import { isEmpty } from '../utils/validation';
 import { printError } from '../utils/helper';
 import { useAuth } from '../context/AuthContex';
+import { useScanningContex } from '../context/ScanningContex'
+import FullButton from '../components/Buttoon/FullButton';
 
 
 const HomeScreen = () => {
@@ -23,8 +25,16 @@ const HomeScreen = () => {
   const [errorLog, setErrorLog] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const { mobile, setMobile, userID, setUserID, password, setPassword, userName, setUserName } = useAuth();
-  const { data: queryResult, refetch } = useVechicle();
-  const { data: customerData, refetch: refetch1 } = useCustomer()
+  const { currentVehicleID, setVehileID } = useScanningContex();
+
+  useEffect(() => {
+    if (currentVehicleID) {
+      setVehicle(currentVehicleID);
+    }
+  }, [currentVehicleID]);
+
+  const { data: queryResult, refetch, isRefetching} = useVechicle();
+  const { data: customerData, refetch: customerRefetch } = useCustomer()
 
   const logLocalUsers = async () => {
     try {
@@ -74,15 +84,14 @@ const HomeScreen = () => {
         return;
       }
       const androidId = await getAndroidId();
-      await barcodeDataSync(vehicle, androidId,userID);
-      console.log("🚀 ~ handleSync ~ userID:", userID)
+      await barcodeDataSync(vehicle, androidId, userID);
       await refetch(); // Refresh dropdown list with newly synced data from SQLite
-      await refetch1();
+      await customerRefetch();
       Alert.alert('Sync completed successfully');
     } catch (error) {
       console.error('Sync failed:', error);
       printError(error);
-    Alert.alert("Sync Failed", error.message);
+      Alert.alert("Sync Failed", error.message);
     } finally {
       setIsSyncing(false);
     }
@@ -126,6 +135,18 @@ const HomeScreen = () => {
   }, []);
 
 
+  const onRefresh = async () => {
+    try {
+      await syncVechileTable();
+
+      await Promise.all([
+        refetch(),
+        customerRefetch(),
+      ])
+    } catch (error) {
+      console.error('Error refreshing vehicle table:', error);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -133,38 +154,42 @@ const HomeScreen = () => {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={onRefresh}
+          />
+        }
       >
-
         <View>
           <View>
-
             <HeaderCard
               lg_label={"Welcome Back✌"}
               md_label={userName}
             />
           </View>
-
+          <Text className='text-red-500 text-2xl'>{currentVehicleID}</Text>
           <View className='px-4 py-6'>
             <View className='mb-6'>
               <SearchDropDown
                 data={formattedVehicles}
                 value={vehicle}
-                setValue={setVehicle}
+                setValue={(val) => {
+                  setVehicle(val);
+                  setVehileID(val);
+                }}
                 label="Vehicle"
                 iconName="car-outline"
                 placeholder='select the vehicle'
               />
             </View>
             <View>
-              <Button
-                className='mt-6'
-                mode="contained"
+              <FullButton
+                title="Offline To online Sync"
                 loading={isSyncing}
                 disabled={isSyncing || !vehicle}
                 onPress={handleSync}
-              >
-                Online to offline  Sync Data
-              </Button>
+              />
             </View>
           </View>
         </View>

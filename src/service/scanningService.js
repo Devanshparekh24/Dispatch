@@ -1,26 +1,23 @@
 import { getSQLiteConnection } from '../backend/DB/db';
 
 const getlocalVechical = async () => {
-    try {
-        let localConnection = getSQLiteConnection();
-        const localQuery = `select distinct VehicleID From Vechile_Master_Local`;
-        const result = await localConnection.executeQuery(localQuery);
-        console.log("🚀 ~ getlocalVechical ~ result:", result)
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `select distinct VehicleID From Vechile_Master_Local`;
+    const result = await localConnection.executeQuery(localQuery);
 
-        if (Array.isArray(result)) {
-            return result;
-        }
-        throw new Error('Database query did not return a list of rows');
-
-    } catch (error) {
-        console.log("🚀 ~ getlocalVechical ~ error:", error);
-        return [];
+    if (Array.isArray(result)) {
+      return result;
     }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    return [];
+  }
 };
 const getPartyName = async () => {
-    try {
-        let localConnection = getSQLiteConnection();
-        const localQuery = `SELECT
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `SELECT
                             AA.CustName,
                             AA.CustID,
                             AA.VehicleID,
@@ -36,27 +33,21 @@ const getPartyName = async () => {
                             AA.CustName,
                             AA.VehicleID;
                         `;
-        
-     
-        const result = await localConnection.executeQuery(localQuery);
-        console.log("🚀 ~ getPartyName ~ result:", result)
-        if (Array.isArray(result)) {
-            return result;
-        }
-        throw new Error('Database query did not return a list of rows');
-        
-    } catch (error) {
-        console.log("🚀 ~ getPartyName ~ error:", error);
-        return [];
+
+    const result = await localConnection.executeQuery(localQuery);
+    if (Array.isArray(result)) {
+      return result;
     }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    return [];
+  }
 };
 
-
-const getItemDataScannedInfo = async (CustID,VehicleID) => {
-    console.log("🚀 ~ getItemDataScannedInfo ~ CustID:", CustID)
-    try {
-        let localConnection = getSQLiteConnection();
-        const localQuery = `SELECT
+const getItemDataScannedInfo = async (CustID, VehicleID) => {
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `SELECT
                         aa.ItemName,
                         aa.ItemID,
                         COUNT(aa.BarCode) AS Total_Qty,
@@ -71,89 +62,130 @@ const getItemDataScannedInfo = async (CustID,VehicleID) => {
                     AND aa.VehicleID = ?
                     GROUP BY aa.ItemName,
                      aa.ItemID;`;
-        const result = await localConnection.executeQuery(localQuery, [CustID, VehicleID]);
-        console.log("🚀 ~ getItemDataScannedInfo ~ result:", result)
-        if (Array.isArray(result)) {
-            return result;
-        }
-        throw new Error('Database query did not return a list of rows');
-        
-    } catch (error) {
-        console.log("🚀 ~ getItemName ~ error:", error);
-        return [];
+    const result = await localConnection.executeQuery(localQuery, [
+      CustID,
+      VehicleID,
+    ]);
+    if (Array.isArray(result)) {
+      return result;
     }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    return [];
+  }
 };
-
 
 const getlocalBarCodeData = async () => {
-    try {
-        let localConnection = getSQLiteConnection();
-        const localQuery = `select * From Barcode_Data_Local`;
-        const result = await localConnection.executeQuery(localQuery);
-        
-        if (Array.isArray(result)) {
-            return result;
-        }
-        throw new Error('Database query did not return a list of rows');
-        
-    } catch (error) {
-        console.log("🚀 ~ getlocalBarCodeData ~ error:", error);
-        return [];
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `select * From Barcode_Data_Local`;
+    const result = await localConnection.executeQuery(localQuery);
+
+    if (Array.isArray(result)) {
+      return result;
     }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    return [];
+  }
 };
 
+const isBarcodeExist = async (BarCode, CustID, VehicleID) => {
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `SELECT count(1) AS Total FROM Dis_Scaned_QR_Data_Local
+                        WHERE TRIM(BarCode) = TRIM(?) AND CustID = ? AND VehicleID = ?`;
+    const result = await localConnection.executeQuery(localQuery, [
+      BarCode,
+      CustID,
+      VehicleID,
+    ]);
 
-
-const insertLocalScanningQRData=async(OrderID,CustID,VehicleID,BarCode,Latitude,Longitude)=>{
-    try {
-        
-        let localConnection=getSQLiteConnection();
-        const localQuery=`INSERT INTO Dis_Scaned_QR_Data_Local (OrderID,CustID,VehicleID,BarCode,Latitude,Longitude)
-                            values(?,?,?,?,?,?)`;
-                            
-        await localConnection.transaction(tx => {
-      tx.executeSql(
-        localQuery,
-        [OrderID,CustID,VehicleID,BarCode,Latitude,Longitude],
-        () => {
-          console.log('Dis_Scaned_QR_Data_Local table insert successfully');
-        },
-        (txOrError, error) => {
-          console.log("🚀 ~Inserting in insertLocalScanningQRData ~ error:", error || txOrError)
-        }
-      );
-    });
-
-    } catch (error) {
-        console.log("🚀 ~ insertLocalScanningQRData ~ error:", error)
+    if (result && result.length > 0 && result[0].Total > 0) {
+        return true;
+    } else {
+      return false;
     }
-}
+  } catch (error) {
+    console.error("Error in isBarcodeExist:", error);
+    return false;
+  }
+};  
+
+
+const isItemExist = async (ItemID, CustID, VehicleID) => {
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `SELECT count(ItemID) AS Total FROM Barcode_Data_Local
+                        WHERE TRIM(BarCode) = TRIM(?) AND CustID = ? AND VehicleID = ?`;
+    const result = await localConnection.executeQuery(localQuery, [
+      ItemID,
+      CustID,
+      VehicleID,
+    ]);
+
+    if (result && result.length > 0 && result[0].Total > 0) {
+        return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error in isBarcodeExist:", error);
+    return false;
+  }
+};  
+
+const insertLocalScanningQRData = async (
+  OrderID,
+  CustID,
+  VehicleID,
+  BarCode,
+  Latitude,
+  Longitude,
+) => {
+  try {
+    const isExistQRCode = await isBarcodeExist(BarCode, CustID, VehicleID);
+    const itemData= await isItemExist(BarCode, CustID, VehicleID);
+    if (isExistQRCode) {
+      throw new Error('Barcode is Already Exist');
+    }
+
+    if (!itemData) {
+      throw new Error('Item not Exist For this Customer');
+    }
+
+    let localConnection = getSQLiteConnection();
+    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID,CustID,VehicleID,BarCode,Latitude,Longitude)
+                            values(?,?,?,?,?,?)`;
+
+    await localConnection.executeQuery(localQuery, [OrderID, CustID, VehicleID, BarCode, Latitude, Longitude]);
+    console.log('Dis_Scaned_QR_Data_Local table insert successfully');
+  } catch (error) {
+    console.log("🚀 ~ insertLocalScanningQRData ~ error:", error.message);
+    throw error; // Re-throw to propagate back to the React Query mutation and show UI Alert
+  }
+};
 
 const getScannendData = async () => {
-    try {
-        let localConnection = getSQLiteConnection();
-        const localQuery = `select * From Dis_Scaned_QR_Data_Local`;
-        const result = await localConnection.executeQuery(localQuery);
-        console.log("🚀 ~ getScannendData ~ result:", result)
-        
-        if (Array.isArray(result)) {
-            return result;
-        }
-        throw new Error('Database query did not return a list of rows');
-        
-    } catch (error) {
-        console.log("🚀 ~ getlocalBarCodeData ~ error:", error);
-        return [];
+  try {
+    let localConnection = getSQLiteConnection();
+    const localQuery = `select * From Dis_Scaned_QR_Data_Local`;
+    const result = await localConnection.executeQuery(localQuery);
+
+    if (Array.isArray(result)) {
+      return result;
     }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    return [];
+  }
 };
 
 export {
-    getlocalVechical,
-    getlocalBarCodeData,
-    getPartyName,
-    insertLocalScanningQRData,
-    getScannendData,
-    getItemDataScannedInfo
+  getlocalVechical,
+  getlocalBarCodeData,
+  getPartyName,
+  insertLocalScanningQRData,
+  getScannendData,
+  getItemDataScannedInfo,
 };
-
-

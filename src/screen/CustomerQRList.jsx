@@ -2,20 +2,19 @@ import { Alert, KeyboardAvoidingView, Platform, View, FlatList, Text, TextInput 
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import StatesButton from '../components/Buttoon/StatesButton';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { barcodeDataSync } from '../service/syncService';
 import useCustomer from '../hooks/useCustomer';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Card from '../components/Card/Card'
 import { printError } from '../utils/helper';
 import { isEmpty } from '../utils/validation';
 import SearchInput from '../components/Input/SearchInput'
 import { COLORS } from '../constant/index'
+import { useScanningContex } from '../context/ScanningContex';
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
     const [search, setSearch] = useState('');
-    const [equalTo, setEqualTo] = useState(null)
-    const navigation = useNavigation();
     const { data: customerData, refetch: customerRefetch, isRefetching } = useCustomer();
+    const { currentVehicleID, setCurrentVehicleID } = useScanningContex();
+    const navigation = useNavigation();
 
     useFocusEffect(
         useCallback(() => {
@@ -105,7 +104,7 @@ const ScanQRCodeScreen = () => {
                             const total_qr_code = item.Total_QR_Code || 0;
                             const scanningQRCode = item.Scanned_QR_Code || 0;
                             const orderID = item.OrderID || "N/A";
-                            // Write it here
+
                             let cardColor = COLORS.white;
 
                             if (scanningQRCode === 0) {
