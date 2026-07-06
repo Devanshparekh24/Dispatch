@@ -12,7 +12,8 @@ import { useScanningContex } from '../context/ScanningContex';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import MiniButton from '../components/Buttoon/MiniButton'
 import { qrCodeScannedDataSync } from '../service/syncService';
-
+import { Chip } from 'react-native-paper';
+import isInternet from '../utils/network';
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
     const [search, setSearch] = useState('');
@@ -20,12 +21,27 @@ const ScanQRCodeScreen = () => {
     const { currentVehicleID, setCurrentVehicleID } = useScanningContex();
     const navigation = useNavigation();
     const [isSyncing, setIsSyncing] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState('all');
 
-    const handleSync = async () => {
+    const custData = customerData?.data;
+
+
+    const handleServerSync = async () => {
         setIsSyncing(true);
         try {
-            await qrCodeScannedDataSync();
-            Alert.alert('Success', 'Sync completed successfully');
+            const syncResult = await qrCodeScannedDataSync();
+            if (syncResult && syncResult.totalCount > 0) {
+                if (syncResult.failedCount > 0) {
+                    Alert.alert(
+                        'Sync Partially Completed',
+                        `Successfully synced ${syncResult.syncedCount} of ${syncResult.totalCount} items.\nFailed: ${syncResult.failedCount}`
+                    );
+                } else {
+                    Alert.alert('Success', `Sync completed successfully. Synced ${syncResult.syncedCount} items.`);
+                }
+            } else {
+                Alert.alert('Info', 'No new QR data to sync.');
+            }
             customerRefetch();
         } catch (error) {
             console.error('Sync failed:', error);
@@ -41,12 +57,30 @@ const ScanQRCodeScreen = () => {
         }, [customerRefetch])
     );
     const filterCustData = useMemo(() => {
-        if (isEmpty(customerData?.data)) {
+        if (isEmpty(custData)) {
             return [];
         }
-        return customerData?.data?.filter(item => item.CustName.toLowerCase().includes(search.toLowerCase()));
-    }, [customerData, search]);
 
+        let data = custData;
+
+        if (search.trim()) {
+            data = data.filter(item => item.CustName.toLowerCase().includes(search.toLowerCase()));
+        }
+
+        switch (selectedFilter) {
+            case 'pending':
+                data = data?.filter(item => item.Scanned_QR_Code < item.Total_QR_Code)
+                break;
+            case 'scanned':
+                data = data?.filter(item => item.Scanned_QR_Code === item.Total_QR_Code)
+                break;
+
+            default:
+                break;
+        }
+
+        return data;
+    }, [custData, search, selectedFilter]);
 
     const onRefresh = () => {
         try {
@@ -70,30 +104,22 @@ const ScanQRCodeScreen = () => {
 
         console.log('Navigating to ScanQRCode screen');
     }
-    const custData = customerData?.data;
     useEffect(() => {
         if (custData && custData.length > 0) {
             setVehicle(custData[0].VehicleID);
         }
     }, [custData]);
 
-    // const formattedCustomer = custData.map(item => ({
-    //     label: item.CustName,
-    //     value: item.CustID,
-    // }));
+
 
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-
         >
             <SafeAreaView>
-                <View className='px-4 pt-5 mx-4   '>
-
-
-
+                <View className='px-4 pt-5 mx-4'>
                     <View className="flex-row justify-between items-center mb-5">
                         <View className="flex-row items-center">
                             <Ionicons name="person" size={20} color="#000fff" />
@@ -102,26 +128,65 @@ const ScanQRCodeScreen = () => {
                             </Text>
                         </View>
 
-                        <MiniButton
-                            title="Sync"
-                            icon="sync"
-                            disabled={isSyncing}
-                            onPress={handleSync}
-                        />
-                    </View>
 
+                          <View>
+                            <MiniButton
+                                title="Sync"
+                                icon="sync"
+                                disabled={isSyncing}
+                                onPress={handleServerSync}
+                            />
+                        </View>
+
+                    </View>
+                    <View className="mt-2 mb-4 flex-row flex-wrap gap-2 px-5">
+                        <Chip
+                            compact
+                            selected={selectedFilter === 'all'}
+                            showSelectedCheck={false}
+                            icon={selectedFilter === 'all' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
+                            onPress={() => setSelectedFilter('all')}>
+                            All ({custData?.length ?? 0})
+                        </Chip>
+
+                        <Chip
+                            compact
+                            selected={selectedFilter === 'pending'}
+                            showSelectedCheck={false}
+                            icon={selectedFilter === 'pending' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
+                            onPress={() => setSelectedFilter('pending')}>
+                            Pending (
+                            {custData?.filter(
+                                item => item.Scanned_QR_Code < item.Total_QR_Code,
+                            ).length ?? 0}
+                            )
+                        </Chip>
+
+                        <Chip
+                            compact
+                            selected={selectedFilter === 'scanned'}
+                            showSelectedCheck={false}
+                            icon={selectedFilter === 'scanned' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
+                            onPress={() => setSelectedFilter('scanned')}>
+                            Scanned (
+                            {custData?.filter(
+                                item => item.Scanned_QR_Code === item.Total_QR_Code,
+                            ).length ?? 0}
+                            )
+                        </Chip>
+                    </View>
                     <SearchInput
                         value={search}
                         onChangeText={setSearch}
                         placeholder='search customer...'
                     />
-
                     <FlatList
                         keyExtractor={(item) => item.CustID}
+
                         ListEmptyComponent={
                             () => {
                                 return (
-                                    <View className="items-center justify-center py-10">
+                                    <View className="items-center justify-center py-14">
                                         <Text className="text-gray-400 text-sm">No Customer  available</Text>
                                     </View>
                                 )
@@ -131,7 +196,7 @@ const ScanQRCodeScreen = () => {
                         refreshing={isRefetching}
                         onRefresh={onRefresh}
                         keyboardDismissMode='on-drag'
-                        contentContainerStyle={{ paddingBottom: 80 }}
+                        // contentContainerStyle={{ paddingBottom: 100 }}
                         renderItem={({ item, index }) => {
 
                             const custName = item.CustName || "N/A";

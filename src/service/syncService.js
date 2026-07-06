@@ -158,59 +158,93 @@ const barcodeDataSync = async (vehicleID,androidID,userID) => {
 
 
 //offline to online Sync
-const qrCodeScannedDataSync = async() => {
+const qrCodeScannedDataSync = async () => {
+  const connect = await isInternet();
+  if (!connect) {
+    throw new Error('Internet is not connected.');
+  }
+
+  const localConnection = getSQLiteConnection();
+
+  // Get only unsynced records
+  const localQuery = `
+    SELECT *
+    FROM Dis_Scaned_QR_Data_Local
+    WHERE IsSynced = 0
+  `;
+
+  const result = await localConnection.executeQuery(localQuery);
+
+  if (!result || result.length === 0) {
+    return { success: true, syncedCount: 0, failedCount: 0, totalCount: 0 };
+  }
+
+  const mssql = await getMSSQLConnection();
+  let syncedCount = 0;
+  let failedCount = 0;
+  let lastError = null;
+
+  for (const item of result) {
     try {
-        const connect = await isInternet();
-        if (!connect) {
-            console.log('Internet Is not connected .....');
-            return;
-        }
-        const localConnection = await getSQLiteConnection();
-        const locaQuery = `select * From Dis_Scaning_QR_Data_Local`;
-        const result = await localConnection.executeQuery(locaQuery);
-        console.log("🚀 ~ qrCodeScannedDataSync ~ result:", result)
-        if (!result || result.length === 0) {
-            console.log('No vehicle data found on remote server.');
-            return;
-        }
+      const query = `
+        INSERT INTO Dis_Scaned_QR_Data (
+          Local_ID,
+          OrderID,
+          ItemID,
+          CustID,
+          VehicleID,
+          BarCode,
+          Latitude,
+          Longitude,
+          UserID,
+          deviceTimeAt
+        )
+        VALUES (
+          '${item.ID || ''}',
+          '${item.OrderID || ''}',
+          ${item.ItemID || 0},
+          ${item.CustID || 0},
+          '${item.VehicleID || ''}',
+          '${item.BarCode || ''}',
+          ${item.Latitude || 0},
+          ${item.Longitude || 0},
+          ${item.UserID || 0},
+          '${item.CreatedAt || ''}'
+        )
+      `;
+      await mssql.executeUpdate(query);
 
-        const serverConnection =await getMSSQLConnection();
-
-        await serverConnection.transaction(tx => {
-            // // Optional: clear old data
-            tx.executeSql(`update Dis_Scaning_QR_Data_Local 
-                            set IsSynced=1
-                            where IsSynced=0             
-                `);
-
-            result.forEach(item => {
-                tx.executeSql(
-                    `INSERT OR REPLACE INTO Dis_Scaned_QR_Data (OrderID,
-                                                                ItemID,
-                                                                CustID,
-                                                                VehicleID,
-                                                                BarCode,
-                                                                Latitude,
-                                                                Longitude,
-                                                                IsSynced,
-                                                                mobileCreatedTime,
-                                                                CreatedAt) VALUES (?, ?, ?,?,?,?,?,?,?,?)`,
-                    [item.OrderID, item.BarCode, item.VehicleID, item.EInvoice_Number,item.CustID, item.Qty, item.CustName]
-                );
-            });
-        });
-
-        console.log('Data sync for scaning QR code completed 🔥🔥🔥');
-
-    } catch (error) {
-        console.log("🚀 ~ barcodeDataSync ~ error:", error)
-
+      // Mark record as synced in SQLite
+      await localConnection.executeQuery(
+        `UPDATE Dis_Scaned_QR_Data_Local
+         SET IsSynced = 1
+         WHERE ID = ?`,
+        [item.ID],
+      );
+      syncedCount++;
+    } catch (err) {
+      failedCount++;
+      lastError = err;
+      console.log(`Failed to sync QR ID ${item.ID}`, err);
     }
-}
+  }
+
+  if (syncedCount === 0 && failedCount > 0) {
+    throw new Error(lastError?.message || `Failed to sync all ${failedCount} items.`);
+  }
+
+  return {
+    success: true,
+    syncedCount,
+    failedCount,
+    totalCount: result.length
+  };
+};
 
 
 
 export {
     syncVechileTable,
-    barcodeDataSync
+    barcodeDataSync,
+    qrCodeScannedDataSync
 };
