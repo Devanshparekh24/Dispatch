@@ -65,7 +65,6 @@ const App = () => {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Main" component={BottomNavigationTab} />
           <Stack.Screen name="ScanQRCode" component={QRCodeScreen} />
-
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

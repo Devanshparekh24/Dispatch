@@ -120,6 +120,7 @@ const createScaningQRDatatTable = async () => {
     BarCode TEXT,
     Latitude REAL,
     Longitude REAL,
+    UserID INTEGER,
     IsSynced INTEGER DEFAULT 0,
     CreatedAt TEXT
   )

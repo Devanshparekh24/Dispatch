@@ -12,7 +12,8 @@ import useCustomerItemWise from '../hooks/useCustomerItemWise';
 import useCustomer from '../hooks/useCustomer';
 import ToastMessage from '../utils/ToastBox/TotastMessage'
 import { isEmpty, isValidQRCode } from '../utils/validation';
-import {currentDateTime} from '../utils/TimeHelp'
+import { currentDateTime } from '../utils/TimeHelp'
+import { useAuth } from '../context/AuthContex';
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
@@ -23,7 +24,7 @@ const QRCodeScreen = ({ route }) => {
     const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
     const { vehicle, custID, customerName, OrderID } = route.params;
-
+    const { userID } = useAuth();
     const device = useCameraDevice('back');
     const navigation = useNavigation();
 
@@ -112,7 +113,8 @@ const QRCodeScreen = ({ route }) => {
                     BarCode: qrValue,
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
-                    CreatedAt:currentDateTime,
+                    UserID: userID,
+                    CreatedAt: currentDateTime,
                 });
 
                 setShowSuccess(true);

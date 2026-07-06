@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { insertLocalScanningQRData } from '../service/scanningService';
 
-const useScanQRCodeData = () => {
+ const useScanQRCodeData = () => {
     return useMutation({
-        mutationFn: ({ OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,CreatedAt }) =>
-            insertLocalScanningQRData(OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,CreatedAt),
+        mutationFn: ({ OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,UserID,CreatedAt }) =>
+            insertLocalScanningQRData(OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,UserID,CreatedAt),
     });
 };
 

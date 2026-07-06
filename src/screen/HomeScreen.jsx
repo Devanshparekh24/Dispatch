@@ -171,6 +171,9 @@ const HomeScreen = () => {
               md_label={userName}
               sm_label={currentVehicleID}
             />
+
+            <Text className='text-red-500 text-2xl'>{userID}</Text>
+            <Text className='text-red-500 text-2xl'>{vehicle}</Text>
           </View>
           {/* <Text className='text-red-500 text-2xl'>{currentVehicleID}</Text> */}
           <View className='px-4 py-6'>

@@ -59,6 +59,7 @@ const getItemDataScannedInfo = async (CustID, VehicleID) => {
                             FROM Dis_Scaned_QR_Data_Local AS oo
                             WHERE oo.CustID = aa.CustID
                             AND oo.VehicleID = aa.VehicleID
+                            AND oo.ItemID = aa.ItemID
                         ) AS Scanned_Qty
                     FROM Barcode_Data_Local AS aa
                     WHERE aa.CustID = ?
@@ -93,86 +94,40 @@ const getlocalBarCodeData = async () => {
   }
 };
 
-const isBarcodeExist = async (BarCode, CustID, VehicleID) => {
+const isItemExist = async BarCode => {
   try {
-    let localConnection = getSQLiteConnection();
-    
-    // 1. Get total allowed quantity of this barcode for this customer and vehicle
-    const allowedQuery = `SELECT SUM(Qty) AS TotalQty, COUNT(1) AS RowCount FROM Barcode_Data_Local
-                          WHERE TRIM(BarCode) = TRIM(?) AND CustID = ? AND VehicleID = ?`;
-    const allowedResult = await localConnection.executeQuery(allowedQuery, [
-      BarCode,
-      CustID,
-      VehicleID,
-    ]);
-    
-    let allowedQty = 0;
-    if (allowedResult && allowedResult.length > 0) {
-      const rowCount = allowedResult[0].RowCount || 0;
-      const totalQty = allowedResult[0].TotalQty || 0;
-      allowedQty = Math.max(rowCount, totalQty);
-    }
+    const localConnection = getSQLiteConnection();
 
-    if (allowedQty === 0) {
-      return false; // Not in master list, let isItemExist handle "Item not Exist"
-    }
+    const query = `
+      SELECT COUNT(*) AS Total
+      FROM Dis_Scaned_QR_Data_Local
+      WHERE TRIM(BarCode) = TRIM(?)
+    `;
 
-    // 2. Get number of times this barcode has already been scanned for this customer and vehicle
-    const scannedQuery = `SELECT COUNT(1) AS Total FROM Dis_Scaned_QR_Data_Local
-                          WHERE TRIM(BarCode) = TRIM(?) AND CustID = ? AND VehicleID = ?`;
-    const scannedResult = await localConnection.executeQuery(scannedQuery, [
-      BarCode,
-      CustID,
-      VehicleID,
-    ]);
+    const result = await localConnection.executeQuery(query, [BarCode]);
 
-    let scannedQty = 0;
-    if (scannedResult && scannedResult.length > 0) {
-      scannedQty = scannedResult[0].Total || 0;
-    }
-
-    return scannedQty >= allowedQty;
+    return result[0].Total > 0;
   } catch (error) {
-    console.error("Error in isBarcodeExist:", error);
+    console.error('Error in isItemExist:', error);
     return false;
   }
-};  
-
-const isItemExist = async (ItemID, CustID, VehicleID) => {
-  try {
-    let localConnection = getSQLiteConnection();
-    const localQuery = `SELECT count(ItemID) AS Total FROM Barcode_Data_Local
-                        WHERE ItemID = ? AND CustID = ? AND VehicleID = ?`;
-    const result = await localConnection.executeQuery(localQuery, [
-      ItemID,
-      CustID,
-      VehicleID,
-    ]);
-
-    if (result && result.length > 0 && result[0].Total > 0) {
-        return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error("Error in isItemExist:", error);
-    return false;
-  }
-};  
-
+};
 const getItemID = async (BarCode, VehicleID) => {
   try {
     let localConnection = getSQLiteConnection();
     const localQuery = `SELECT ItemID FROM Barcode_Data_Local
                         WHERE TRIM(BarCode) = TRIM(?)  AND VehicleID = ?`;
-    const result = await localConnection.executeQuery(localQuery, [BarCode, VehicleID]);
+    const result = await localConnection.executeQuery(localQuery, [
+      BarCode,
+      VehicleID,
+    ]);
     if (result && result.length > 0) {
-        return result[0].ItemID;
+      return result[0].ItemID;
     } else {
-        return null;
+      return null;
     }
   } catch (error) {
-    console.error("Error in getItemID:", error);
+    console.error('Error in getItemID:', error);
     return null;
   }
 };
@@ -180,7 +135,7 @@ const getItemID = async (BarCode, VehicleID) => {
 const isItemQtyLimitReached = async (ItemID, CustID, VehicleID) => {
   try {
     let localConnection = getSQLiteConnection();
-    
+
     // 1. Get total allowed quantity for this ItemID, customer, and vehicle
     const allowedQuery = `SELECT SUM(Qty) AS TotalQty, COUNT(1) AS RowCount FROM Barcode_Data_Local
                           WHERE ItemID = ? AND CustID = ? AND VehicleID = ?`;
@@ -189,7 +144,7 @@ const isItemQtyLimitReached = async (ItemID, CustID, VehicleID) => {
       CustID,
       VehicleID,
     ]);
-    
+
     let allowedQty = 0;
     if (allowedResult && allowedResult.length > 0) {
       const rowCount = allowedResult[0].RowCount || 0;
@@ -217,8 +172,78 @@ const isItemQtyLimitReached = async (ItemID, CustID, VehicleID) => {
 
     return scannedQty >= allowedQty;
   } catch (error) {
-    console.error("Error in isItemQtyLimitReached:", error);
+    console.error('Error in isItemQtyLimitReached:', error);
     return true;
+  }
+};
+
+const itemNotAssignToCustomer = async (ItemID, CustID, VehicleID) => {
+  try {
+    const localConnection = getSQLiteConnection();
+
+    const query = `
+      SELECT COUNT(*) AS Total
+      FROM Barcode_Data_Local
+      WHERE ItemID = ?
+        AND CustID = ?
+        AND VehicleID = ?
+    `;
+
+    const result = await localConnection.executeQuery(query, [
+      ItemID,
+      CustID,
+      VehicleID,
+    ]);
+
+    return result[0].Total === 0;
+  } catch (error) {
+    console.error('Error:', error);
+    return true;
+  }
+};
+
+const isScanLimitReached = async (ItemID, CustID, VehicleID) => {
+  try {
+    const localConnection = getSQLiteConnection();
+
+    const query = `
+      SELECT
+        (
+          SELECT COUNT(*)
+          FROM Barcode_Data_Local
+          WHERE ItemID = ?
+            AND CustID = ?
+            AND VehicleID = ?
+        ) AS TotalQRCode,
+
+        (
+          SELECT COUNT(*)
+          FROM Dis_Scaned_QR_Data_Local
+          WHERE ItemID = ?
+            AND CustID = ?
+            AND VehicleID = ?
+        ) AS ScannedQRCode
+    `;
+
+    const result = await localConnection.executeQuery(query, [
+      ItemID,
+      CustID,
+      VehicleID,
+      ItemID,
+      CustID,
+      VehicleID,
+    ]);
+
+    if (result && result.length > 0) {
+      const { TotalQRCode, ScannedQRCode } = result[0];
+
+      return ScannedQRCode >= TotalQRCode;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Error in isScanLimitReached:', error);
+    return false;
   }
 };
 
@@ -229,43 +254,62 @@ const insertLocalScanningQRData = async (
   BarCode,
   Latitude,
   Longitude,
+  UserID,
   CreatedAt,
 ) => {
   try {
-    // 1. Get ItemID from BarCode (specifically for this customer and vehicle)
-    const ItemID = await getItemID(BarCode, VehicleID);  
+   // 1. Get ItemID
+const ItemID = await getItemID(BarCode, VehicleID);
+if (!ItemID) {
+    throw new Error("Barcode not found.");
+}
 
-    if (!ItemID) {
-      throw new Error('Item not Exist For this Customer');
-    }
+// 2. Duplicate barcode
+const isExistBarcode = await isItemExist(BarCode);
+if (isExistBarcode) {
+    throw new Error("This barcode has already been scanned.");
+}
 
-    // 2. Check if this specific barcode has been scanned up to the allowed quantity limit
-    const isExistQRCode = await isBarcodeExist(BarCode, CustID, VehicleID);
-    if (isExistQRCode) {
-      throw new Error('Barcode is Already Exist');
-    }
+// 3. Check item assignment
+const notAssigned = await itemNotAssignToCustomer(
+    ItemID,
+    CustID,
+    VehicleID
+);
 
-    // 3. Verify the item exists in the customer's order for this vehicle
-    const itemData = await isItemExist(ItemID, CustID, VehicleID);
-    if (!itemData) {
-      throw new Error('Item not Exist For this Customer');
-    }
+if (notAssigned) {
+    throw new Error("This item is not assigned to the selected customer.");
+}
 
-    // 4. Check if the quantity limit for this ItemID has already been reached
-    const qtyLimitReached = await isItemQtyLimitReached(ItemID, CustID, VehicleID);
-    if (qtyLimitReached) {
-      throw new Error('All quantities of this item are already scanned');
-    }
+// 4. Check scan limit
+const isScanLimit = await isScanLimitReached(
+    ItemID,
+    CustID,
+    VehicleID
+);
 
+if (isScanLimit) {
+    throw new Error("All QR Codes for this item have already been scanned.");
+}
     let localConnection = getSQLiteConnection();
-    
-    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude,CreatedAt)
-                        VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
 
-    await localConnection.executeQuery(localQuery, [OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude, CreatedAt]);
+    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude,UserID,CreatedAt)
+                        VALUES (?, ?, ?, ?, ?, ?, ?,?,?)`;
+
+    await localConnection.executeQuery(localQuery, [
+      OrderID,
+      ItemID,
+      CustID,
+      VehicleID,
+      BarCode,
+      Latitude,
+      Longitude,
+      UserID,
+      CreatedAt,
+    ]);
     console.log('Dis_Scaned_QR_Data_Local table insert successfully');
   } catch (error) {
-    console.log("🚀 ~ insertLocalScanningQRData ~ error:", error.message);
+    console.log('🚀 ~ insertLocalScanningQRData ~ error:', error.message);
     throw error;
   }
 };
@@ -295,7 +339,7 @@ const getSelectVehileData = async () => {
     }
     throw new Error('Database query did not return a list of rows');
   } catch (error) {
-    console.error("Error in getSelectVehileData:", error);
+    console.error('Error in getSelectVehileData:', error);
     return [];
   }
 };
@@ -307,5 +351,5 @@ export {
   insertLocalScanningQRData,
   getScannendData,
   getItemDataScannedInfo,
-  getSelectVehileData
+  getSelectVehileData,
 };
