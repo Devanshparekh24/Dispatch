@@ -14,6 +14,8 @@ import ToastMessage from '../utils/ToastBox/TotastMessage'
 import { isEmpty, isValidQRCode } from '../utils/validation';
 import { currentDateTime } from '../utils/TimeHelp'
 import { useAuth } from '../context/AuthContex';
+import useQRCodeSync from '../hooks/useQrCodeSync';
+import isInternet from '../utils/network';
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
@@ -23,7 +25,7 @@ const QRCodeScreen = ({ route }) => {
     const [zoom, setZoom] = useState(1);
     const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
-    const { vehicle, custID, customerName, OrderID } = route.params;
+    const { vehicle, custID, customerName, OrderID, einvoiceNo } = route.params;
     const { userID } = useAuth();
     const device = useCameraDevice('back');
     const navigation = useNavigation();
@@ -34,6 +36,7 @@ const QRCodeScreen = ({ route }) => {
             baseZoom.current = device.minZoom;
         }
     }, [device]);
+    const { mutateAsync: serverSyncData, isPending: serverPending, isError } = useQRCodeSync();
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
     const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
     const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, vehicle);
@@ -114,11 +117,11 @@ const QRCodeScreen = ({ route }) => {
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
                     UserID: userID,
+                    EInvoice_Number: einvoiceNo,
                     CreatedAt: currentDateTime,
                 });
 
                 setShowSuccess(true);
-
                 setTimeout(() => {
                     setShowSuccess(false);
                 }, 2000);
@@ -126,6 +129,12 @@ const QRCodeScreen = ({ route }) => {
                 ToastMessage(qrValue.toString());
                 refetchScannedData();
                 refetchItemWiseData();
+
+                const hasInternet = await isInternet();
+                if (hasInternet) {
+                    await serverSyncData();
+                }
+
 
                 // Reset scanner lock and zoom after 5 seconds of success
                 setTimeout(() => {
@@ -160,6 +169,7 @@ const QRCodeScreen = ({ route }) => {
             </View>
         );
     }
+    console.log("🚀 ~ QRCodeScreen ~ einvoiceNo:", einvoiceNo)
     return (
         <View style={styles.container}>
             <Camera
@@ -241,7 +251,8 @@ const QRCodeScreen = ({ route }) => {
                 <View className='px-4 pb-3 border-b border-gray-200'>
                     <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
                     <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{vehicle}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceNo}</Text>
+                    {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text> */}
                 </View>
 
                 {/* List of Items */}

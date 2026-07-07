@@ -73,7 +73,7 @@ const createBarcodeDatatTable = async () => {
      CREATE TABLE IF NOT EXISTS Barcode_Data_Local (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     OrderID TEXT,
-    BarCode TEXT,
+    BarCode  TEXT UNIQUE,
     VehicleID TEXT,
     EInvoice_Number TEXT,
     CustID INTEGER,
@@ -117,7 +117,8 @@ const createScaningQRDatatTable = async () => {
     ItemID INTEGER,
     CustID INTEGER,
     VehicleID TEXT,
-    BarCode TEXT,
+    EInvoice_Number TEXT,
+    BarCode   TEXT UNIQUE,
     Latitude REAL,
     Longitude REAL,
     UserID INTEGER,

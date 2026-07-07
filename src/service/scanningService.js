@@ -24,6 +24,7 @@ const getPartyName = async () => {
                             SUM(AA.Qty) AS Total_Qty,
                             COUNT(distinct AA.ItemName) AS No_of_Items,
                             COUNT(AA.BarCode) AS Total_QR_Code,
+                            (select EInvoice_Number  from  Barcode_Data_Local as bb where bb.EInvoice_Number=AA.EInvoice_Number )as EInvoice_Number,
                             (select OrderID
                              From Barcode_Data_Local as qq 
                              Where qq.CustID=AA.CustID) as orderID,
@@ -211,6 +212,7 @@ const insertLocalScanningQRData = async (
   Longitude,
   UserID,
   CreatedAt,
+  EInvoice_Number,
 ) => {
   try {
     // 1. Get ItemID
@@ -244,14 +246,15 @@ const insertLocalScanningQRData = async (
     }
     let localConnection = getSQLiteConnection();
 
-    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, BarCode, Latitude, Longitude,UserID,CreatedAt)
-                        VALUES (?, ?, ?, ?, ?, ?, ?,?,?)`;
+    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, EInvoice_Number,BarCode, Latitude, Longitude,UserID,CreatedAt)
+                        VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?)`;
 
     await localConnection.executeQuery(localQuery, [
       OrderID,
       ItemID,
       CustID,
       VehicleID,
+      EInvoice_Number,
       BarCode,
       Latitude,
       Longitude,
@@ -260,6 +263,13 @@ const insertLocalScanningQRData = async (
     ]);
     console.log('Dis_Scaned_QR_Data_Local table insert successfully');
   } catch (error) {
+    if (
+      error.message?.includes('SQLITE_CONSTRAINT_UNIQUE') ||
+      error.message?.includes('UNIQUE constraint failed')
+    ) {
+      throw new Error('This barcode has already been scanned ✨✨✨✨✨.');
+    }
+
     console.log('🚀 ~ insertLocalScanningQRData ~ error:', error.message);
     throw error;
   }
@@ -332,5 +342,5 @@ export {
   getScannendData,
   getItemDataScannedInfo,
   getSelectVehileData,
-  getTotalSyncData
+  getTotalSyncData,
 };

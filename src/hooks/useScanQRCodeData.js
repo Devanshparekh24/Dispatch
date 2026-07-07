@@ -3,8 +3,8 @@ import { insertLocalScanningQRData } from '../service/scanningService';
 
  const useScanQRCodeData = () => {
     return useMutation({
-        mutationFn: ({ OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,UserID,CreatedAt }) =>
-            insertLocalScanningQRData(OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,UserID,CreatedAt),
+        mutationFn: ({ OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,UserID,CreatedAt,EInvoice_Number }) =>
+            insertLocalScanningQRData(OrderID,CustId,VehicleID,BarCode,Latitude,Longitude,UserID,CreatedAt,EInvoice_Number),
     });
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAndroidId } from 'react-native-device-info';
@@ -20,21 +20,22 @@ import FullButton from '../components/Buttoon/FullButton';
 import useSelectVehileID from '../hooks/useCurrentVehileID';
 import { useTotalSyncData } from '../hooks/useCustomerItemWise'
 import MiniButton from '../components/Buttoon/MiniButton';
-import { qrCodeScannedDataSync } from '../service/syncService';
-
+import { useFocusEffect } from '@react-navigation/native';
+import useQRCodeSync from '../hooks/useQrCodeSync';
+import isInternet from '../utils/network';
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
   const [errorLog, setErrorLog] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [totalScannedData, setTotalScannedData] = useState(0);
-  const [pendingScanne, setPendingScanne] = useState(null)
   const { mobile, setMobile, userID, setUserID, password, setPassword, userName, setUserName } = useAuth();
   const { currentVehicleID, setCurrentVehicleID } = useScanningContex();
   const { data: selectedVehileID, refetch: selectedVehileIDRefetch, isRefetching: selectedVehileIDIsRefetching } = useSelectVehileID();
   const { data: queryResult, refetch, isRefetching } = useVechicle();
   const { data: customerData, refetch: customerRefetch } = useCustomer()
   const { data: TotalSyncData, refetch: TotalSyncDataRefetch } = useTotalSyncData();
+  const { mutateAsync,isPending } = useQRCodeSync();
+
 
   const logLocalUsers = async () => {
     try {
@@ -58,20 +59,11 @@ const HomeScreen = () => {
   };
 
 
-  const getTotalSyncData = async () => {
-    try {
-      const result = await TotalSyncDataRefetch();
-      const getScannResult = result.data[0]
-      setTotalScannedData(getScannResult?.ScannedQRCode || 0)
-      setPendingScanne(getScannResult?.TotalQRCode || 0)
-      console.log("🚀 ~ getTotalSyncData ~ getScannResult:", getScannResult)
-      console.log("🚀 ~ getTotalSyncData ~ result:", result)
+  const totalScannedData =
+    TotalSyncData?.[0]?.ScannedQRCode || 0;
 
-
-    } catch (error) {
-      console.error("🚀 ~ getTotalSyncData ~ error:", error)
-    }
-  }
+  const pendingScanne =
+    TotalSyncData?.[0]?.TotalQRCode || 0;
 
   const vehicleData = queryResult?.data || [];
   const formattedVehicles = vehicleData.map(item => ({
@@ -116,7 +108,11 @@ const HomeScreen = () => {
       setIsSyncing(false);
     }
   };
-
+  useFocusEffect(
+    useCallback(() => {
+      TotalSyncDataRefetch();
+    }, [TotalSyncDataRefetch])
+  )
 
 
   useEffect(() => {
@@ -131,17 +127,15 @@ const HomeScreen = () => {
     };
 
     logLocalUsers();
-    requestLocationPermission();
     ErrorLog();
     loadData();
-    getTotalSyncData();
   }, [refetch, selectedVehileID]);
 
 
   useEffect(() => {
-    (async () => {
+    const timer = setTimeout(async () => {
       try {
-        requestLocationPermission();
+        await requestLocationPermission();
         if (Camera && typeof Camera.requestCameraPermission === 'function') {
           await Camera.requestCameraPermission();
         }
@@ -151,18 +145,20 @@ const HomeScreen = () => {
       } catch (err) {
         console.warn('Permissions request failed:', err.message);
         printError(err);
-
       }
-    })();
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
 
   const onRefresh = async () => {
     try {
       await syncVechileTable();
-      await TotalSyncDataRefetch();
+
       await Promise.all([
         refetch(),
+        TotalSyncDataRefetch(),
         customerRefetch(),
         selectedVehileIDRefetch(),
       ])
@@ -172,30 +168,24 @@ const HomeScreen = () => {
   };
 
 
-  const handleServerSync = async () => {
-    setIsSyncing(true);
-    try {
-      const syncResult = await qrCodeScannedDataSync();
-      if (syncResult && syncResult.totalCount > 0) {
-        if (syncResult.failedCount > 0) {
-          Alert.alert(
-            'Sync Partially Completed',
-            `Successfully synced ${syncResult.syncedCount} of ${syncResult.totalCount} items.\nFailed: ${syncResult.failedCount}`
-          );
-        } else {
-          Alert.alert('Success', `Sync completed successfully. Synced ${syncResult.syncedCount} items.`);
+const handleServerSync = async () => {
+
+      const hasInternet = await isInternet();
+        if (!hasInternet) {
+            Alert.alert("Info", "No internet connection.");
+            return;
         }
-      } else {
-        Alert.alert('Info', 'No new QR data to sync.');
-      }
-      customerRefetch();
-    } catch (error) {
-      console.error('Sync failed:', error);
-      Alert.alert('Sync Failed', error.message || 'Unknown error');
-    } finally {
-      setIsSyncing(false);
-    }
-  };
+  try {
+    const result = await mutateAsync();
+
+    Alert.alert(
+      'Success',
+      `Synced ${result.syncedCount} of ${result.totalCount}`
+    );
+  } catch (error) {
+    Alert.alert('Error', error.message);
+  }
+};
 
   return (
     <SafeAreaView>
@@ -247,7 +237,8 @@ const HomeScreen = () => {
           <MiniButton
             title="Sync"
             icon="sync"
-            disabled={isSyncing}
+            loading={isPending}
+            disabled={isPending}
             onPress={handleServerSync}
           />
         </View>
@@ -256,7 +247,6 @@ const HomeScreen = () => {
 
   );
 };
-
 
 
 export default HomeScreen;

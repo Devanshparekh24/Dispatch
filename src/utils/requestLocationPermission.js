@@ -59,6 +59,14 @@ export const requestLocationPermission = () => {
                     }
                 } catch (err) {
                     console.error('Permission error:', err);
+                    const errStr = err?.toString() || '';
+                    if (errStr.includes('Activity') || errStr.includes('activity')) {
+                        // Native Activity is not attached yet; retry silently after a short delay
+                        setTimeout(() => {
+                            _request();
+                        }, 1000);
+                        return;
+                    }
                     Alert.alert(
                         'Permission Error',
                         'An error occurred while requesting permission.',
