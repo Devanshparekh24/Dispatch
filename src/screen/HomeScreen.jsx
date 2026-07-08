@@ -11,7 +11,6 @@ import useVechicle from '../hooks/useVechical';
 import useCustomer from '../hooks/useCustomer';
 import { Button } from 'react-native-paper';
 import { syncVechileTable, barcodeDataSync } from '../service/syncService';
-import { Camera } from 'react-native-vision-camera';
 import { isEmpty } from '../utils/validation';
 import { printError } from '../utils/helper';
 import { useAuth } from '../context/AuthContex';
@@ -23,6 +22,7 @@ import MiniButton from '../components/Buttoon/MiniButton';
 import { useFocusEffect } from '@react-navigation/native';
 import useQRCodeSync from '../hooks/useQrCodeSync';
 import isInternet from '../utils/network';
+import { requestAllPermissions } from '../utils/requestAllPermissions'
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
@@ -34,7 +34,7 @@ const HomeScreen = () => {
   const { data: queryResult, refetch, isRefetching } = useVechicle();
   const { data: customerData, refetch: customerRefetch } = useCustomer()
   const { data: TotalSyncData, refetch: TotalSyncDataRefetch } = useTotalSyncData();
-  const { mutateAsync,isPending } = useQRCodeSync();
+  const { mutateAsync, isPending } = useQRCodeSync();
 
 
   const logLocalUsers = async () => {
@@ -133,23 +133,19 @@ const HomeScreen = () => {
 
 
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      try {
-        await requestLocationPermission();
-        if (Camera && typeof Camera.requestCameraPermission === 'function') {
-          await Camera.requestCameraPermission();
-        }
-        if (Camera && typeof Camera.requestMicrophonePermission === 'function') {
-          await Camera.requestMicrophonePermission();
-        }
-      } catch (err) {
-        console.warn('Permissions request failed:', err.message);
-        printError(err);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
+    checkPermission();
   }, []);
+
+  const checkPermission = async () => {
+    const granted = await requestAllPermissions();
+
+    if (!granted) {
+      return;
+    }
+
+    console.log('All permissions granted');
+
+  };
 
 
   const onRefresh = async () => {
@@ -168,24 +164,24 @@ const HomeScreen = () => {
   };
 
 
-const handleServerSync = async () => {
+  const handleServerSync = async () => {
 
-      const hasInternet = await isInternet();
-        if (!hasInternet) {
-            Alert.alert("Info", "No internet connection.");
-            return;
-        }
-  try {
-    const result = await mutateAsync();
+    const hasInternet = await isInternet();
+    if (!hasInternet) {
+      Alert.alert("Info", "No internet connection.");
+      return;
+    }
+    try {
+      const result = await mutateAsync();
 
-    Alert.alert(
-      'Success',
-      `Synced ${result.syncedCount} of ${result.totalCount}`
-    );
-  } catch (error) {
-    Alert.alert('Error', error.message);
-  }
-};
+      Alert.alert(
+        'Success',
+        `Synced ${result.syncedCount} of ${result.totalCount}`
+      );
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
 
   return (
     <SafeAreaView>

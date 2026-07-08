@@ -151,16 +151,75 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
     throw error;
   }
 };
+const isBarcodeExistInServer = async barCode => {
+  debugger;
+  try {
+    const mssql = await getMSSQLConnection();
+
+    const query = `
+      SELECT COUNT(1) AS Total
+      FROM Dis_Scaned_QR_Data
+      WHERE BarCode = '${barCode}'
+    `;
+
+    const result = await mssql.executeQuery(query);
+
+    return result[0].Total > 0;
+  } catch (error) {
+    console.log('🚀 ~ isBarcodeExistInServer ~ error:', error);
+  }
+};
+const insertConflictQRCode = async item => {
+  try {
+    const mssql = await getMSSQLConnection();
+
+    const query = `
+      INSERT INTO Dis_Conflict_Scaned_QR_Data
+      (
+        Local_ID,
+        OrderID,
+        ItemID,
+        CustID,
+        VehicleID,
+        BarCode,
+        Latitude,
+        Longitude,
+        UserID,
+        deviceTimeAt,
+        EInvoice_Number
+      )
+      VALUES
+      (
+          '${item.ID || ''}',
+          '${item.OrderID || ''}',
+          ${item.ItemID || 0},
+          ${item.CustID || 0},
+          '${item.VehicleID || ''}',
+          '${item.BarCode || ''}',
+          ${item.Latitude || 0},
+          ${item.Longitude || 0},
+          ${item.UserID || 0},
+          '${item.CreatedAt || ''}',
+          '${item.EInvoice_Number || ''}'
+          )
+    `;
+
+    await mssql.executeUpdate(query);
+  } catch (error) {
+    console.log('🚀 ~ insertConflictQRCode ~ error:', error);
+  }
+};
 
 //offline to online Sync
 const qrCodeScannedDataSync = async () => {
-  const hasInternet = isInternet();
+  const hasInternet = await isInternet();
 
   if (!hasInternet) {
     console.log(`No Internet Avilable........`);
     console.log('🚀 ~ qrCodeScannedDataSync ~ hasInternet:', hasInternet);
     return;
   }
+
   const localConnection = getSQLiteConnection();
 
   // Get only unsynced records
@@ -183,6 +242,25 @@ const qrCodeScannedDataSync = async () => {
 
   for (const item of result) {
     try {
+      const exists = await isBarcodeExistInServer(item.BarCode);
+      console.log('🚀 ~ qrCodeScannedDataSync ~ exists:', exists);
+
+      if (exists) {
+        // Save in conflict table
+        await insertConflictQRCode(item);
+
+        // Mark local record as synced
+        await localConnection.executeQuery(
+          `UPDATE Dis_Scaned_QR_Data_Local
+           SET IsSynced = 1
+           WHERE ID = ?`,
+          [item.ID],
+        );
+
+        syncedCount++;
+        continue;
+      }
+
       const query = `
         INSERT INTO Dis_Scaned_QR_Data (
           Local_ID,
