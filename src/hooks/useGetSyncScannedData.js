@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getScannendData } from '../service/scanningService'
 
-const useGetScannedData = () => {
+const useGetSyncScannedData = () => {
     return useQuery({
         queryKey: ['getScannedData'],
         queryFn: async () => {
@@ -26,5 +26,5 @@ const useGetScannedData = () => {
     })
 }
 
-export default useGetScannedData;
+export default useGetSyncScannedData;
 

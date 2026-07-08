@@ -334,6 +334,33 @@ const getTotalSyncData = async () => {
   }
 };
 
+const getTotalScannedData = async () => {
+  try {
+    const connection = await getSQLiteConnection();
+    const query = `SELECT
+        (
+          SELECT COUNT(Distinct BarCode)
+          FROM Dis_Scaned_QR_Data_Local          
+        ) AS TotalQRCode,
+        (
+          SELECT COUNT(Distinct BarCode)
+          FROM Dis_Scaned_QR_Data_Local
+          WHERE IsSynced=1          
+        ) AS ScannedQRCode
+    `;
+
+    const result = await connection.executeQuery(query);
+    if (Array.isArray(result)) {
+      return result;
+    }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    console.log('🚀 ~ getTotalSyncData ~ error:', error);
+  }
+};
+
+
+
 export {
   getlocalVechical,
   getlocalBarCodeData,
@@ -343,4 +370,5 @@ export {
   getItemDataScannedInfo,
   getSelectVehileData,
   getTotalSyncData,
+  getTotalScannedData
 };

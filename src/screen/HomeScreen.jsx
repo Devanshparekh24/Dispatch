@@ -23,6 +23,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import useQRCodeSync from '../hooks/useQrCodeSync';
 import isInternet from '../utils/network';
 import { requestAllPermissions } from '../utils/requestAllPermissions'
+import AppVersionUpdate from '../components/DialogeBox/AppVersionUpdate'
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
@@ -238,6 +239,7 @@ const HomeScreen = () => {
             onPress={handleServerSync}
           />
         </View>
+        <AppVersionUpdate/>
       </ScrollView>
     </SafeAreaView>
 

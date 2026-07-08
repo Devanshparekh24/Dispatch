@@ -87,17 +87,32 @@ const canConnect = async (config) => {
   throw new Error('All MSSQL connections failed');
 };
 
- const getMSSQLConnection = async () => {
-  if (!activeConfig) {
-    await setMSSQLConnection();
-  } else {
-    try {
-      await MSSQL.connect(activeConfig);
-    } catch {
-      await setMSSQLConnection();
-    }
+let connectionPromise = null;
+
+const getMSSQLConnection = async () => {
+  if (connectionPromise) {
+    return connectionPromise;
   }
-  return MSSQL;
+
+  connectionPromise = (async () => {
+    try {
+      if (!activeConfig) {
+        await setMSSQLConnection();
+      } else {
+        try {
+          await MSSQL.connect(activeConfig);
+        } catch {
+          await setMSSQLConnection();
+        }
+      }
+      return MSSQL;
+    } catch (error) {
+      connectionPromise = null; // Reset on failure so it can retry later
+      throw error;
+    }
+  })();
+
+  return connectionPromise;
 };
 
 export {

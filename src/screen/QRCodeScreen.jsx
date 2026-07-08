@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 import BottomSheet from '../components/Sheet/BottomSheet';
 import useScanQRCodeData from '../hooks/useScanQRCodeData';
-import useGetScannedData from '../hooks/useGetScannedData';
+import useGetSyncScannedData from '../hooks/useGetSyncScannedData';
 import useCustomerItemWise from '../hooks/useCustomerItemWise';
 import useCustomer from '../hooks/useCustomer';
 import ToastMessage from '../utils/ToastBox/TotastMessage'
@@ -38,7 +38,7 @@ const QRCodeScreen = ({ route }) => {
     }, [device]);
     const { mutateAsync: serverSyncData, isPending: serverPending, isError } = useQRCodeSync();
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
-    const { data: scannedData, refetch: refetchScannedData } = useGetScannedData();
+    const { data: scannedData, refetch: refetchScannedData } = useGetSyncScannedData();
     const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, vehicle);
     const { refetch: customerRefetch } = useCustomer();
 
