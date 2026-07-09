@@ -111,7 +111,7 @@ const ScanQRCodeScreen = () => {
             customerName: CustName,
             OrderID: OrderID,
             einvoiceNo: einvoiceNo,
-            einvoiceID:einvoiceID
+            einvoiceID: einvoiceID
 
         });
 
@@ -237,6 +237,7 @@ const ScanQRCodeScreen = () => {
                             const einvoiceID = item.EInvoiceID || "N/A";
                             let cardColor = COLORS.white;
 
+                            const isvisible = scanningQRCode !== total_qr_code;
                             if (scanningQRCode === 0) {
                                 cardColor = COLORS.white;
                             } else if (scanningQRCode === total_qr_code) {
@@ -245,11 +246,13 @@ const ScanQRCodeScreen = () => {
                                 cardColor = COLORS.warning;
                             }
 
+
                             return (
                                 <>
                                     <View
                                         className="rounded-xl mb-4 shadow-lg p-4 my-4"
                                         style={{ backgroundColor: cardColor }}
+
                                     >
                                         <View className='flex-row justify-between items-center'>
                                             {/* Left side */}
@@ -263,19 +266,23 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty (kg) : </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
+                                            {
+                                                isvisible && (<>
 
-                                            {/* Right side - QR button */}
-                                            <View style={{ flexShrink: 0, alignSelf: 'flex-start' }}>
-                                                <StatesButton
-                                                    bg={'bg-primary-50'}
-                                                    // text={"QR Code"}
-                                                    icon={"qr-code-outline"}
-                                                    onPress={() => {
-                                                        return handleOpenScanner(custName, vehicleNo, custID, orderID, einvoiceNo,einvoiceID);
-                                                    }}
-                                                />
-                                            </View>
+                                                    {/* Right side - QR button */}
+                                                    <View style={{ flexShrink: 0, alignSelf: 'flex-start' }}>
+                                                        <StatesButton
+                                                            bg={'bg-primary-50'}
+                                                            // text={"QR Code"}
+                                                            icon={"qr-code-outline"}
+                                                            onPress={() => {
+                                                                return handleOpenScanner(custName, vehicleNo, custID, orderID, einvoiceNo, einvoiceID);
+                                                            }}
+                                                        />
+                                                    </View>
 
+                                                </>)
+                                            }
                                         </View>
 
                                         <View className=' mt-2 flex-row space-x-7'>
