@@ -100,7 +100,7 @@ const ScanQRCodeScreen = () => {
             printError("Error in onRefresh:", error);
         }
     }
-    const handleOpenScanner = (CustName, VehicleID, CustID, OrderID,einvoiceNo) => {
+    const handleOpenScanner = (CustName, VehicleID, CustID, OrderID, einvoiceNo, einvoiceID) => {
         if (!vehicle) {
             Alert.alert('Alert', 'Please select vehicle');
             return;
@@ -110,7 +110,8 @@ const ScanQRCodeScreen = () => {
             custID: CustID,
             customerName: CustName,
             OrderID: OrderID,
-            einvoiceNo:einvoiceNo
+            einvoiceNo: einvoiceNo,
+            einvoiceID:einvoiceID
 
         });
 
@@ -159,7 +160,7 @@ const ScanQRCodeScreen = () => {
                 </View>
                 <View className='flex-1 px-4 mx-4'>
                     <View className="mb-4 flex-row flex-wrap gap-2 px-2">
-                        <Chip
+                        {/* <Chip
                             compact
                             selected={selectedFilter === 'all'}
                             showSelectedCheck={false}
@@ -167,15 +168,17 @@ const ScanQRCodeScreen = () => {
                             textStyle={{ fontSize: 10, fontWeight: '200' }}
                             onPress={() => setSelectedFilter('all')}>
                             All ({custData?.length ?? 0})
-                        </Chip>
+                        </Chip> */}
 
                         <Chip
                             textStyle={{ fontSize: 10, fontWeight: '200' }}
                             compact
+                            selectedColor={COLORS.warning}
                             selected={selectedFilter === 'pending'}
                             showSelectedCheck={false}
                             icon={selectedFilter === 'pending' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
                             onPress={() => setSelectedFilter('pending')}>
+
                             Pending (
                             {custData?.filter(
                                 item => item.Scanned_QR_Code < item.Total_QR_Code,
@@ -186,6 +189,7 @@ const ScanQRCodeScreen = () => {
                         <Chip
                             textStyle={{ fontSize: 10, fontWeight: '200' }}
                             compact
+                            selectedColor={COLORS.success}
                             selected={selectedFilter === 'scanned'}
                             showSelectedCheck={false}
                             icon={selectedFilter === 'scanned' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
@@ -230,6 +234,7 @@ const ScanQRCodeScreen = () => {
                             const scanningQRCode = item.Scanned_QR_Code || 0;
                             const orderID = item.OrderID || item.orderID || "N/A";
                             const einvoiceNo = item.EInvoice_Number || "N/A";
+                            const einvoiceID = item.EInvoiceID || "N/A";
                             let cardColor = COLORS.white;
 
                             if (scanningQRCode === 0) {
@@ -253,6 +258,7 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
                                                 <Text className='text-xs text-gray-600'>{custID}</Text>
                                                 <Text className='text-xs text-gray-600'> Invoice No. {einvoiceNo}</Text>
+                                                <Text className='text-xs text-gray-600'> Invoice No. {einvoiceID}</Text>
                                                 <Text className='text-xs text-gray-600'>orderID :{orderID}</Text>
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty (kg) : </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
@@ -265,7 +271,7 @@ const ScanQRCodeScreen = () => {
                                                     // text={"QR Code"}
                                                     icon={"qr-code-outline"}
                                                     onPress={() => {
-                                                        return handleOpenScanner(custName, vehicleNo, custID, orderID, einvoiceNo);
+                                                        return handleOpenScanner(custName, vehicleNo, custID, orderID, einvoiceNo,einvoiceID);
                                                     }}
                                                 />
                                             </View>

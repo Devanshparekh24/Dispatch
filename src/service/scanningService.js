@@ -24,6 +24,7 @@ const getPartyName = async () => {
                             SUM(AA.Qty) AS Total_Qty,
                             COUNT(distinct AA.ItemName) AS No_of_Items,
                             COUNT(AA.BarCode) AS Total_QR_Code,
+                            (select EInvoiceID  From Barcode_Data_Local as bb where bb.CustID=AA.CustID ) as EInvoiceID,
                             (select EInvoice_Number  from  Barcode_Data_Local as bb where bb.EInvoice_Number=AA.EInvoice_Number )as EInvoice_Number,
                             (select OrderID
                              From Barcode_Data_Local as qq 
@@ -213,6 +214,7 @@ const insertLocalScanningQRData = async (
   UserID,
   CreatedAt,
   EInvoice_Number,
+  EInvoiceID
 ) => {
   try {
     // 1. Get ItemID
@@ -246,8 +248,8 @@ const insertLocalScanningQRData = async (
     }
     let localConnection = getSQLiteConnection();
 
-    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, EInvoice_Number,BarCode, Latitude, Longitude,UserID,CreatedAt)
-                        VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?)`;
+    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, EInvoice_Number,BarCode, Latitude, Longitude,UserID,CreatedAt,EInvoiceID)
+                        VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)`;
 
     await localConnection.executeQuery(localQuery, [
       OrderID,
@@ -260,6 +262,7 @@ const insertLocalScanningQRData = async (
       Longitude,
       UserID,
       CreatedAt,
+      EInvoiceID
     ]);
     console.log('Dis_Scaned_QR_Data_Local table insert successfully');
   } catch (error) {
@@ -359,8 +362,6 @@ const getTotalScannedData = async () => {
   }
 };
 
-
-
 export {
   getlocalVechical,
   getlocalBarCodeData,
@@ -370,5 +371,5 @@ export {
   getItemDataScannedInfo,
   getSelectVehileData,
   getTotalSyncData,
-  getTotalScannedData
+  getTotalScannedData,
 };

@@ -25,7 +25,7 @@ const QRCodeScreen = ({ route }) => {
     const [zoom, setZoom] = useState(1);
     const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
-    const { vehicle, custID, customerName, OrderID, einvoiceNo } = route.params;
+    const { vehicle, custID, customerName, OrderID, einvoiceNo, einvoiceID } = route.params;
     const { userID } = useAuth();
     const device = useCameraDevice('back');
     const navigation = useNavigation();
@@ -47,6 +47,7 @@ const QRCodeScreen = ({ route }) => {
             navigation.goBack();
             customerRefetch();
         } catch (error) {
+            console.log("🚀 ~ handleGoBack ~ error:", error)
 
         }
     }
@@ -56,7 +57,7 @@ const QRCodeScreen = ({ route }) => {
         if (device) {
             setTimeout(() => {
                 bottomSheetRef.current?.present();
-            }, 500);
+            });
         }
     }, [device]);
 
@@ -118,6 +119,7 @@ const QRCodeScreen = ({ route }) => {
                     Longitude: locationData.longitude,
                     UserID: userID,
                     EInvoice_Number: einvoiceNo,
+                    EInvoiceID: einvoiceID,
                     CreatedAt: currentDateTime,
                 });
 
@@ -252,6 +254,7 @@ const QRCodeScreen = ({ route }) => {
                     <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
                     <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{vehicle}</Text>
                     <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceNo}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceID}</Text>
                     {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text> */}
                 </View>
 

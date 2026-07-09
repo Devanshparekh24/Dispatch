@@ -127,12 +127,13 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
 
       result.forEach(item => {
         tx.executeSql(
-          'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,VehicleID, EInvoice_Number , CustID, Qty,ItemID,ItemName,CustName,UserID,AndroidID) VALUES (?, ?, ?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,EInvoiceID,EInvoice_Number,VehicleID, CustID, Qty,ItemID,ItemName,CustName,UserID,AndroidID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
             item.OrderID,
             item.BarCode,
-            item.VehicleID,
+            item.EInvoiceID,
             item.EInvoice_Number,
+            item.VehicleID,           
             item.CustID,
             item.Qty,
             item.ItemID,
@@ -186,7 +187,7 @@ const insertConflictQRCode = async item => {
         Longitude,
         UserID,
         deviceTimeAt,
-        EInvoice_Number
+        EInvoiceID
       )
       VALUES
       (
@@ -200,7 +201,7 @@ const insertConflictQRCode = async item => {
           ${item.Longitude || 0},
           ${item.UserID || 0},
           '${item.CreatedAt || ''}',
-          '${item.EInvoice_Number || ''}'
+          ${item.EInvoiceID ?? 'NULL'}
           )
     `;
 
@@ -273,7 +274,7 @@ const qrCodeScannedDataSync = async () => {
           Longitude,
           UserID,
           deviceTimeAt,
-          EInvoice_Number
+          EInvoiceID
 
         )
         VALUES (
@@ -287,7 +288,7 @@ const qrCodeScannedDataSync = async () => {
           ${item.Longitude || 0},
           ${item.UserID || 0},
           '${item.CreatedAt || ''}',
-          '${item.EInvoice_Number || ''}'
+          ${item.EInvoiceID ?? 'NULL'}
           )
       `;
       await mssql.executeUpdate(query);

@@ -87,6 +87,43 @@ const canConnect = async (config) => {
   throw new Error('All MSSQL connections failed');
 };
 
+const isClosedError = (error) => {
+  if (!error || !error.message) return false;
+  const msg = error.message.toLowerCase();
+  return msg.includes('closed') || msg.includes('connection') || msg.includes('state') || msg.includes('invalid state');
+};
+
+const wrapper = {
+  connect: (config) => MSSQL.connect(config),
+  close: () => MSSQL.close(),
+  executeQuery: async (query) => {
+    try {
+      return await MSSQL.executeQuery(query);
+    } catch (error) {
+      if (isClosedError(error)) {
+        console.log('[DB] Connection closed error detected, resetting and retrying...', error);
+        connectionPromise = null; // Reset connection promise
+        await getMSSQLConnection(); // Reconnect
+        return await MSSQL.executeQuery(query); // Retry
+      }
+      throw error;
+    }
+  },
+  executeUpdate: async (query) => {
+    try {
+      return await MSSQL.executeUpdate(query);
+    } catch (error) {
+      if (isClosedError(error)) {
+        console.log('[DB] Connection closed error detected, resetting and retrying...', error);
+        connectionPromise = null; // Reset connection promise
+        await getMSSQLConnection(); // Reconnect
+        return await MSSQL.executeUpdate(query); // Retry
+      }
+      throw error;
+    }
+  }
+};
+
 let connectionPromise = null;
 
 const getMSSQLConnection = async () => {
@@ -105,7 +142,7 @@ const getMSSQLConnection = async () => {
           await setMSSQLConnection();
         }
       }
-      return MSSQL;
+      return wrapper;
     } catch (error) {
       connectionPromise = null; // Reset on failure so it can retry later
       throw error;

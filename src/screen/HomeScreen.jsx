@@ -85,7 +85,7 @@ const HomeScreen = () => {
     }
   };
 
-  const handleSync = async () => {
+  const handleSyncoffline = async () => {
 
     setIsSyncing(true);
     try {
@@ -222,7 +222,7 @@ const HomeScreen = () => {
                 title="Offline To online Sync"
                 loading={isSyncing}
                 disabled={isSyncing || !vehicle}
-                onPress={handleSync}
+                onPress={handleSyncoffline}
               />
             </View>
           </View>
