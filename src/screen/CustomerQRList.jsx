@@ -24,7 +24,7 @@ const ScanQRCodeScreen = () => {
     const { mutateAsync: serverSyncData, isPending: serverPending, isError } = useQRCodeSync();
     const { data: TotalSyncData, refetch: TotalSyncDataRefetch } = useTotalSyncData();
     const [isSyncing, setIsSyncing] = useState(false);
-    const [selectedFilter, setSelectedFilter] = useState('all');
+    const [selectedFilter, setSelectedFilter] = useState('pending');
 
     const custData = customerData?.data;
     const navigation = useNavigation();
