@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getItemDataScannedInfo,getTotalSyncData } from '../service/scanningService'
+import { getItemDataScannedInfo,getTotalSyncData,getTotalBagData } from '../service/scanningService'
 
 const useCustomerItemWise = (CustID, VehicleID) => {
     return useQuery({
@@ -15,6 +15,15 @@ export const useTotalSyncData=()=>{
     return useQuery({
         queryKey: ['getTotalSyncData'],
         queryFn:async () =>await getTotalSyncData(),
+        retry: 1,
+        refetchOnWindowFocus: true,
+        staleTime:1000*60*1
+    })
+}
+export const useTotalBagData=()=>{
+    return useQuery({
+        queryKey: ['getTotalBagData'],
+        queryFn:async () =>await getTotalBagData(),
         retry: 1,
         refetchOnWindowFocus: true,
         staleTime:1000*60*1

@@ -3,13 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshCon
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAndroidId } from 'react-native-device-info';
 import { getLocalUsers } from '../service/authService';
-import { requestLocationPermission } from '../utils/requestLocationPermission';
 import { getErrorLog } from '../service/Log';
 import HeaderCard from '../components/Card/HeaderCard';
 import SearchDropDown from '../components/Input/SearchDropDown';
 import useVechicle from '../hooks/useVechical';
 import useCustomer from '../hooks/useCustomer';
-import { Button } from 'react-native-paper';
 import { syncVechileTable, barcodeDataSync } from '../service/syncService';
 import { isEmpty } from '../utils/validation';
 import { printError } from '../utils/helper';
@@ -23,7 +21,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import useQRCodeSync from '../hooks/useQrCodeSync';
 import isInternet from '../utils/network';
 import { requestAllPermissions } from '../utils/requestAllPermissions'
+import Card from '../components/Card/Card'
 import AppVersionUpdate from '../components/DialogeBox/AppVersionUpdate'
+import StatasCard from '../components/Card/StatasCard'
+import { useTotalBagData } from '../hooks/useCustomerItemWise'
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
@@ -36,6 +37,10 @@ const HomeScreen = () => {
   const { data: customerData, refetch: customerRefetch } = useCustomer()
   const { data: TotalSyncData, refetch: TotalSyncDataRefetch } = useTotalSyncData();
   const { mutateAsync, isPending } = useQRCodeSync();
+  const { data: totalBagData, refetch: totalBagDataRefetch } = useTotalBagData();
+
+
+
 
 
   const logLocalUsers = async () => {
@@ -66,6 +71,9 @@ const HomeScreen = () => {
   const pendingScanne =
     TotalSyncData?.[0]?.TotalQRCode || 0;
 
+  const totalBag = totalBagData?.[0]?.TotalBag || 0;
+  const totalScannBag = totalBagData?.[0]?.TotalScannedBag || 0;
+  const totalPendingBag = totalBagData?.[0]?.TotalPendingBag || 0;
   const vehicleData = queryResult?.data || [];
   const formattedVehicles = vehicleData.map(item => ({
     label: item.VehicleID,
@@ -97,9 +105,9 @@ const HomeScreen = () => {
       const androidId = await getAndroidId();
       await barcodeDataSync(vehicle, androidId, userID);
       await refetch(); // Refresh dropdown list with newly synced data from SQLite
-      selectedVehileIDRefetch(),
-
-        await customerRefetch();
+      await selectedVehileIDRefetch()
+      await TotalSyncDataRefetch()
+      await customerRefetch()
       Alert.alert('Sync completed successfully');
     } catch (error) {
       console.error('Sync failed:', error);
@@ -112,7 +120,8 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       TotalSyncDataRefetch();
-    }, [TotalSyncDataRefetch])
+      totalBagDataRefetch();
+    }, [TotalSyncDataRefetch, totalBagDataRefetch])
   )
 
 
@@ -158,6 +167,7 @@ const HomeScreen = () => {
         TotalSyncDataRefetch(),
         customerRefetch(),
         selectedVehileIDRefetch(),
+        totalBagDataRefetch(),
       ])
     } catch (error) {
       console.error('Error refreshing vehicle table:', error);
@@ -205,8 +215,32 @@ const HomeScreen = () => {
               sm_label={currentVehicleID}
             />
           </View>
-          {/* <Text className='text-red-500 text-2xl'>{currentVehicleID}</Text> */}
+
+
+
           <View className='px-4 py-6'>
+
+            <View className="flex-row">
+              <StatasCard
+                bg="bg-red-100"
+                color="text-red-600"
+                value={totalBag}
+                label="Total Bag"
+              />
+
+              <StatasCard
+                bg="bg-green-100"
+                color="text-green-600"
+                value={totalScannBag}
+                label="Scanned Bag"
+              />
+              <StatasCard
+                bg="bg-yellow-300"
+                color="text-yellow-600"
+                value={totalPendingBag}
+                label="Pending Bag"
+              />
+            </View>
             <View className='mb-6'>
               <SearchDropDown
                 data={formattedVehicles}
@@ -239,7 +273,7 @@ const HomeScreen = () => {
             onPress={handleServerSync}
           />
         </View>
-        <AppVersionUpdate/>
+        {/* <AppVersionUpdate /> */}
       </ScrollView>
     </SafeAreaView>
 

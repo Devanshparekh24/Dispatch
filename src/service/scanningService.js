@@ -214,7 +214,7 @@ const insertLocalScanningQRData = async (
   UserID,
   CreatedAt,
   EInvoice_Number,
-  EInvoiceID
+  EInvoiceID,
 ) => {
   try {
     // 1. Get ItemID
@@ -262,7 +262,7 @@ const insertLocalScanningQRData = async (
       Longitude,
       UserID,
       CreatedAt,
-      EInvoiceID
+      EInvoiceID,
     ]);
     console.log('Dis_Scaned_QR_Data_Local table insert successfully');
   } catch (error) {
@@ -337,6 +337,42 @@ const getTotalSyncData = async () => {
   }
 };
 
+const getTotalBagData = async () => {
+  try {
+    const connection = await getSQLiteConnection();
+    const query = `SELECT
+        (
+          SELECT COUNT(Distinct BarCode)
+          FROM Barcode_Data_Local
+        ) AS TotalBag,
+
+        (
+          SELECT COUNT(Distinct BarCode)
+          FROM Dis_Scaned_QR_Data_Local
+        ) AS TotalScannedBag,
+        (
+         (
+          SELECT COUNT(Distinct BarCode)
+          FROM Barcode_Data_Local
+        ) - (
+          SELECT COUNT(Distinct BarCode)
+          FROM Dis_Scaned_QR_Data_Local
+        )
+        ) AS TotalPendingBag
+    
+    
+    `;
+
+    const result = await connection.executeQuery(query);
+    if (Array.isArray(result)) {
+      return result;
+    }
+    throw new Error('Database query did not return a list of rows');
+  } catch (error) {
+    console.log('🚀 ~ getTotalSyncData ~ error:', error);
+  }
+};
+
 const getTotalScannedData = async () => {
   try {
     const connection = await getSQLiteConnection();
@@ -372,4 +408,5 @@ export {
   getSelectVehileData,
   getTotalSyncData,
   getTotalScannedData,
+  getTotalBagData,
 };

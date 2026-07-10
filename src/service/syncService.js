@@ -93,8 +93,47 @@ const existVehileFetch = async vehicleID => {
   }
 };
 
+const isVehicleChangeAllowed = async () => {
+  try {
+    const localConnection = await getSQLiteConnection();
+
+    const query = `
+      SELECT
+        (
+          SELECT COUNT(DISTINCT BarCode)
+          FROM Dis_Scaned_QR_Data_Local
+        ) AS TotalsyncQRCode,
+
+        (
+         SELECT COUNT(DISTINCT BarCode)
+          FROM Dis_Scaned_QR_Data_Local
+          WHERE IsSynced=1
+        ) AS TotalScannedQRCode
+    `;
+
+    const result = await localConnection.executeQuery(query);
+
+    if (result && result.length > 0) {
+      const { TotalsyncQRCode, TotalScannedQRCode } = result[0];
+
+      return TotalScannedQRCode === TotalsyncQRCode;
+    }
+
+    return true;
+  } catch (error) {
+    console.log('🚀 ~ isScanLimitReached ~ error:', error);
+    return false;
+  }
+};
+
 const barcodeDataSync = async (vehicleID, androidID, userID) => {
   try {
+    const canChangeVehicle = await isVehicleChangeAllowed();
+
+    if (!canChangeVehicle) {
+      throw new Error('Please sync all bags before changing the vehicle.');
+    }
+
     const existingUser = await existVehileFetch(vehicleID);
 
     if (existingUser) {
@@ -124,6 +163,7 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
     await localConnection.transaction(tx => {
       // Optional: clear old data
       tx.executeSql('DELETE FROM Barcode_Data_Local');
+      tx.executeSql('DELETE FROM  Dis_Scaned_QR_Data_Local');
 
       result.forEach(item => {
         tx.executeSql(
@@ -133,7 +173,7 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
             item.BarCode,
             item.EInvoiceID,
             item.EInvoice_Number,
-            item.VehicleID,           
+            item.VehicleID,
             item.CustID,
             item.Qty,
             item.ItemID,
