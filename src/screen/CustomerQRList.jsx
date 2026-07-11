@@ -8,14 +8,13 @@ import { printError } from '../utils/helper';
 import { isEmpty } from '../utils/validation';
 import SearchInput from '../components/Input/SearchInput'
 import { COLORS } from '../constant/index'
-import { useScanningContex } from '../context/ScanningContex';
 import { useTotalSyncData } from '../hooks/useCustomerItemWise'
 import Ionicons from '@react-native-vector-icons/ionicons';
 import MiniButton from '../components/Buttoon/MiniButton'
-import { qrCodeScannedDataSync } from '../service/syncService';
 import { Chip } from 'react-native-paper';
 import useQRCodeSync from '../hooks/useQrCodeSync';
 import isInternet from '../utils/network';
+import * as Progress from 'react-native-progress';
 
 const ScanQRCodeScreen = () => {
     const [vehicle, setVehicle] = useState(null);
@@ -148,15 +147,20 @@ const ScanQRCodeScreen = () => {
                             <Text className="text-red-500">{pendingScanne}</Text>
                         </Text>
 
-                        <MiniButton
-                            title="Sync"
-                            icon="sync"
-                            disabled={isSyncing}
-                            loading={serverPending}
-                            onPress={handleServerSync}
-                            containerClassName="px-0"
-                        />
+                        <View>
+
+                            <MiniButton
+                                title="Sync"
+                                icon="sync"
+                                disabled={isSyncing}
+                                loading={serverPending}
+                                onPress={handleServerSync}
+                                containerClassName="px-0"
+                            />
+                        </View>
+
                     </View>
+
                 </View>
                 <View className='flex-1 px-4 mx-4'>
                     <View className="mb-4 flex-row flex-wrap gap-2 px-2">
@@ -246,7 +250,13 @@ const ScanQRCodeScreen = () => {
                                 cardColor = COLORS.warning;
                             }
 
+                            let progress;
 
+                            if (total_qr_code > 0) {
+                                progress = scanningQRCode / total_qr_code;
+                            } else {
+                                progress = 0;
+                            }
                             return (
                                 <>
                                     <View
@@ -290,6 +300,14 @@ const ScanQRCodeScreen = () => {
                                             <Text className='text-gray-400 text-sm font-semibold'> / </Text>
                                             <Text className='text-red-500 text-sm font-bold'>{scanningQRCode}</Text>
                                         </View>
+                                        <Progress.Bar
+                                            height={12}
+                                            progress={progress}
+                                            borderRadius={15}    // controls rounded corners
+
+                                            animation={{ type: "spring", friction: 30, tension: 500 }}
+                                            width={null} />
+
                                     </View >
                                 </>
                             )

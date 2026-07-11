@@ -21,7 +21,7 @@ const LoginScreen = () => {
 
     const handleForgotPassword = () => {
         try {
-            navigation.navigate('ForgotPassword');
+            navigation.navigate('VerifyUserMobie');
         } catch (error) {
             Alert.alert('Error', error.message);
 
@@ -141,7 +141,7 @@ const LoginScreen = () => {
                             onChangeText={setPassword}
                             placeholder="Enter The Password" />
 
-                        {/* <TouchableOpacity
+                        <TouchableOpacity
                             onPress={handleForgotPassword}
                             className="self-end mt-1 mb-4"
                         // disabled={loading}
@@ -149,7 +149,7 @@ const LoginScreen = () => {
                             <Text className="text-sm font-semibold text-blue-600">
                                 Forgot Password?
                             </Text>
-                        </TouchableOpacity> */}
+                        </TouchableOpacity>
 
                         <View className='mt-4'>
                             <FullButton
@@ -158,7 +158,6 @@ const LoginScreen = () => {
                                 disabled={!mobile || !password || Boolean(mobileError)}
                             />
                         </View>
-
                     </View>
                 </SafeAreaView>
             </ScrollView>

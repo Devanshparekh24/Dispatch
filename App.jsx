@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab';
 import initTable from './src/service/localTableinit'
 import QRCodeScreen from './src/screen/QRCodeScreen';
+import VerifyUser from './src/auth/VerifyUser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 LogBox.ignoreAllLogs();
 
@@ -63,6 +64,7 @@ const App = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="VerifyUserMobie" component={VerifyUser} />
           <Stack.Screen name="Main" component={BottomNavigationTab} />
           <Stack.Screen name="ScanQRCode" component={QRCodeScreen} />
         </Stack.Navigator>

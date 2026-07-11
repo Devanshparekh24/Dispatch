@@ -17,7 +17,6 @@ const syncVechileTable = async () => {
 
     const serverquery = `select distinct VehicleID From Dis_vw_BarCodeData`;
     const result = await mssqlConn.executeQuery(serverquery);
-    console.log('🚀 ~ syncVechileTable ~ result:', result);
 
     if (!result || result.length === 0) {
       console.log('No vehicle data found on remote server.');
@@ -37,9 +36,7 @@ const syncVechileTable = async () => {
     });
 
     console.log('Vehicle sync completed 🔥🔥🔥');
-  } catch (error) {
-    console.log('🚀 ~ syncVechileTable ~ error:', error);
-  }
+  } catch (error) {}
 };
 
 const updateTripMaster = async (vehicleID, androidID, userID) => {
@@ -57,7 +54,6 @@ const updateTripMaster = async (vehicleID, androidID, userID) => {
         `;
 
     const result = await mssqlConn.executeUpdate(query);
-    console.log('🚀 ~ updateTripMaster ~ result:', result);
   } catch (error) {
     console.log(error);
     throw error;
@@ -81,16 +77,13 @@ const existVehileFetch = async vehicleID => {
                             where um.UserID in (select UserID from Dis_vw_BarCodeData where  VehicleID= '${vehicleID}')`;
 
     const result = await mssqlConn.executeQuery(serverquery);
-    console.log('🚀 ~ existVehileFetch ~ result:', result);
 
     if (result.length > 0) {
       return result[0].UserName;
     } else {
       return null;
     }
-  } catch (error) {
-    console.log('🚀 ~ existVehileFetch ~ error:', error);
-  }
+  } catch (error) {}
 };
 
 const isVehicleChangeAllowed = async () => {
@@ -101,7 +94,7 @@ const isVehicleChangeAllowed = async () => {
       SELECT
         (
           SELECT COUNT(DISTINCT BarCode)
-          FROM Dis_Scaned_QR_Data_Local
+          FROM Barcode_Data_Local
         ) AS TotalsyncQRCode,
 
         (
@@ -113,15 +106,17 @@ const isVehicleChangeAllowed = async () => {
 
     const result = await localConnection.executeQuery(query);
 
-    if (result && result.length > 0) {
+    if (result.length > 0) {
       const { TotalsyncQRCode, TotalScannedQRCode } = result[0];
 
+      if (TotalScannedQRCode === 0) {
+        return true;
+      }
       return TotalScannedQRCode === TotalsyncQRCode;
     }
 
     return true;
   } catch (error) {
-    console.log('🚀 ~ isScanLimitReached ~ error:', error);
     return false;
   }
 };
@@ -152,7 +147,6 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
     const serverquery = `select * From Dis_vw_BarCodeData where VehicleID = '${vehicleID}'`;
 
     const result = await mssqlConn.executeQuery(serverquery);
-    console.log('🚀 ~ barcodeDataSync ~ result:', result);
     if (!result || result.length === 0) {
       console.log('No vehicle data found on remote server.');
       return;
@@ -188,7 +182,6 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
 
     console.log('BarcodeData sync completed 🔥🔥🔥');
   } catch (error) {
-    console.log('🚀 ~ barcodeDataSync ~ error:', error);
     throw error;
   }
 };
@@ -206,9 +199,7 @@ const isBarcodeExistInServer = async barCode => {
     const result = await mssql.executeQuery(query);
 
     return result[0].Total > 0;
-  } catch (error) {
-    console.log('🚀 ~ isBarcodeExistInServer ~ error:', error);
-  }
+  } catch (error) {}
 };
 const insertConflictQRCode = async item => {
   try {
@@ -246,9 +237,7 @@ const insertConflictQRCode = async item => {
     `;
 
     await mssql.executeUpdate(query);
-  } catch (error) {
-    console.log('🚀 ~ insertConflictQRCode ~ error:', error);
-  }
+  } catch (error) {}
 };
 
 //offline to online Sync
@@ -257,7 +246,6 @@ const qrCodeScannedDataSync = async () => {
 
   if (!hasInternet) {
     console.log(`No Internet Avilable........`);
-    console.log('🚀 ~ qrCodeScannedDataSync ~ hasInternet:', hasInternet);
     return;
   }
 
@@ -284,7 +272,6 @@ const qrCodeScannedDataSync = async () => {
   for (const item of result) {
     try {
       const exists = await isBarcodeExistInServer(item.BarCode);
-      console.log('🚀 ~ qrCodeScannedDataSync ~ exists:', exists);
 
       if (exists) {
         // Save in conflict table

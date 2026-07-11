@@ -25,6 +25,9 @@ import Card from '../components/Card/Card'
 import AppVersionUpdate from '../components/DialogeBox/AppVersionUpdate'
 import StatasCard from '../components/Card/StatasCard'
 import { useTotalBagData } from '../hooks/useCustomerItemWise'
+import * as Progress from 'react-native-progress';
+
+
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
@@ -38,10 +41,6 @@ const HomeScreen = () => {
   const { data: TotalSyncData, refetch: TotalSyncDataRefetch } = useTotalSyncData();
   const { mutateAsync, isPending } = useQRCodeSync();
   const { data: totalBagData, refetch: totalBagDataRefetch } = useTotalBagData();
-
-
-
-
 
   const logLocalUsers = async () => {
     try {
@@ -74,6 +73,16 @@ const HomeScreen = () => {
   const totalBag = totalBagData?.[0]?.TotalBag || 0;
   const totalScannBag = totalBagData?.[0]?.TotalScannedBag || 0;
   const totalPendingBag = totalBagData?.[0]?.TotalPendingBag || 0;
+
+  let progress;
+
+  if (totalBag > 0) {
+    progress = totalScannBag / totalBag;
+  }
+  else {
+    progress = 0;
+  }
+
   const vehicleData = queryResult?.data || [];
   const formattedVehicles = vehicleData.map(item => ({
     label: item.VehicleID,
@@ -107,6 +116,7 @@ const HomeScreen = () => {
       await refetch(); // Refresh dropdown list with newly synced data from SQLite
       await selectedVehileIDRefetch()
       await TotalSyncDataRefetch()
+      await totalBagDataRefetch()
       await customerRefetch()
       Alert.alert('Sync completed successfully');
     } catch (error) {
@@ -196,7 +206,6 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView>
-
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
@@ -215,33 +224,54 @@ const HomeScreen = () => {
               sm_label={currentVehicleID}
             />
           </View>
+          <View className='px-4 py-6 gap-4'>
+            <View className=''>
+              <Card>
+                <View className="flex-row">
+                  <StatasCard
+                    bg="bg-red-100"
+                    color="text-red-600"
+                    value={totalBag}
+                    label="Total Bag"
+                  />
 
+                  <StatasCard
+                    bg="bg-green-100"
+                    color="text-green-600"
+                    value={totalScannBag}
+                    label="Scanned Bag"
+                  />
+                  <StatasCard
+                    bg="bg-yellow-300"
+                    color="text-yellow-600"
+                    value={totalPendingBag}
+                    label="Pending Bag"
+                  />
+                </View>
 
+                {/* Progress */}
+                <View className="flex-1 justify-center items-center mt-4">
+                  {/* Progress Bar */}
+                  <Progress.Bar
+                    progress={progress}
+                    width={300}          // controls width
+                    height={18}          // controls thickness
+                    borderRadius={15}    // controls rounded corners
+                    color={'#28a745'}      // main fill color
+                    unfilledColor={'#e9ecef'} // background of unfilled part
+                    borderWidth={0}      // removes border
+                    animation={{ type: "spring", friction: 30, tension: 500 }}
+                  />
 
-          <View className='px-4 py-6'>
-
-            <View className="flex-row">
-              <StatasCard
-                bg="bg-red-100"
-                color="text-red-600"
-                value={totalBag}
-                label="Total Bag"
-              />
-
-              <StatasCard
-                bg="bg-green-100"
-                color="text-green-600"
-                value={totalScannBag}
-                label="Scanned Bag"
-              />
-              <StatasCard
-                bg="bg-yellow-300"
-                color="text-yellow-600"
-                value={totalPendingBag}
-                label="Pending Bag"
-              />
+                  {/* Progress Text */}
+                  <Text className="mt-2 text-lg font-semibold text-gray-700">
+                    {totalScannBag} / {totalBag} ({Math.round(progress * 100)}%)
+                  </Text>
+                </View>
+              </Card>
             </View>
-            <View className='mb-6'>
+
+            <View className=''>
               <SearchDropDown
                 data={formattedVehicles}
                 value={vehicle}
@@ -276,7 +306,6 @@ const HomeScreen = () => {
         {/* <AppVersionUpdate /> */}
       </ScrollView>
     </SafeAreaView>
-
   );
 };
 
