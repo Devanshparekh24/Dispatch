@@ -99,19 +99,17 @@ const ScanQRCodeScreen = () => {
             printError("Error in onRefresh:", error);
         }
     }
-    const handleOpenScanner = (CustName, VehicleID, CustID, OrderID, einvoiceNo, einvoiceID) => {
+    const handleOpenScanner = (CustName, custID, VehicleID, InvoNo,Total_qty) => {
         if (!vehicle) {
             Alert.alert('Alert', 'Please select vehicle');
             return;
         }
         navigation.navigate('ScanQRCode', {
-            vehicle: VehicleID,
-            custID: CustID,
             customerName: CustName,
-            OrderID: OrderID,
-            einvoiceNo: einvoiceNo,
-            einvoiceID: einvoiceID
-
+            custID: custID,
+            VehicleID:VehicleID,
+            InvoNo:InvoNo
+            
         });
 
         console.log('Navigating to ScanQRCode screen');
@@ -211,7 +209,7 @@ const ScanQRCodeScreen = () => {
                         placeholder='search customer...'
                     />
                     <FlatList
-                        keyExtractor={(item) => item.CustID}
+                        keyExtractor={(item) => item.St_CustId}
 
                         ListEmptyComponent={
                             () => {
@@ -229,16 +227,14 @@ const ScanQRCodeScreen = () => {
                         // contentContainerStyle={{ paddingBottom: 100 }}
                         renderItem={({ item, index }) => {
 
-                            const custName = item.CustName || "N/A";
+                            const custName = item.St_Name || "N/A";
                             const vehicleNo = item.VehicleID || "N/A";
-                            const custID = item.CustID || "N/A";
-                            const total_qty = item.Total_Qty || 0;
-                            const no_of_items = item.No_of_Items || 0;
-                            const total_qr_code = item.Total_QR_Code || 0;
+                            const custID = item.St_CustId || "clsN/A";
+                            const total_qty = item.total_qty || 0;
+                            const no_of_items = item.no_of_item || 0;
+                            const total_qr_code = item.no_of_barcode || 0;
                             const scanningQRCode = item.Scanned_QR_Code || 0;
-                            const orderID = item.OrderID || item.orderID || "N/A";
-                            const einvoiceNo = item.EInvoice_Number || "N/A";
-                            const einvoiceID = item.EInvoiceID || "N/A";
+                            const InvoNo = item.InvNo || "N/A";
                             let cardColor = COLORS.white;
 
                             const isvisible = scanningQRCode !== total_qr_code;
@@ -270,9 +266,8 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-sm font-semibold'>{custName}</Text>
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
                                                 <Text className='text-xs text-gray-600'>{custID}</Text>
-                                                <Text className='text-xs text-gray-600'> Invoice No. {einvoiceNo}</Text>
-                                                <Text className='text-xs text-gray-600'> Invoice No. {einvoiceID}</Text>
-                                                <Text className='text-xs text-gray-600'>orderID :{orderID}</Text>
+                                                <Text className='text-xs text-gray-600'>{InvoNo}</Text>
+                                                {/* <Text className='text-xs text-gray-600'>orderID :{orderID}</Text> */}
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty (kg) : </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
@@ -286,7 +281,7 @@ const ScanQRCodeScreen = () => {
                                                             // text={"QR Code"}
                                                             icon={"qr-code-outline"}
                                                             onPress={() => {
-                                                                return handleOpenScanner(custName, vehicleNo, custID, orderID, einvoiceNo, einvoiceID);
+                                                                return handleOpenScanner(custName, custID,vehicleNo,InvoNo);
                                                             }}
                                                         />
                                                     </View>

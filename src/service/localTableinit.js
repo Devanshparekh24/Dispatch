@@ -22,13 +22,15 @@ const createUserMasterTable = async () => {
           console.log('User_Local table created successfully');
         },
         (txOrError, error) => {
-          console.log("🚀 ~ createUserMasterTable ~ error:", error || txOrError)
-        }
+          console.log(
+            '🚀 ~ createUserMasterTable ~ error:',
+            error || txOrError,
+          );
+        },
       );
     });
-
   } catch (error) {
-    console.log("🚀 ~ createUserMasterTable ~ error:", error)
+    console.log('🚀 ~ createUserMasterTable ~ error:', error);
 
     throw error;
   }
@@ -36,7 +38,6 @@ const createUserMasterTable = async () => {
 
 const createVechileMaster = async () => {
   try {
-
     const Localconnection = await getSQLiteConnection();
 
     const query = `
@@ -54,62 +55,94 @@ const createVechileMaster = async () => {
           console.log('Vechile_Master_Local table created successfully');
         },
         (txOrError, error) => {
-          console.log("🚀 ~ createVechileMaster ~ error:", error || txOrError)
-        }
+          console.log('🚀 ~ createVechileMaster ~ error:', error || txOrError);
+        },
       );
     });
   } catch (error) {
-    console.log("🚀 ~ createVechileMaster ~ error:", error)
+    console.log('🚀 ~ createVechileMaster ~ error:', error);
     throw error;
   }
-}
-
+};
 
 const createBarcodeDatatTable = async () => {
   try {
-
     const Localconnection = await getSQLiteConnection();
+
     const query = `
-     CREATE TABLE IF NOT EXISTS Barcode_Data_Local (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    OrderID TEXT,
-    BarCode  TEXT UNIQUE,
-    VehicleID TEXT,
-    EInvoiceID INTEGER,
-    EInvoice_Number TEXT,
-    CustID INTEGER,
-    Qty  REAL,
-    ItemID INTEGER,
-    ItemName TEXT,
-    CustName TEXT,
-    UserID INTEGER,
-    AndroidID TEXT,
-    IsSynced INTEGER DEFAULT 0,
-    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`;
+     CREATE TABLE IF NOT EXISTS Dis_Barcode_Data_Local (
+     ID INTEGER PRIMARY KEY AUTOINCREMENT,
+      TripID	INTEGER,
+      TripDate	TEXT,
+      VehicleType	TEXT,
+      VehicleID	TEXT,
+      InvId	INTEGER,
+      InvNo	TEXT,
+      InvDate	TEXT,
+      AgentId	INTEGER,
+      AgentName	TEXT,
+      Bt_CustId	INTEGER,
+      Bt_Name	TEXT,
+      St_CustId	INTEGER,
+      St_Name	TEXT,
+      OrderID	INTEGER,
+      ChallanId	INTEGER,
+      ChallanNo	TEXT,
+      ChallanDate	TEXT,
+      ItemID	INTEGER,
+      ItemName	TEXT,
+      ChallanQty	INTEGER,
+      PackingTypeId	INTEGER,
+      PackingTypeName	TEXT,
+      BarcodeId	INTEGER,
+      BarCode	TEXT UNIQUE,
+      BarCodeQty	INTEGER
+)
+   
+    `;
+    //     const query = `
+    //      CREATE TABLE IF NOT EXISTS Dis_Barcode_Data_Local (
+    //     ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    //     OrderID TEXT,
+    //     BarCode  TEXT UNIQUE,
+    //     VehicleID TEXT,
+    //     EInvoiceID INTEGER,
+    //     EInvoice_Number TEXT,
+    //     CustID INTEGER,
+    //     Qty  REAL,
+    //     ItemID INTEGER,
+    //     ItemName TEXT,
+    //     CustName TEXT,
+    //     UserID INTEGER,
+    //     AndroidID TEXT,
+    //     IsSynced INTEGER DEFAULT 0,
+    //     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    //   )
+    // `;
 
     Localconnection.transaction(tx => {
       tx.executeSql(
         query,
         [],
         () => {
-          console.log('Barcode_Data_Local table created successfully');
+          console.log('Dis_Barcode_Data_Local table created successfully');
         },
         (txOrError, error) => {
-          console.log("🚀 ~ createBarcodeDatatTable ~ error:", error || txOrError)
-        }
+          console.log(
+            '🚀 ~ createBarcodeDatatTable ~ error:',
+            error || txOrError,
+          );
+        },
       );
     });
   } catch (error) {
-    console.log("🚀 ~ createBarcodeDatatTable ~ error:", error)
+    console.log('🚀 ~ createBarcodeDatatTable ~ error:', error);
     throw error;
   }
-}
+};
 
 const createScaningQRDatatTable = async () => {
   try {
-
     const Localconnection = await getSQLiteConnection();
     const query = `
     CREATE TABLE IF NOT EXISTS Dis_Scaned_QR_Data_Local (
@@ -137,18 +170,20 @@ const createScaningQRDatatTable = async () => {
           console.log('Scaning_QR_Data_Local table created successfully');
         },
         (txOrError, error) => {
-          console.log("🚀 ~ createScaningQRDatatTable ~ error:", error || txOrError)
-        }
+          console.log(
+            '🚀 ~ createScaningQRDatatTable ~ error:',
+            error || txOrError,
+          );
+        },
       );
     });
   } catch (error) {
-    console.log("🚀 ~ createScaningQRDatatTable ~ error:", error)
+    console.log('🚀 ~ createScaningQRDatatTable ~ error:', error);
     throw error;
   }
-}
+};
 const customErrorLog = async () => {
   try {
-
     const Localconnection = await getSQLiteConnection();
     const query = `
      CREATE TABLE IF NOT EXISTS Dis_Error_Log (
@@ -168,16 +203,18 @@ const customErrorLog = async () => {
           console.log('Dis_Error_Log table created successfully');
         },
         (txOrError, error) => {
-          console.log("🚀 ~ createScaningQRDatatTable ~ error:", error || txOrError)
-        }
+          console.log(
+            '🚀 ~ createScaningQRDatatTable ~ error:',
+            error || txOrError,
+          );
+        },
       );
     });
   } catch (error) {
-    console.log("🚀 ~ createScaningQRDatatTable ~ error:", error)
+    console.log('🚀 ~ createScaningQRDatatTable ~ error:', error);
     throw error;
   }
-}
-
+};
 
 const initTable = async () => {
   try {
@@ -186,9 +223,8 @@ const initTable = async () => {
     await createBarcodeDatatTable();
     await createScaningQRDatatTable();
   } catch (error) {
-    console.log("🚀 ~ initTable ~ error:", error)
-
+    console.log('🚀 ~ initTable ~ error:', error);
   }
-}
+};
 
 export default initTable;

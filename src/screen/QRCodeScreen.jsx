@@ -25,7 +25,7 @@ const QRCodeScreen = ({ route }) => {
     const [zoom, setZoom] = useState(1);
     const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
-    const { vehicle, custID, customerName, OrderID, einvoiceNo, einvoiceID } = route.params;
+    const { customerName ,custID,VehicleID,InvoNo} = route.params;
     const { userID } = useAuth();
     const device = useCameraDevice('back');
     const navigation = useNavigation();
@@ -39,7 +39,8 @@ const QRCodeScreen = ({ route }) => {
     const { mutateAsync: serverSyncData, isPending: serverPending, isError } = useQRCodeSync();
     const { mutateAsync: insertQRData, isPending: insertQRDataPending } = useScanQRCodeData();
     const { data: scannedData, refetch: refetchScannedData } = useGetSyncScannedData();
-    const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, vehicle);
+    const { data: itemWiseData, refetch: refetchItemWiseData, isLoading: itemWiseLoading } = useCustomerItemWise(custID, VehicleID);
+    console.log("🚀 ~ QRCodeScreen ~ itemWiseData:", itemWiseData)
     const { refetch: customerRefetch } = useCustomer();
 
     const handleGoBack = () => {
@@ -111,15 +112,15 @@ const QRCodeScreen = ({ route }) => {
                 const locationData = await getCurrentLocationPromise();
 
                 await insertQRData({
-                    OrderID: OrderID,
+                    // OrderID: OrderID,
                     CustId: custID,
-                    VehicleID: vehicle,
+                    // VehicleID: vehicle,
                     BarCode: qrValue,
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
                     UserID: userID,
-                    EInvoice_Number: einvoiceNo,
-                    EInvoiceID: einvoiceID,
+                    // EInvoice_Number: einvoiceNo,
+                    // EInvoiceID: einvoiceID,
                     CreatedAt: currentDateTime,
                 });
 
@@ -171,7 +172,7 @@ const QRCodeScreen = ({ route }) => {
             </View>
         );
     }
-    console.log("🚀 ~ QRCodeScreen ~ einvoiceNo:", einvoiceNo)
+    
     return (
         <View style={styles.container}>
             <Camera
@@ -252,20 +253,21 @@ const QRCodeScreen = ({ route }) => {
                 {/* Header (Renders once at the top of the BottomSheet) */}
                 <View className='px-4 pb-3 border-b border-gray-200'>
                     <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{vehicle}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceNo}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceID}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{VehicleID}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{InvoNo}</Text>
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{custID}</Text>             
+                    {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceID}</Text> */}
                     {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text> */}
                 </View>
 
                 {/* List of Items */}
                 <FlatList
                     data={itemWiseData}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item, index) => item.ItemID}
                     contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 }}
                     renderItem={({ item }) => {
                         const itemName = item.ItemName || "N/A";
-                        const noOfQty = item.Total_Qty || 0;
+                        const noOfQty = item.no_of_Barcode || 0;
                         const scannedQty = item.Scanned_Qty || 0;
                         const itemID = item.ItemID || "N/A";
                         return (

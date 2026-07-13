@@ -15,7 +15,18 @@ const syncVechileTable = async () => {
 
     const mssqlConn = await getMSSQLConnection();
 
-    const serverquery = `select distinct VehicleID From Dis_vw_BarCodeData`;
+    const serverquery = `Select Tm.VehicleID 
+                          From Trip_Master_New As Tm With(Nolock)  
+                          Inner Join Trip_Detail_New As Td With(Nolock) On Td.TripID=Tm.TripID  
+                          Inner Join SaleChallan_New As Sc With(Nolock) On Sc.OrderID=Td.OrderID  
+                          Inner Join SaleChallanDetails_New As Sd With(Nolock) On Sd.ChallanMasterID=Sc.AutoID  
+                          Left Join  
+                          (Select ChallanDetailId,COUNT(BarCode) As NoOfBarcode From WH_SaleChallanBarcode With(Nolock) Group By ChallanDetailId  
+                          ) As Sb On Sb.ChallanDetailId=Sd.AutoID  
+                          Where IsNull(Sc.Cancel_Flag,0)=0 And Sc.DeliveryArrangedBy=4498  
+                          And Sc.ChallanDate=Convert(date,GetDate())  
+                          Group By Tm.VehicleID  
+                          Having Convert(int,Sum(Sd.Pcs))=Sum(IsNull(Sb.NoOfBarcode,0)) `;
     const result = await mssqlConn.executeQuery(serverquery);
 
     if (!result || result.length === 0) {
@@ -94,7 +105,7 @@ const isVehicleChangeAllowed = async () => {
       SELECT
         (
           SELECT COUNT(DISTINCT BarCode)
-          FROM Barcode_Data_Local
+          FROM Dis_Barcode_Data_Local
         ) AS TotalsyncQRCode,
 
         (
@@ -144,7 +155,9 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
       console.log('Vehicle not selected...');
       throw new Error('Vehicle not selected...');
     }
-    const serverquery = `select * From Dis_vw_BarCodeData where VehicleID = '${vehicleID}'`;
+    const serverquery = `select * From Dis_vw_BarCodeData where 
+     CAST(InvDate as date)=cast(GETDATE() as date) and  
+    VehicleID = '${vehicleID}'`;
 
     const result = await mssqlConn.executeQuery(serverquery);
     if (!result || result.length === 0) {
@@ -156,25 +169,64 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
 
     await localConnection.transaction(tx => {
       // Optional: clear old data
-      tx.executeSql('DELETE FROM Barcode_Data_Local');
+      tx.executeSql('DELETE FROM Dis_Barcode_Data_Local');
       tx.executeSql('DELETE FROM  Dis_Scaned_QR_Data_Local');
 
       result.forEach(item => {
         tx.executeSql(
-          'INSERT OR REPLACE INTO Barcode_Data_Local (OrderID,BarCode,EInvoiceID,EInvoice_Number,VehicleID, CustID, Qty,ItemID,ItemName,CustName,UserID,AndroidID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          `INSERT OR REPLACE INTO Dis_Barcode_Data_Local (
+      TripID,
+      TripDate,
+      VehicleType,
+      VehicleID,
+      InvId,
+      InvNo,
+      InvDate,
+      AgentId,
+      AgentName,
+      Bt_CustId,
+      Bt_Name,
+      St_CustId,
+      St_Name,
+      OrderID,
+      ChallanId,
+      ChallanNo,
+      ChallanDate,
+      ItemID,
+      ItemName,
+      ChallanQty,
+      PackingTypeId,
+      PackingTypeName,
+      BarcodeId,
+      BarCode,
+      BarCodeQty
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
-            item.OrderID,
-            item.BarCode,
-            item.EInvoiceID,
-            item.EInvoice_Number,
+            item.TripID,
+            item.TripDate,
+            item.VehicleType,
             item.VehicleID,
-            item.CustID,
-            item.Qty,
+            item.InvId,
+            item.InvNo,
+            item.InvDate,
+            item.AgentId,
+            item.AgentName,
+            item.Bt_CustId,
+            item.Bt_Name,
+            item.St_CustId,
+            item.St_Name,
+            item.OrderID,
+            item.ChallanId,
+            item.ChallanNo,
+            item.ChallanDate,
             item.ItemID,
             item.ItemName,
-            item.CustName,
-            userID,
-            androidID,
+            item.ChallanQty,
+            item.PackingTypeId,
+            item.PackingTypeName,
+            item.BarcodeId,
+            item.BarCode,
+            item.BarCodeQty,
           ],
         );
       });

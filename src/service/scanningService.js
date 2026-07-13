@@ -17,27 +17,38 @@ const getlocalVechical = async () => {
 const getPartyName = async () => {
   try {
     let localConnection = getSQLiteConnection();
-    const localQuery = `SELECT
-                            AA.CustName,
-                            AA.CustID,
-                            AA.VehicleID,
-                            SUM(AA.Qty) AS Total_Qty,
-                            COUNT(distinct AA.ItemName) AS No_of_Items,
-                            COUNT(AA.BarCode) AS Total_QR_Code,
-                            (select EInvoiceID  From Barcode_Data_Local as bb where bb.CustID=AA.CustID ) as EInvoiceID,
-                            (select EInvoice_Number  from  Barcode_Data_Local as bb where bb.EInvoice_Number=AA.EInvoice_Number )as EInvoice_Number,
-                            (select OrderID
-                             From Barcode_Data_Local as qq 
-                             Where qq.CustID=AA.CustID) as orderID,
-                            (select count(BarCode)
-                             From Dis_Scaned_QR_Data_Local as qq 
-                             Where qq.CustID=AA.CustID) as Scanned_QR_Code
-                            FROM Barcode_Data_Local as AA
-                            GROUP BY
-                            AA.CustID,
-                            AA.CustName,
-                            AA.VehicleID;
+
+    const localQuery = `select 
+                    aa.St_CustId,
+                    aa.St_Name,
+                    aa.VehicleID,
+                    COUNT(DISTINCT aa.BarCode) as no_of_barcode,
+                    COUNT(DISTINCT aa.BarCode) as Total_QR_Code,
+                    (
+                      SELECT GROUP_CONCAT(InvNo, ',')
+                      FROM (
+                          SELECT DISTINCT InvNo
+                          FROM Dis_Barcode_Data_Local b
+                          WHERE b.St_CustId = aa.St_CustId
+                           AND b.VehicleID = aa.VehicleID
+                      )
+                  ) AS InvNo,
+                     COUNT(DISTINCT aa.ItemID) as no_of_item,
+                    sum(aa.BarCodeQty) as total_qty,
+                    (select count(oo.BarCode)
+                     from Dis_Scaned_QR_Data_Local as oo
+                     where oo.CustID=aa.St_CustId and oo.VehicleID=aa.VehicleID) as scanned_qty,
+                    (select count(oo.BarCode)
+                     from Dis_Scaned_QR_Data_Local as oo
+                     where oo.CustID=aa.St_CustId and oo.VehicleID=aa.VehicleID) as Scanned_QR_Code
+                    FROM Dis_Barcode_Data_Local as aa
+                    group by 
+                        aa.St_CustId,
+                        aa.St_Name,
+                        aa.VehicleID
+                       
                         `;
+
 
     const result = await localConnection.executeQuery(localQuery);
     if (Array.isArray(result)) {
@@ -45,6 +56,7 @@ const getPartyName = async () => {
     }
     throw new Error('Database query did not return a list of rows');
   } catch (error) {
+    console.error('Error in getPartyName:', error);
     return [];
   }
 };
@@ -52,31 +64,33 @@ const getPartyName = async () => {
 const getItemDataScannedInfo = async (CustID, VehicleID) => {
   try {
     let localConnection = getSQLiteConnection();
-    const localQuery = `SELECT
-                        aa.ItemName,
-                        aa.ItemID,
-                        COUNT(aa.BarCode) AS Total_Qty,
-                        (
-                            SELECT COUNT(oo.BarCode)
-                            FROM Dis_Scaned_QR_Data_Local AS oo
-                            WHERE oo.CustID = aa.CustID
-                            AND oo.VehicleID = aa.VehicleID
-                            AND oo.ItemID = aa.ItemID
-                        ) AS Scanned_Qty
-                    FROM Barcode_Data_Local AS aa
-                    WHERE aa.CustID = ?
-                    AND aa.VehicleID = ?
-                    GROUP BY aa.ItemName,
-                     aa.ItemID;`;
+    const localQuery = `SELECT 
+                          aa.ItemID,
+                          aa.ItemName,
+                          COUNT(aa.BarCode) AS no_of_Barcode,
+                          (
+                              SELECT COUNT(oo.BarCode)
+                              FROM Dis_Scaned_QR_Data_Local AS oo
+                              WHERE oo.CustID = aa.St_CustId
+                                AND oo.VehicleID = aa.VehicleID
+                                AND oo.ItemID = aa.ItemID
+                          ) AS Scanned_Qty
+                        FROM Dis_Barcode_Data_Local AS aa
+                        WHERE aa.St_CustId = ?
+                          AND aa.VehicleID = ?
+                        GROUP BY aa.ItemID, aa.ItemName`;
     const result = await localConnection.executeQuery(localQuery, [
       CustID,
       VehicleID,
     ]);
+    console.log("🚀 ~ getItemDataScannedInfo ~ result:", result)
+  
     if (Array.isArray(result)) {
       return result;
     }
     throw new Error('Database query did not return a list of rows');
   } catch (error) {
+    console.error('Error in getItemDataScannedInfo:', error);
     return [];
   }
 };
@@ -84,7 +98,7 @@ const getItemDataScannedInfo = async (CustID, VehicleID) => {
 const getlocalBarCodeData = async () => {
   try {
     let localConnection = getSQLiteConnection();
-    const localQuery = `select * From Barcode_Data_Local`;
+    const localQuery = `select * From Dis_Barcode_Data_Local`;
     const result = await localConnection.executeQuery(localQuery);
 
     if (Array.isArray(result)) {
@@ -117,7 +131,7 @@ const isItemExist = async BarCode => {
 const getItemID = async (BarCode, VehicleID) => {
   try {
     let localConnection = getSQLiteConnection();
-    const localQuery = `SELECT ItemID FROM Barcode_Data_Local
+    const localQuery = `SELECT ItemID FROM Dis_Barcode_Data_Local
                         WHERE TRIM(BarCode) = TRIM(?)  AND VehicleID = ?`;
     const result = await localConnection.executeQuery(localQuery, [
       BarCode,
@@ -140,9 +154,9 @@ const itemNotAssignToCustomer = async (ItemID, CustID, VehicleID) => {
 
     const query = `
       SELECT COUNT(*) AS Total
-      FROM Barcode_Data_Local
+      FROM Dis_Barcode_Data_Local
       WHERE ItemID = ?
-        AND CustID = ?
+        AND St_CustId = ?
         AND VehicleID = ?
     `;
 
@@ -154,7 +168,7 @@ const itemNotAssignToCustomer = async (ItemID, CustID, VehicleID) => {
 
     return result[0].Total === 0;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in itemNotAssignToCustomer:', error);
     return true;
   }
 };
@@ -167,9 +181,9 @@ const isScanLimitReached = async (ItemID, CustID, VehicleID) => {
       SELECT
         (
           SELECT COUNT(*)
-          FROM Barcode_Data_Local
+          FROM Dis_Barcode_Data_Local
           WHERE ItemID = ?
-            AND CustID = ?
+            AND St_CustId = ?
             AND VehicleID = ?
         ) AS TotalQRCode,
 
@@ -296,7 +310,7 @@ const getScannendData = async () => {
 const getSelectVehileData = async () => {
   try {
     const connection = await getSQLiteConnection();
-    const query = 'SELECT distinct VehicleID FROM  Barcode_Data_Local';
+    const query = 'SELECT distinct VehicleID FROM  Dis_Barcode_Data_Local';
     const result = await connection.executeQuery(query);
     if (Array.isArray(result)) {
       return result;
@@ -343,7 +357,7 @@ const getTotalBagData = async () => {
     const query = `SELECT
         (
           SELECT COUNT(Distinct BarCode)
-          FROM Barcode_Data_Local
+          FROM Dis_Barcode_Data_Local
         ) AS TotalBag,
 
         (
@@ -353,7 +367,7 @@ const getTotalBagData = async () => {
         (
          (
           SELECT COUNT(Distinct BarCode)
-          FROM Barcode_Data_Local
+          FROM Dis_Barcode_Data_Local
         ) - (
           SELECT COUNT(Distinct BarCode)
           FROM Dis_Scaned_QR_Data_Local

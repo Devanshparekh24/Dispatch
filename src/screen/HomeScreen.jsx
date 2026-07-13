@@ -26,7 +26,7 @@ import AppVersionUpdate from '../components/DialogeBox/AppVersionUpdate'
 import StatasCard from '../components/Card/StatasCard'
 import { useTotalBagData } from '../hooks/useCustomerItemWise'
 import * as Progress from 'react-native-progress';
-
+import Map from '../components/Map/Map'
 
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
@@ -227,6 +227,28 @@ const HomeScreen = () => {
           <View className='px-4 py-6 gap-4'>
             <View className=''>
               <Card>
+
+               <View className="flex-row justify-end items-end mx-4 px-4 my-3">
+                    <View className="flex-row items-center">
+                        <Text className="text-base font-semibold mr-3">
+                            <Text className="text-blue-600">{totalScannedData}</Text>
+                            <Text className="text-gray-500"> / </Text>
+                            <Text className="text-red-500">{pendingScanne}</Text>
+                        </Text>
+
+                        <View>
+
+                            <MiniButton
+                                title="Sync"
+                                icon="sync"
+                                disabled={isSyncing}
+                                loading={isPending}
+                                onPress={handleServerSync}
+                                containerClassName="px-0"
+                            />
+                        </View>
+                    </View>
+                </View>
                 <View className="flex-row">
                   <StatasCard
                     bg="bg-red-100"
@@ -283,7 +305,7 @@ const HomeScreen = () => {
             </View>
             <View>
               <FullButton
-                title="Offline To online Sync"
+                title="Fetch Data offline"
                 loading={isSyncing}
                 disabled={isSyncing || !vehicle}
                 onPress={handleSyncoffline}
@@ -292,16 +314,7 @@ const HomeScreen = () => {
           </View>
         </View>
         <View className='px-4'>
-          <View className=''>
-            <Text className=' text-center'> {totalScannedData} <Text className='text-red-500'> / {pendingScanne}</Text>    </Text>
-          </View>
-          <MiniButton
-            title="Sync"
-            icon="sync"
-            loading={isPending}
-            disabled={isPending}
-            onPress={handleServerSync}
-          />
+          <Map />
         </View>
         {/* <AppVersionUpdate /> */}
       </ScrollView>
