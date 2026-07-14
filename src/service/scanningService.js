@@ -22,6 +22,20 @@ const getPartyName = async () => {
                     aa.St_CustId,
                     aa.St_Name,
                     aa.VehicleID,
+                    (
+                      SELECT Latitude
+                      FROM Dis_Barcode_Data_Local b
+                      WHERE b.St_CustId = aa.St_CustId
+                        AND b.VehicleID = aa.VehicleID
+                      LIMIT 1
+                    ) AS Latitude,
+                    (
+                      SELECT Longitude
+                      FROM Dis_Barcode_Data_Local b
+                      WHERE b.St_CustId = aa.St_CustId
+                        AND b.VehicleID = aa.VehicleID
+                      LIMIT 1
+                    ) AS Longitude,
                     COUNT(DISTINCT aa.BarCode) as no_of_barcode,
                     COUNT(DISTINCT aa.BarCode) as Total_QR_Code,
                     (
@@ -126,27 +140,7 @@ const isItemExist = async BarCode => {
   }
 };
 
-const getItemID = async (BarCode, VehicleID) => {
-  try {
-    let localConnection = getSQLiteConnection();
-    const localQuery = `SELECT ItemID FROM Dis_Barcode_Data_Local
-                        WHERE TRIM(BarCode) = TRIM(?)  AND VehicleID = ?`;
-    const result = await localConnection.executeQuery(localQuery, [
-      BarCode,
-      VehicleID,
-    ]);
-    if (result && result.length > 0) {
-      return result[0].ItemID;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('Error in getItemID:', error);
-    return null;
-  }
-};
-
-const getDetails = async (BarCode) => {
+const getDetails = async BarCode => {
   try {
     const localConnection = getSQLiteConnection();
 
@@ -171,9 +165,7 @@ const getDetails = async (BarCode) => {
                         FROM Dis_Barcode_Data_Local
                         WHERE TRIM(BarCode) = TRIM(?)`;
 
-    const result = await localConnection.executeQuery(query, [
-      BarCode,
-    ]);
+    const result = await localConnection.executeQuery(query, [BarCode]);
 
     if (result && result.length > 0) {
       return result[0];
@@ -286,7 +278,7 @@ const insertLocalScanningQRData = async (
       ChallanQty,
       TripID,
       TripDate,
-      VehicleType
+      VehicleType,
     } = barcodeDetails;
 
     // 2. Duplicate barcode

@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MapScreen from '../../screen/MapScreen';
 // Screens
 import HomeScreen from '../../screen/HomeScreen';
 import SettingScreen from '../../screen/SettingScreen';
@@ -28,32 +29,39 @@ const SCREENS = {
     label: 'Customer List',
     icon: 'list',
   },
+   Map: {
+    component: MapScreen,
+    label: 'Map',
+    icon: 'map',
+  },
   Setting: {
     component: SettingScreen,
     label: 'Settings',
     icon: 'settings',
   },
-  // Demo: {
-  //   component: DemoScreen,
-  //   label: 'Demo',
-  //   icon: 'list',
-  // },
-  // Visit: {
-  //   component: VisitScreen,
-  //   label: 'Visit',
-  //   icon: 'location',
-  // },
-  // Demo: {
-  //   component: Demo,
-  //   label: 'Report',
-  //   icon: 'list',
-  // },
-  // Profile: {
-  //   component: ProfileScreen,
-  //   label: 'Profile',
-  //   icon: 'person-circle',
-  // },
-};
+ 
+}
+// Demo: {
+//   component: DemoScreen,
+//   label: 'Demo',
+//   icon: 'list',
+// },
+// Visit: {
+//   component: VisitScreen,
+//   label: 'Visit',
+//   icon: 'location',
+// },
+// Demo: {
+//   component: Demo,
+//   label: 'Report',
+//   icon: 'list',
+// },
+// Profile: {
+//   component: ProfileScreen,
+//   label: 'Profile',
+//   icon: 'person-circle',
+// },
+// };
 
 const BottomNavigationTab = () => {
 

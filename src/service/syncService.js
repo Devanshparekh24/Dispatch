@@ -199,8 +199,10 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
       PackingTypeName,
       BarcodeId,
       BarCode,
-      BarCodeQty
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      BarCodeQty,
+      Latitude,
+      Longitude
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)`,
           [
             item.TripID,
             item.TripDate,
@@ -227,6 +229,10 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
             item.BarcodeId,
             item.BarCode,
             item.BarCodeQty,
+            item.Latitude,
+            item.Longitude
+
+
           ],
         );
       });
@@ -260,36 +266,57 @@ const insertConflictQRCode = async item => {
     const query = `
       INSERT INTO Dis_Conflict_Scaned_QR_Data
       (
-        Local_ID,
-        OrderID,
-        ItemID,
-        CustID,
-        VehicleID,
-        BarCode,
-        Latitude,
-        Longitude,
-        UserID,
-        deviceTimeAt,
-        EInvoiceID
-      )
-      VALUES
-      (
-          '${item.ID || ''}',
-          '${item.OrderID || ''}',
-          ${item.ItemID || 0},
-          ${item.CustID || 0},
-          '${item.VehicleID || ''}',
-          '${item.BarCode || ''}',
-          ${item.Latitude || 0},
-          ${item.Longitude || 0},
-          ${item.UserID || 0},
-          '${item.CreatedAt || ''}',
-          ${item.EInvoiceID ?? 'NULL'}
-          )
-    `;
+       LocaID,
+    UserId,
+    OrderID,
+    ItemID,
+    St_CustID,
+    Bt_CustId,
+    AgentId,
+    VehicleID,
+    InvId,
+    InvDate,
+    BarCode,
+    PackingTypeId,
+    PackingTypeName,
+    BarCodeQty,
+    ChallanQty,
+    TripID,
+    TripDate,
+    VehicleType,
+    Latitude,
+    Longitude,
+    DeviceTimeAt
+)
+VALUES (
+    ${item.LocaID},
+    '${item.UserId}',
+    '${item.OrderID}',
+    ${item.ItemID},
+    ${item.St_CustID},
+    ${item.Bt_CustId},
+    ${item.AgentId},
+    '${item.VehicleID}',
+    ${item.InvId},
+    '${item.InvDate}',
+    '${item.BarCode}',
+    ${item.PackingTypeId},
+    '${item.PackingTypeName}',
+    ${item.BarCodeQty},
+    ${item.ChallanQty},
+    ${item.TripID},
+    '${item.TripDate}',
+    '${item.VehicleType}',
+    ${item.Latitude},
+    ${item.Longitude},
+    '${item.CreatedAt}'
+)
+`;
 
     await mssql.executeUpdate(query);
-  } catch (error) {}
+  } catch (error) {
+    console.error('Error in insertConflictQRCode:', error);
+  }
 };
 
 //offline to online Sync
@@ -341,9 +368,10 @@ const qrCodeScannedDataSync = async () => {
         continue;
       }
 
-   const query = `
+      const query = `
 INSERT INTO Dis_Scaned_QR_Data (
-    Local_ID,
+    LocaID,
+    UserId,
     OrderID,
     ItemID,
     St_CustID,
@@ -362,31 +390,30 @@ INSERT INTO Dis_Scaned_QR_Data (
     VehicleType,
     Latitude,
     Longitude,
-    UserID,
     DeviceTimeAt
 )
 VALUES (
-    ${item.ID},
-    '${item.OrderID}',
-    ${item.ItemID},
-    ${item.St_CustID},
-    ${item.Bt_CustId},
-    ${item.AgentId},
-    '${item.VehicleID}',
-    ${item.InvId},
-    '${item.InvDate}',
-    '${item.BarCode}',
-    ${item.PackingTypeId},
-    '${item.PackingTypeName}',
-    ${item.BarCodeQty},
-    ${item.ChallanQty},
-    ${item.TripID},
-    '${item.TripDate}',
-    '${item.VehicleType}',
-    ${item.Latitude},
-    ${item.Longitude},
-    ${item.UserID},
-    '${item.CreatedAt}'
+    ${item.ID || 0},
+    '${item.UserID || ''}',
+    '${item.OrderID || ''}',
+    ${item.ItemID || 0},
+    ${item.St_CustID || 0},
+    ${item.Bt_CustId || 0},
+    ${item.AgentId || 0},
+    '${item.VehicleID || ''}',
+    ${item.InvId || 0},
+    '${item.InvDate || ''}',
+    '${item.BarCode || ''}',
+    ${item.PackingTypeId || 0},
+    '${item.PackingTypeName || ''}',
+    ${item.BarCodeQty || 0},
+    ${item.ChallanQty || 0},
+    ${item.TripID || 0},
+    '${item.TripDate || ''}',
+    '${item.VehicleType || ''}',
+    ${item.Latitude || 0},
+    ${item.Longitude || 0},
+    '${item.CreatedAt || ''}'
 )
 `;
       await mssql.executeUpdate(query);

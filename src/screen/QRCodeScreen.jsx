@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Vibration, FlatList, Alert } 
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Chip } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 import BottomSheet from '../components/Sheet/BottomSheet';
@@ -17,11 +17,13 @@ import { currentDateTime } from '../utils/TimeHelp'
 import { useAuth } from '../context/AuthContex';
 import useQRCodeSync from '../hooks/useQrCodeSync';
 import isInternet from '../utils/network';
+import { COLORS } from '../constant';
 
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
     const [sheetIndex, setSheetIndex] = useState(0);
+    const [selectedFilter, setSelectedFilter] = useState('pending');
     const [showSuccess, setShowSuccess] = useState(false);
     const [zoom, setZoom] = useState(1);
     const baseZoom = useRef(1);
@@ -53,7 +55,7 @@ const QRCodeScreen = ({ route }) => {
         }
     }
 
-    const snapPoints = useMemo(() => ['25%', '50%'], []);
+    const snapPoints = useMemo(() => ['35%', '60%'], []);
     useEffect(() => {
         if (device) {
             setTimeout(() => {
@@ -131,7 +133,7 @@ const QRCodeScreen = ({ route }) => {
 
                 const hasInternet = await isInternet();
                 if (hasInternet) {
-                    // await serverSyncData();
+                    await serverSyncData();
                 }
 
 
@@ -168,6 +170,18 @@ const QRCodeScreen = ({ route }) => {
             </View>
         );
     }
+
+    const filteredData = itemWiseData?.filter((item) => {
+        if (selectedFilter === 'pending') {
+            return item.Scanned_Qty < item.no_of_Barcode;
+        }
+
+        if (selectedFilter === 'scanned') {
+            return item.Scanned_Qty === item.no_of_Barcode;
+        }
+
+        return true;
+    });
 
     return (
         <View style={styles.container}>
@@ -239,8 +253,6 @@ const QRCodeScreen = ({ route }) => {
 
 
             <BottomSheet
-                nestedScrollEnabled={true}
-
                 ref={bottomSheetRef}
                 snapPoints={snapPoints}
                 index={0}                      // always render at first snap point, not hidden
@@ -250,33 +262,79 @@ const QRCodeScreen = ({ route }) => {
             >
                 {/* Header (Renders once at the top of the BottomSheet) */}
                 <View className='px-4 pb-3 border-b border-gray-200'>
-                    <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{VehicleID}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{InvoNo}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{custID}</Text>
+                    <Text className={`text-md font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
+
+                    <Text className={`text-xs font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{VehicleID}</Text>
+                    <View className="mb-4 flex-row flex-wrap gap-2 px-2">
+                        <Chip
+                            textStyle={{ fontSize: 10, fontWeight: '200' }}
+                            compact
+                            selectedColor={COLORS.warning}
+                            selected={selectedFilter === 'pending'}
+                            showSelectedCheck={false}
+                            icon={selectedFilter === 'pending' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
+                            onPress={() => { setSelectedFilter('pending') }}>
+
+                            Pending (
+                            {itemWiseData?.filter(
+                                item => item.Scanned_Qty < item.no_of_Barcode,
+                            ).length ?? 0}
+                            )
+                        </Chip>
+
+                        <Chip
+                            textStyle={{ fontSize: 10, fontWeight: '200' }}
+                            compact
+                            selectedColor={COLORS.success}
+                            selected={selectedFilter === 'scanned'}
+                            showSelectedCheck={false}
+                            icon={selectedFilter === 'scanned' ? ({ size, color }) => <Ionicons name="checkmark" size={size} color={color} /> : undefined}
+                            onPress={() => { setSelectedFilter('scanned') }}>
+                            Done (
+                            {itemWiseData?.filter(
+                                item => item.Scanned_Qty === item.no_of_Barcode,
+                            ).length ?? 0}
+                            )
+                        </Chip>
+                    </View>
+                    {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{InvoNo}</Text> */}
+                    {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{custID}</Text> */}
                     {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceID}</Text> */}
                     {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text> */}
                 </View>
 
                 {/* List of Items */}
                 <BottomSheetFlatList
-                    data={itemWiseData}
+                    data={filteredData}
                     keyExtractor={(item, index) => item.ItemID}
                     contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 }}
-                    renderItem={({ item }) => {
+                    renderItem={({ item, index }) => {
                         const itemName = item.ItemName || "N/A";
                         const noOfQty = item.no_of_Barcode || 0;
                         const scannedQty = item.Scanned_Qty || 0;
                         const itemID = item.ItemID || "N/A";
+
+                        let cardColor = COLORS.white;
+
+                        if (scannedQty === 0) {
+                            cardColor = COLORS.white;
+                        } else if (noOfQty === scannedQty) {
+                            cardColor = COLORS.success;
+                        } else {
+                            cardColor = COLORS.warning;
+                        }
+
                         return (
                             <>
-                                <View className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '>
+                                <View
+                                    style={{ backgroundColor: cardColor }}
+                                    className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '>
                                     <Text
                                         adjustsFontSizeToFit
                                         numberOfLines={1}
                                         minimumFontScale={0.10}
                                         className='text-base font-medium text-gray-700'>
-                                        {itemName}
+                                        {index + 1}.{' '}{itemName}
                                     </Text>
                                     <Text adjustsFontSizeToFit
                                         numberOfLines={1}
@@ -285,7 +343,7 @@ const QRCodeScreen = ({ route }) => {
                                     </Text>
                                 </View>
                                 <View>
-                                    {/* <Text>{itemID}</Text> */}
+                                    <Text>{itemID}</Text>
                                 </View>
                             </>
                         );

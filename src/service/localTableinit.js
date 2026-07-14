@@ -96,7 +96,9 @@ const createBarcodeDatatTable = async () => {
       PackingTypeName	TEXT,
       BarcodeId	INTEGER,
       BarCode	TEXT,
-      BarCodeQty	REAL
+      BarCodeQty	REAL,
+      Latitude TEXT,
+      Longitude TEXT
 )
    
     `;
