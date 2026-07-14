@@ -37,18 +37,15 @@ const getPartyName = async () => {
                     sum(aa.BarCodeQty) as total_qty,
                     (select count(oo.BarCode)
                      from Dis_Scaned_QR_Data_Local as oo
-                     where oo.CustID=aa.St_CustId and oo.VehicleID=aa.VehicleID) as scanned_qty,
+                     where oo.St_CustID=aa.St_CustId and oo.VehicleID=aa.VehicleID) as scanned_qty,
                     (select count(oo.BarCode)
                      from Dis_Scaned_QR_Data_Local as oo
-                     where oo.CustID=aa.St_CustId and oo.VehicleID=aa.VehicleID) as Scanned_QR_Code
+                     where oo.St_CustID=aa.St_CustId and oo.VehicleID=aa.VehicleID) as Scanned_QR_Code
                     FROM Dis_Barcode_Data_Local as aa
                     group by 
                         aa.St_CustId,
                         aa.St_Name,
-                        aa.VehicleID
-                       
-                        `;
-
+                        aa.VehicleID`;
 
     const result = await localConnection.executeQuery(localQuery);
     if (Array.isArray(result)) {
@@ -71,7 +68,7 @@ const getItemDataScannedInfo = async (CustID, VehicleID) => {
                           (
                               SELECT COUNT(oo.BarCode)
                               FROM Dis_Scaned_QR_Data_Local AS oo
-                              WHERE oo.CustID = aa.St_CustId
+                              WHERE oo.St_CustID = aa.St_CustId
                                 AND oo.VehicleID = aa.VehicleID
                                 AND oo.ItemID = aa.ItemID
                           ) AS Scanned_Qty
@@ -83,8 +80,8 @@ const getItemDataScannedInfo = async (CustID, VehicleID) => {
       CustID,
       VehicleID,
     ]);
-    console.log("🚀 ~ getItemDataScannedInfo ~ result:", result)
-  
+    console.log('🚀 ~ getItemDataScannedInfo ~ result:', result);
+
     if (Array.isArray(result)) {
       return result;
     }
@@ -128,6 +125,7 @@ const isItemExist = async BarCode => {
     return false;
   }
 };
+
 const getItemID = async (BarCode, VehicleID) => {
   try {
     let localConnection = getSQLiteConnection();
@@ -148,7 +146,47 @@ const getItemID = async (BarCode, VehicleID) => {
   }
 };
 
-const itemNotAssignToCustomer = async (ItemID, CustID, VehicleID) => {
+const getDetails = async (BarCode) => {
+  try {
+    const localConnection = getSQLiteConnection();
+
+    const query = `
+                        SELECT 
+                        OrderID,
+                        ItemID,
+                        St_CustId AS St_CustID,
+                        Bt_CustId,
+                        AgentId,
+                        VehicleID,
+                        InvId,
+                        InvDate,
+                        BarCode,
+                        PackingTypeId,
+                        PackingTypeName,
+                        BarCodeQty,
+                        ChallanQty,
+                        TripID,
+                        TripDate,
+                        VehicleType
+                        FROM Dis_Barcode_Data_Local
+                        WHERE TRIM(BarCode) = TRIM(?)`;
+
+    const result = await localConnection.executeQuery(query, [
+      BarCode,
+    ]);
+
+    if (result && result.length > 0) {
+      return result[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log('🚀 ~ getDetails ~ error:', error);
+    return null;
+  }
+};
+
+const itemNotAssignToCustomer = async (ItemID, St_CustID, VehicleID) => {
   try {
     const localConnection = getSQLiteConnection();
 
@@ -162,7 +200,7 @@ const itemNotAssignToCustomer = async (ItemID, CustID, VehicleID) => {
 
     const result = await localConnection.executeQuery(query, [
       ItemID,
-      CustID,
+      St_CustID,
       VehicleID,
     ]);
 
@@ -173,7 +211,7 @@ const itemNotAssignToCustomer = async (ItemID, CustID, VehicleID) => {
   }
 };
 
-const isScanLimitReached = async (ItemID, CustID, VehicleID) => {
+const isScanLimitReached = async (ItemID, St_CustID, VehicleID) => {
   try {
     const localConnection = getSQLiteConnection();
 
@@ -191,17 +229,17 @@ const isScanLimitReached = async (ItemID, CustID, VehicleID) => {
           SELECT COUNT(*)
           FROM Dis_Scaned_QR_Data_Local
           WHERE ItemID = ?
-            AND CustID = ?
+            AND St_CustID = ?
             AND VehicleID = ?
         ) AS ScannedQRCode
     `;
 
     const result = await localConnection.executeQuery(query, [
       ItemID,
-      CustID,
+      St_CustID,
       VehicleID,
       ItemID,
-      CustID,
+      St_CustID,
       VehicleID,
     ]);
 
@@ -219,23 +257,37 @@ const isScanLimitReached = async (ItemID, CustID, VehicleID) => {
 };
 
 const insertLocalScanningQRData = async (
-  OrderID,
-  CustID,
-  VehicleID,
+  St_CustID,
   BarCode,
   Latitude,
   Longitude,
   UserID,
   CreatedAt,
-  EInvoice_Number,
-  EInvoiceID,
 ) => {
   try {
-    // 1. Get ItemID
-    const ItemID = await getItemID(BarCode, VehicleID);
-    if (!ItemID) {
+    let localConnection = getSQLiteConnection();
+
+    const barcodeDetails = await getDetails(BarCode);
+    if (!barcodeDetails) {
       throw new Error('Barcode not found.');
     }
+
+    const {
+      OrderID,
+      ItemID,
+      Bt_CustId,
+      AgentId,
+      VehicleID,
+      InvId,
+      InvDate,
+      PackingTypeId,
+      PackingTypeName,
+      BarCodeQty,
+      ChallanQty,
+      TripID,
+      TripDate,
+      VehicleType
+    } = barcodeDetails;
 
     // 2. Duplicate barcode
     const isExistBarcode = await isItemExist(BarCode);
@@ -246,7 +298,7 @@ const insertLocalScanningQRData = async (
     // 3. Check item assignment
     const notAssigned = await itemNotAssignToCustomer(
       ItemID,
-      CustID,
+      St_CustID,
       VehicleID,
     );
 
@@ -255,30 +307,64 @@ const insertLocalScanningQRData = async (
     }
 
     // 4. Check scan limit
-    const isScanLimit = await isScanLimitReached(ItemID, CustID, VehicleID);
+    const isScanLimit = await isScanLimitReached(ItemID, St_CustID, VehicleID);
 
     if (isScanLimit) {
       throw new Error('All QR Codes for this item have already been scanned.');
     }
-    let localConnection = getSQLiteConnection();
 
-    const localQuery = `INSERT INTO Dis_Scaned_QR_Data_Local (OrderID, ItemID, CustID, VehicleID, EInvoice_Number,BarCode, Latitude, Longitude,UserID,CreatedAt,EInvoiceID)
-                        VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)`;
+    const localQuery = `
+INSERT INTO Dis_Scaned_QR_Data_Local (
+    OrderID,
+    ItemID,
+    St_CustID,
+    Bt_CustId,
+    AgentId,
+    VehicleID,
+    InvId,
+    InvDate,
+    BarCode,
+    PackingTypeId,
+    PackingTypeName,
+    BarCodeQty,
+    ChallanQty,
+    TripID,
+    TripDate,
+    VehicleType,
+    Latitude,
+    Longitude,
+    UserID,
+    CreatedAt
+)
+VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+)
+`;
 
     await localConnection.executeQuery(localQuery, [
       OrderID,
       ItemID,
-      CustID,
+      St_CustID,
+      Bt_CustId,
+      AgentId,
       VehicleID,
-      EInvoice_Number,
+      InvId,
+      InvDate,
       BarCode,
+      PackingTypeId,
+      PackingTypeName,
+      BarCodeQty,
+      ChallanQty,
+      TripID,
+      TripDate,
+      VehicleType,
       Latitude,
       Longitude,
       UserID,
       CreatedAt,
-      EInvoiceID,
     ]);
-    console.log('Dis_Scaned_QR_Data_Local table insert successfully');
+
+    console.log('Dis_Scaned_QR_Data_Local inserted successfully');
   } catch (error) {
     if (
       error.message?.includes('SQLITE_CONSTRAINT_UNIQUE') ||

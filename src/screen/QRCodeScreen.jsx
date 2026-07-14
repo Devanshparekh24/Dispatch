@@ -6,6 +6,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentLocationPromise } from '../utils/getCurrentPosition';
 import BottomSheet from '../components/Sheet/BottomSheet';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import useScanQRCodeData from '../hooks/useScanQRCodeData';
 import useGetSyncScannedData from '../hooks/useGetSyncScannedData';
 import useCustomerItemWise from '../hooks/useCustomerItemWise';
@@ -25,7 +26,7 @@ const QRCodeScreen = ({ route }) => {
     const [zoom, setZoom] = useState(1);
     const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
-    const { customerName ,custID,VehicleID,InvoNo} = route.params;
+    const { customerName, custID, VehicleID, InvoNo } = route.params;
     const { userID } = useAuth();
     const device = useCameraDevice('back');
     const navigation = useNavigation();
@@ -49,7 +50,6 @@ const QRCodeScreen = ({ route }) => {
             customerRefetch();
         } catch (error) {
             console.log("🚀 ~ handleGoBack ~ error:", error)
-
         }
     }
 
@@ -112,15 +112,11 @@ const QRCodeScreen = ({ route }) => {
                 const locationData = await getCurrentLocationPromise();
 
                 await insertQRData({
-                    // OrderID: OrderID,
-                    CustId: custID,
-                    // VehicleID: vehicle,
+                    St_CustID: custID,
                     BarCode: qrValue,
                     Latitude: locationData.latitude,
                     Longitude: locationData.longitude,
                     UserID: userID,
-                    // EInvoice_Number: einvoiceNo,
-                    // EInvoiceID: einvoiceID,
                     CreatedAt: currentDateTime,
                 });
 
@@ -135,7 +131,7 @@ const QRCodeScreen = ({ route }) => {
 
                 const hasInternet = await isInternet();
                 if (hasInternet) {
-                    await serverSyncData();
+                    // await serverSyncData();
                 }
 
 
@@ -172,7 +168,7 @@ const QRCodeScreen = ({ route }) => {
             </View>
         );
     }
-    
+
     return (
         <View style={styles.container}>
             <Camera
@@ -243,6 +239,8 @@ const QRCodeScreen = ({ route }) => {
 
 
             <BottomSheet
+                nestedScrollEnabled={true}
+
                 ref={bottomSheetRef}
                 snapPoints={snapPoints}
                 index={0}                      // always render at first snap point, not hidden
@@ -255,13 +253,13 @@ const QRCodeScreen = ({ route }) => {
                     <Text className={`text-lg font-bold text-gray-800 ${sheetIndex === 0 ? '' : 'text-center text-sm'}`}>{customerName}</Text>
                     <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{VehicleID}</Text>
                     <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{InvoNo}</Text>
-                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{custID}</Text>             
+                    <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{custID}</Text>
                     {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{einvoiceID}</Text> */}
                     {/* <Text className={`text-md font-semibold text-gray-600 ${sheetIndex === 0 ? 'hidden' : 'flex'}`}>{OrderID}</Text> */}
                 </View>
 
                 {/* List of Items */}
-                <FlatList
+                <BottomSheetFlatList
                     data={itemWiseData}
                     keyExtractor={(item, index) => item.ItemID}
                     contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 }}
@@ -272,19 +270,24 @@ const QRCodeScreen = ({ route }) => {
                         const itemID = item.ItemID || "N/A";
                         return (
                             <>
-                                <View className='py-2.5 flex-row justify-between items-center border-b border-gray-100'>
-                                    <Text className='text-base font-medium text-gray-700'>
+                                <View className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '>
+                                    <Text
+                                        adjustsFontSizeToFit
+                                        numberOfLines={1}
+                                        minimumFontScale={0.10}
+                                        className='text-base font-medium text-gray-700'>
                                         {itemName}
                                     </Text>
-                                    <Text className='text-base font-semibold text-blue-600 text-right' >
+                                    <Text adjustsFontSizeToFit
+                                        numberOfLines={1}
+                                        minimumFontScale={0.10} className='text-base font-semibold text-blue-600 text-right' >
                                         {noOfQty} / {scannedQty}
                                     </Text>
                                 </View>
                                 <View>
-                                    <Text>{itemID}</Text>
+                                    {/* <Text>{itemID}</Text> */}
                                 </View>
                             </>
-
                         );
                     }}
                 />

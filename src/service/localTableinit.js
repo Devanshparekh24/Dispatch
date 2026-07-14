@@ -85,7 +85,7 @@ const createBarcodeDatatTable = async () => {
       Bt_Name	TEXT,
       St_CustId	INTEGER,
       St_Name	TEXT,
-      OrderID	INTEGER,
+      OrderID	TEXT,
       ChallanId	INTEGER,
       ChallanNo	TEXT,
       ChallanDate	TEXT,
@@ -95,30 +95,11 @@ const createBarcodeDatatTable = async () => {
       PackingTypeId	INTEGER,
       PackingTypeName	TEXT,
       BarcodeId	INTEGER,
-      BarCode	TEXT UNIQUE,
-      BarCodeQty	INTEGER
+      BarCode	TEXT,
+      BarCodeQty	REAL
 )
    
     `;
-    //     const query = `
-    //      CREATE TABLE IF NOT EXISTS Dis_Barcode_Data_Local (
-    //     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    //     OrderID TEXT,
-    //     BarCode  TEXT UNIQUE,
-    //     VehicleID TEXT,
-    //     EInvoiceID INTEGER,
-    //     EInvoice_Number TEXT,
-    //     CustID INTEGER,
-    //     Qty  REAL,
-    //     ItemID INTEGER,
-    //     ItemName TEXT,
-    //     CustName TEXT,
-    //     UserID INTEGER,
-    //     AndroidID TEXT,
-    //     IsSynced INTEGER DEFAULT 0,
-    //     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-    //   )
-    // `;
 
     Localconnection.transaction(tx => {
       tx.executeSql(
@@ -149,11 +130,20 @@ const createScaningQRDatatTable = async () => {
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     OrderID TEXT,
     ItemID INTEGER,
-    CustID INTEGER,
+    St_CustID INTEGER,
+    Bt_CustId	INTEGER,
+    AgentId	INTEGER,
     VehicleID TEXT,
-    EInvoiceID INTEGER,
-    EInvoice_Number TEXT,
+    InvId	INTEGER,
+    InvDate	TEXT,
     BarCode   TEXT UNIQUE,
+    PackingTypeId	INTEGER,
+    PackingTypeName	TEXT,
+    BarCodeQty	REAL,
+    ChallanQty	INTEGER,
+    TripID	INTEGER,
+    TripDate	TEXT,
+    VehicleType	TEXT,
     Latitude REAL,
     Longitude REAL,
     UserID INTEGER,
@@ -222,6 +212,7 @@ const initTable = async () => {
     await createVechileMaster();
     await createBarcodeDatatTable();
     await createScaningQRDatatTable();
+    await customErrorLog();
   } catch (error) {
     console.log('🚀 ~ initTable ~ error:', error);
   }

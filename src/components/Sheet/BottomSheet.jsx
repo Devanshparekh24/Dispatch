@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
-import { StyleSheet } from 'react-native';
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { StyleSheet, View } from 'react-native';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 const BottomSheet = forwardRef(({ children, snapPoints = ['25%', '50%'], onChange }, ref) => {
     const bottomSheetModalRef = useRef(null);
@@ -42,9 +42,9 @@ const BottomSheet = forwardRef(({ children, snapPoints = ['25%', '50%'], onChang
             index={0}
             enablePanDownToClose={false}
         >
-            <BottomSheetView style={styles.contentContainer}>
+            <View style={styles.contentContainer}>
                 {children}
-            </BottomSheetView>
+            </View>
         </BottomSheetModal>
     );
 });

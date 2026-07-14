@@ -74,15 +74,15 @@ const ScanQRCodeScreen = () => {
         console.log("🚀 ~ ScanQRCodeScreen ~ data:", data)
 
         if (search.trim()) {
-            data = data.filter(item => item.CustName.toLowerCase().includes(search.toLowerCase()));
+            data = data.filter(item => item.St_Name.toLowerCase().includes(search.toLowerCase()));
         }
 
         switch (selectedFilter) {
             case 'pending':
-                data = data?.filter(item => item.Scanned_QR_Code < item.Total_QR_Code)
+                data = data?.filter(item => item.Scanned_QR_Code < item.no_of_barcode)
                 break;
             case 'scanned':
-                data = data?.filter(item => item.Scanned_QR_Code === item.Total_QR_Code)
+                data = data?.filter(item => item.Scanned_QR_Code === item.no_of_barcode)
                 break;
 
             default:
@@ -99,7 +99,7 @@ const ScanQRCodeScreen = () => {
             printError("Error in onRefresh:", error);
         }
     }
-    const handleOpenScanner = (CustName, custID, VehicleID, InvoNo,Total_qty) => {
+    const handleOpenScanner = (CustName, custID, VehicleID, InvoNo, Total_qty) => {
         if (!vehicle) {
             Alert.alert('Alert', 'Please select vehicle');
             return;
@@ -107,9 +107,9 @@ const ScanQRCodeScreen = () => {
         navigation.navigate('ScanQRCode', {
             customerName: CustName,
             custID: custID,
-            VehicleID:VehicleID,
-            InvoNo:InvoNo
-            
+            VehicleID: VehicleID,
+            InvoNo: InvoNo
+
         });
 
         console.log('Navigating to ScanQRCode screen');
@@ -183,7 +183,7 @@ const ScanQRCodeScreen = () => {
 
                             Pending (
                             {custData?.filter(
-                                item => item.Scanned_QR_Code < item.Total_QR_Code,
+                                item => item.Scanned_QR_Code < item.no_of_barcode,
                             ).length ?? 0}
                             )
                         </Chip>
@@ -198,7 +198,7 @@ const ScanQRCodeScreen = () => {
                             onPress={() => setSelectedFilter('scanned')}>
                             Done (
                             {custData?.filter(
-                                item => item.Scanned_QR_Code === item.Total_QR_Code,
+                                item => item.Scanned_QR_Code === item.no_of_barcode,
                             ).length ?? 0}
                             )
                         </Chip>
@@ -232,15 +232,18 @@ const ScanQRCodeScreen = () => {
                             const custID = item.St_CustId || "clsN/A";
                             const total_qty = item.total_qty || 0;
                             const no_of_items = item.no_of_item || 0;
-                            const total_qr_code = item.no_of_barcode || 0;
+                            const no_of_barcode = item.no_of_barcode || 0;
                             const scanningQRCode = item.Scanned_QR_Code || 0;
                             const InvoNo = item.InvNo || "N/A";
+                            const InvoID = item.InvId || "N/A";
+                            const OrderId = item.OrderId || "N/A";
+
                             let cardColor = COLORS.white;
 
-                            const isvisible = scanningQRCode !== total_qr_code;
+                            const isvisible = scanningQRCode !== no_of_barcode;
                             if (scanningQRCode === 0) {
                                 cardColor = COLORS.white;
-                            } else if (scanningQRCode === total_qr_code) {
+                            } else if (scanningQRCode === no_of_barcode) {
                                 cardColor = COLORS.success;
                             } else {
                                 cardColor = COLORS.warning;
@@ -248,8 +251,8 @@ const ScanQRCodeScreen = () => {
 
                             let progress;
 
-                            if (total_qr_code > 0) {
-                                progress = scanningQRCode / total_qr_code;
+                            if (no_of_barcode > 0) {
+                                progress = scanningQRCode / no_of_barcode;
                             } else {
                                 progress = 0;
                             }
@@ -263,11 +266,12 @@ const ScanQRCodeScreen = () => {
                                         <View className='flex-row justify-between items-center'>
                                             {/* Left side */}
                                             <View style={{ flex: 1, marginRight: 12 }}>
-                                                <Text className='text-sm font-semibold'>{custName}</Text>
+                                                <Text className='text-xs font-semibold'>{custName}</Text>
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
                                                 <Text className='text-xs text-gray-600'>{custID}</Text>
-                                                <Text className='text-xs text-gray-600'>{InvoNo}</Text>
-                                                {/* <Text className='text-xs text-gray-600'>orderID :{orderID}</Text> */}
+                                                <Text className='text-xs text-gray-600 font-semibold  '>{InvoNo}</Text>
+                                                <Text className='text-xs text-gray-600'>Invo ID : {InvoID}</Text>
+                                                <Text className='text-xs text-gray-600'>orderID :{OrderId}</Text>
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty (kg) : </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
@@ -281,7 +285,7 @@ const ScanQRCodeScreen = () => {
                                                             // text={"QR Code"}
                                                             icon={"qr-code-outline"}
                                                             onPress={() => {
-                                                                return handleOpenScanner(custName, custID,vehicleNo,InvoNo);
+                                                                return handleOpenScanner(custName, custID, vehicleNo, InvoNo);
                                                             }}
                                                         />
                                                     </View>
@@ -291,7 +295,7 @@ const ScanQRCodeScreen = () => {
                                         </View>
 
                                         <View className=' mt-2 flex-row space-x-7'>
-                                            <Text className='text-blue-600 text-sm font-semibold'>{total_qr_code}</Text>
+                                            <Text className='text-blue-600 text-sm font-semibold'>{no_of_barcode}</Text>
                                             <Text className='text-gray-400 text-sm font-semibold'> / </Text>
                                             <Text className='text-red-500 text-sm font-bold'>{scanningQRCode}</Text>
                                         </View>

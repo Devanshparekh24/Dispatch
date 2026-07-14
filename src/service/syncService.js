@@ -341,35 +341,54 @@ const qrCodeScannedDataSync = async () => {
         continue;
       }
 
-      const query = `
-        INSERT INTO Dis_Scaned_QR_Data (
-          Local_ID,
-          OrderID,
-          ItemID,
-          CustID,
-          VehicleID,
-          BarCode,
-          Latitude,
-          Longitude,
-          UserID,
-          deviceTimeAt,
-          EInvoiceID
-
-        )
-        VALUES (
-          '${item.ID || ''}',
-          '${item.OrderID || ''}',
-          ${item.ItemID || 0},
-          ${item.CustID || 0},
-          '${item.VehicleID || ''}',
-          '${item.BarCode || ''}',
-          ${item.Latitude || 0},
-          ${item.Longitude || 0},
-          ${item.UserID || 0},
-          '${item.CreatedAt || ''}',
-          ${item.EInvoiceID ?? 'NULL'}
-          )
-      `;
+   const query = `
+INSERT INTO Dis_Scaned_QR_Data (
+    Local_ID,
+    OrderID,
+    ItemID,
+    St_CustID,
+    Bt_CustId,
+    AgentId,
+    VehicleID,
+    InvId,
+    InvDate,
+    BarCode,
+    PackingTypeId,
+    PackingTypeName,
+    BarCodeQty,
+    ChallanQty,
+    TripID,
+    TripDate,
+    VehicleType,
+    Latitude,
+    Longitude,
+    UserID,
+    DeviceTimeAt
+)
+VALUES (
+    ${item.ID},
+    '${item.OrderID}',
+    ${item.ItemID},
+    ${item.St_CustID},
+    ${item.Bt_CustId},
+    ${item.AgentId},
+    '${item.VehicleID}',
+    ${item.InvId},
+    '${item.InvDate}',
+    '${item.BarCode}',
+    ${item.PackingTypeId},
+    '${item.PackingTypeName}',
+    ${item.BarCodeQty},
+    ${item.ChallanQty},
+    ${item.TripID},
+    '${item.TripDate}',
+    '${item.VehicleType}',
+    ${item.Latitude},
+    ${item.Longitude},
+    ${item.UserID},
+    '${item.CreatedAt}'
+)
+`;
       await mssql.executeUpdate(query);
 
       // Mark record as synced in SQLite
