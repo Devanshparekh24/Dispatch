@@ -9,7 +9,7 @@ import SettingScreen from '../../screen/SettingScreen';
 import DemoScreen from '../../screen/DemoScreen';
 import ScanQRCodeScreen from '../../screen/CustomerQRList';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import MapwebScreen from '../../screen/MapwebScreen';
 // import AttendanceScreen from '../../screen/AttendanceScreen';
 // import VisitScreen from '../../screen/VisitScreen';
 // import ProfileScreen from '../../screen/ProfileScreen';
@@ -32,6 +32,11 @@ const SCREENS = {
    Map: {
     component: MapScreen,
     label: 'Map',
+    icon: 'map',
+  },
+   MapWeb: {
+    component: MapwebScreen,
+    label: 'Web',
     icon: 'map',
   },
   Setting: {

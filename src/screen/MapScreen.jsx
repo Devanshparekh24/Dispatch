@@ -9,23 +9,17 @@ const MapScreen = () => {
     const { data: customerData, refetch: customerRefetch, isRefetching } = useCustomer();
     console.log("🚀 ~ MapScreen ~ customerData:", customerData)
 
-
-    const custData = customerData?.data?.[0];
-    // console.log("🚀 ~ MapScreen ~ custData:", custData)
-    console.log("Lat ~ MapScreen ~ custData: ", custData.Latitude)
-    console.log("Longi:", custData.Longitude)
-
-    const navigation = useNavigation();
-
+    const custData = customerData?.data;
 
     useFocusEffect(
         useCallback(() => {
             customerRefetch();
         }, [customerRefetch])
     );
+
     return (
         <>
-            <Map  markers={customerData?.data ?? []}  />
+            <Map markers={custData} />
         </>
     )
 }
