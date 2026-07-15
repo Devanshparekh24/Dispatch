@@ -251,22 +251,25 @@ const isBarcodeExistInServer = async barCode => {
     const query = `
       SELECT COUNT(1) AS Total
       FROM Dis_Scaned_QR_Data
-      WHERE BarCode = '${barCode}'
+      WHERE TRIM(BarCode) = TRIM('${barCode}')
     `;
 
     const result = await mssql.executeQuery(query);
-
-    return result[0].Total > 0;
-  } catch (error) {}
+    return result && result[0] && result[0].Total > 0;
+  } catch (error) {
+    console.log("🚀 ~ isBarcodeExistInServer ~ error:", error)
+    return false;
+  }
 };
-const insertConflictQRCode = async item => {
+
+const insertConflictQRCode = async (item) => {
   try {
     const mssql = await getMSSQLConnection();
 
     const query = `
       INSERT INTO Dis_Conflict_Scaned_QR_Data
       (
-       LocaID,
+      LocaID,
     UserId,
     OrderID,
     ItemID,
@@ -289,27 +292,27 @@ const insertConflictQRCode = async item => {
     DeviceTimeAt
 )
 VALUES (
-    ${item.LocaID},
-    '${item.UserId}',
-    '${item.OrderID}',
-    ${item.ItemID},
-    ${item.St_CustID},
-    ${item.Bt_CustId},
-    ${item.AgentId},
-    '${item.VehicleID}',
-    ${item.InvId},
-    '${item.InvDate}',
-    '${item.BarCode}',
-    ${item.PackingTypeId},
-    '${item.PackingTypeName}',
-    ${item.BarCodeQty},
-    ${item.ChallanQty},
-    ${item.TripID},
-    '${item.TripDate}',
-    '${item.VehicleType}',
-    ${item.Latitude},
-    ${item.Longitude},
-    '${item.CreatedAt}'
+    ${item.ID || 0},
+    '${item.UserID || ''}',
+    '${item.OrderID || ''}',
+    ${item.ItemID || 0},
+    ${item.St_CustID || 0},
+    ${item.Bt_CustId || 0},
+    ${item.AgentId || 0},
+    '${item.VehicleID || ''}',
+    ${item.InvId || 0},
+    '${item.InvDate || ''}',
+    '${item.BarCode || ''}',
+    ${item.PackingTypeId || 0},
+    '${item.PackingTypeName || ''}',
+    ${item.BarCodeQty || 0},
+    ${item.ChallanQty || 0},
+    ${item.TripID || 0},
+    '${item.TripDate || ''}',
+    '${item.VehicleType || ''}',
+    ${item.Latitude || 0},
+    ${item.Longitude || 0},
+    '${item.CreatedAt || ''}'
 )
 `;
 
