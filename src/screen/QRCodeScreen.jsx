@@ -74,15 +74,21 @@ const QRCodeScreen = ({ route }) => {
             });
         }
     }, []);
+    const isScanningRef = useRef(false);
+
     // 2. Configure the code scanner with a throttle/lock
     const codeScanner = useCodeScanner({
         codeTypes: ['qr'],
         onCodeScanned: async (codes, frame) => {
             const qrValue = codes[0]?.value;
             try {
-                if (isScanned || !qrValue || isEmpty(qrValue)) {
+                if (isScanningRef.current || isScanned || !qrValue || isEmpty(qrValue)) {
                     return;
                 }
+
+                // Immediately lock synchronously
+                isScanningRef.current = true;
+                setIsScanned(true);
 
                 // Auto zoom logic like GPay
                 if (codes.length > 0 && codes[0].frame && device) {
@@ -98,6 +104,8 @@ const QRCodeScreen = ({ route }) => {
                         const targetZoom = Math.min(device.minZoom * 2.5, device.maxZoom);
                         console.log(`🚀 ~ Auto-zooming from ${device.minZoom} to ${targetZoom} (Ratio: ${ratio})`);
                         setZoom(targetZoom);
+                        isScanningRef.current = false;
+                        setIsScanned(false);
                         return; // Return early, let the camera zoom in on the next frames
                     }
                 }
@@ -106,10 +114,7 @@ const QRCodeScreen = ({ route }) => {
                     throw new Error('Invalid QR Code');
                 }
 
-                // 2. Lock the scanner so subsequent camera frames are ignored
-                setIsScanned(true);
-
-                Vibration.vibrate(200); // Vibrate for 500ms to give feedback to the user
+                Vibration.vibrate(200); // Vibrate for 200ms to give feedback to the user
                 console.log('QR Code Scanned:', qrValue);
                 const locationData = await getCurrentLocationPromise();
 
@@ -136,23 +141,25 @@ const QRCodeScreen = ({ route }) => {
                     await serverSyncData();
                 }
 
-
-                // Reset scanner lock and zoom after 5 seconds of success
+                // Reset scanner lock and zoom after 2.5 seconds of success
                 setTimeout(() => {
+                    isScanningRef.current = false;
                     setIsScanned(false);
                     if (device) setZoom(device.minZoom);
-                }, 5000);
+                }, 2500);
 
             } catch (error) {
                 console.log("🚀 ~ QRCodeScreen ~ error:", error);
                 Vibration.vibrate([100, 100, 100]); // Short vibration error pattern
 
                 // Lock scanner during Alert popup, unlock and reset zoom when user clicks OK
+                isScanningRef.current = true;
                 setIsScanned(true);
                 Alert.alert("Invalid QR Code", error.message, [
                     {
                         text: "OK",
                         onPress: () => {
+                            isScanningRef.current = false;
                             setIsScanned(false);
                             if (device) setZoom(device.minZoom);
                         }

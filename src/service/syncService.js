@@ -97,6 +97,22 @@ const existVehileFetch = async vehicleID => {
   } catch (error) {}
 };
 
+const releaseVehicle = async vehicleID => {
+  const mssqlConn = await getMSSQLConnection();
+
+  const query = `
+    UPDATE Trip_Master_New
+    SET
+      UserID = NULL,
+      AndroidID = NULL
+    WHERE
+      VehicleID = '${vehicleID}'
+      AND CAST(TDate AS DATE) = CAST(GETDATE() AS DATE)
+  `;
+
+  await mssqlConn.executeUpdate(query);
+};
+
 const isVehicleChangeAllowed = async () => {
   try {
     const localConnection = await getSQLiteConnection();
@@ -139,7 +155,7 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
     if (!canChangeVehicle) {
       throw new Error('Please sync all bags before changing the vehicle.');
     }
-
+    await releaseVehicle(vehicleID);
     const existingUser = await existVehileFetch(vehicleID);
 
     if (existingUser) {
@@ -230,9 +246,7 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
             item.BarCode,
             item.BarCodeQty,
             item.Latitude,
-            item.Longitude
-
-
+            item.Longitude,
           ],
         );
       });
@@ -257,12 +271,12 @@ const isBarcodeExistInServer = async barCode => {
     const result = await mssql.executeQuery(query);
     return result && result[0] && result[0].Total > 0;
   } catch (error) {
-    console.log("🚀 ~ isBarcodeExistInServer ~ error:", error)
+    console.log('🚀 ~ isBarcodeExistInServer ~ error:', error);
     return false;
   }
 };
 
-const insertConflictQRCode = async (item) => {
+const insertConflictQRCode = async item => {
   try {
     const mssql = await getMSSQLConnection();
 

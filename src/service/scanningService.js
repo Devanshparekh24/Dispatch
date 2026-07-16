@@ -120,7 +120,32 @@ const getlocalBarCodeData = async () => {
     return [];
   }
 };
+const isPackageValid = async (ItemID, St_CustID, VehicleID, PackingTypeId) => {
+  try {
+    const localConnection = getSQLiteConnection();
 
+    const query = `
+      SELECT COUNT(*) AS Total
+      FROM Dis_Barcode_Data_Local
+      WHERE ItemID = ?
+        AND St_CustId = ?
+        AND VehicleID = ?
+        AND PackingTypeId = ?
+    `;
+
+    const result = await localConnection.executeQuery(query, [
+      ItemID,
+      St_CustID,
+      VehicleID,
+      PackingTypeId,
+    ]);
+
+    return result[0].Total > 0;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
 const isItemExist = async BarCode => {
   try {
     const localConnection = getSQLiteConnection();
@@ -280,6 +305,19 @@ const insertLocalScanningQRData = async (
       TripDate,
       VehicleType,
     } = barcodeDetails;
+
+    const packageValid = await isPackageValid(
+      ItemID,
+      St_CustID,
+      VehicleID,
+      PackingTypeId,
+    );
+
+    if (!packageValid) {
+      throw new Error(
+        `Package ${PackingTypeName} is not allowed for this customer.`,
+      );
+    }
 
     // 2. Duplicate barcode
     const isExistBarcode = await isItemExist(BarCode);

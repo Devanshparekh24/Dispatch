@@ -29,11 +29,11 @@ const SCREENS = {
     label: 'Customer List',
     icon: 'list',
   },
-   Map: {
-    component: MapScreen,
-    label: 'Map',
-    icon: 'map',
-  },
+  //  Map: {
+  //   component: MapScreen,
+  //   label: 'Map',
+  //   icon: 'map',
+  // },
    MapWeb: {
     component: MapwebScreen,
     label: 'Web',
