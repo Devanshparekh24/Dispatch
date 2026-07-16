@@ -82,26 +82,49 @@ const getLocalUsers = async () => {
   }
 };
 
-const forgetPassword = async (mobileNO, otp) => {
+const forgetPassword = async mobileNO => {
   try {
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log('Generated OTP:', otp);
     const serverConnection = await getMSSQLConnection();
     const query = `
             SELECT count(1) as Total FROM User_Master
-            WHERE Mobile = ${mobileNO}
+            WHERE Mobile = '${mobileNO}'
         `;
     const result = await serverConnection.executeQuery(query);
 
     if (result && result.length > 0 && result[0].Total > 0) {
-      return true;
+      // Generate OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      console.log('Generated OTP:', otp);
+      return { success: true, otp };
     } else {
-      throw new Error(`${mobileNO} Number is Not Register`);
+      return {
+        success: false,
+        message: `${mobileNO} Number is Not Registered`,
+      };
     }
   } catch (error) {
     console.log('🚀 ~ forgetPassword ~ error:', error);
+    return {
+      success: false,
+      message: error.message || 'Error checking mobile number',
+    };
   }
 };
 
-export { inserUserMasterTable, userServerExist, getLocalUsers };
+const updatePassword = async (mobileNO, newPassword) => {
+  try {
+    const serverConnection = await getMSSQLConnection();
+    const query = `
+            UPDATE User_Master
+            SET Password = '${newPassword}'
+            WHERE Mobile = '${mobileNO}'
+        `;
+    await serverConnection.executeUpdate(query);
+    return { success: true };
+  } catch (error) {
+    console.log('🚀 ~ updatePassword ~ error:', error);
+    return { success: false };
+  }
+};
+
+export { inserUserMasterTable, userServerExist, getLocalUsers, forgetPassword,updatePassword };

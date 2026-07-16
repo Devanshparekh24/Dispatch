@@ -10,20 +10,27 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuthentication } from '../hooks/useloginCreateUser';
 import { isEmpty, isValidMobile } from '../utils/validation';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import saveError from '../service/Log'
 import { useAuth } from '../context/AuthContex';
-
+import { useErroLog } from '../hooks/useLog';
+import { printError } from '../utils/helper';
 const LoginScreen = () => {
     const navigation = useNavigation();
     const { mobile, setMobile, password, setPassword } = useAuth();
     const { mutateAsync: login, isPending, isError, error } = useAuthentication();
+    const { mutateAsync: insertLoggs } = useErroLog();
     const [mobileError, setMobileError] = useState('');
-
-    const handleForgotPassword = () => {
+    const handleForgotPassword = async() => {
         try {
-            navigation.navigate('VerifyUserMobie');
+            navigation.navigate('VerifyUserMobie', { mode: 'forgotPassword' });
         } catch (error) {
-            Alert.alert('Error', error.message);
+            printError(error);
+
+             await insertLoggs({
+                ErrorType: 'Login Error',
+                ErrorMessage: error.message,
+                Screen: 'LoginScreen'
+            })
+            console.log('Error logged successfully');
 
         }
     }
@@ -89,7 +96,15 @@ const LoginScreen = () => {
             }
         } catch (error) {
             Alert.alert('Error', error.message);
-            saveError('Login Error', error.message, 'LoginScreen');
+            printError(error);
+
+            await insertLoggs({
+                ErrorType: 'Login Error',
+                ErrorMessage: error.message,
+                Screen: 'LoginScreen'
+            })
+            console.log('Error logged successfully');
+
         }
     };
 

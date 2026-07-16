@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform, ScrollView, Image, Alert } from 'react-native'
 import React from 'react'
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,14 +6,15 @@ import Applogo from '../assets/images/Dispatch_Logo.png';
 import Input from '../components/Input/Input';
 import FullButton from '../components/Buttoon/FullButton';
 import { appHeaderName } from '../constant/HeaderName';
-import { isEmpty, isValidMobile } from '../utils/validation';
-import { useAuthentication } from '../hooks/useloginCreateUser';
 import { useAuth } from '../context/AuthContex';
-const VerifyUser = () => {
+import { useNavigation } from '@react-navigation/native';
+import sendSMS from '../utils/Sms/smsService';
+import { forgetPassword } from '../service/authService';
+
+const VerifyUserScreen = () => {
     const { mobile, setMobile } = useAuth();
     const [mobileError, setMobileError] = useState('');
-    const { mutateAsync: verifyUser } = useAuthentication();
-
+    const navigation = useNavigation();
 
     const handleMobileChange = (text) => {
         // Remove non-digit characters
@@ -31,6 +32,31 @@ const VerifyUser = () => {
             setMobileError('Enter a valid 10-digit mobile number');
         } else {
             setMobileError('');
+        }
+    };
+
+    const handleNavigateOtpScreen = async () => {
+        try {
+            const response = await forgetPassword(mobile);
+            if (response && response.success) {
+                const generatedOtp = response.otp;
+                console.log("Generated OTP:", generatedOtp);
+
+                const result = await sendSMS(mobile, generatedOtp);
+                console.log('SMS sent successfully:', result);
+
+                navigation.navigate('VerifyOtp', {
+                    mobile: mobile,
+                    otp: generatedOtp
+                });
+                setMobile(mobile);
+            } else {
+                Alert.alert('Verification Failed', response?.message || 'Mobile number is not registered');
+            }
+        }
+        catch (error) {
+            console.error("handleNavigateOtpScreen error:", error);
+            Alert.alert('Error', 'Failed to send SMS. Please try again.');
         }
     };
     return (
@@ -79,8 +105,13 @@ const VerifyUser = () => {
                             <View className='mt-4'>
                                 <FullButton
                                     title="Verify Mobile No"
-                                    onPress={true}
-                                    disabled={true}
+                                    onPress={handleNavigateOtpScreen}
+                                    disabled={!mobile || Boolean(mobileError)}
+                                />
+                                <FullButton
+                                    title="Password"
+                                    onPress={() => navigation.navigate('ChangePasswordScreen')}
+
                                 />
                             </View>
                         </View>
@@ -91,4 +122,4 @@ const VerifyUser = () => {
     )
 }
 
-export default VerifyUser
+export default VerifyUserScreen

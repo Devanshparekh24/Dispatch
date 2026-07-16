@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, ActivityIndicator,LogBox  } from 'react-native';
+import { View, ActivityIndicator, LogBox } from 'react-native';
 import LoginScreen from './src/auth/LoginScreen';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,8 +7,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BottomNavigationTab from './src/components/Navigation/BottomNavigationTab';
 import initTable from './src/service/localTableinit'
 import QRCodeScreen from './src/screen/QRCodeScreen';
-import VerifyUser from './src/auth/VerifyUser';
+import VerifyUserScreen from './src/auth/VerifyUserScreen';
+import OTPScreen from './src/auth/OTPScreen';
+import ChangePasswordScreen from './src/auth/ChangePasswordScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 LogBox.ignoreAllLogs();
 
 const Stack = createNativeStackNavigator();
@@ -64,9 +67,11 @@ const App = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="VerifyUserMobie" component={VerifyUser} />
+          <Stack.Screen name="VerifyUserMobie" component={VerifyUserScreen} />
+          <Stack.Screen name="VerifyOtp" component={OTPScreen} />
           <Stack.Screen name="Main" component={BottomNavigationTab} />
           <Stack.Screen name="ScanQRCode" component={QRCodeScreen} />
+          <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

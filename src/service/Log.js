@@ -1,5 +1,5 @@
 import { getSQLiteConnection } from '../backend/DB/db';
-
+import { currentDateTime } from '../utils/TimeHelp';
 
 let localConn = getSQLiteConnection();
 
@@ -10,7 +10,7 @@ const saveError = async (ErrorType, ErrorMessage, Screen) => {
         localConn.transaction(tx => {
             tx.executeSql(
                 query,
-                [ErrorType, ErrorMessage, Screen, new Date().toISOString()],
+                [ErrorType, ErrorMessage, Screen, currentDateTime],
                 () => {
                     console.log('Error logged successfully');
                 },

@@ -8,6 +8,7 @@ const PasswordInput = ({
     value,
     onChangeText,
     label = 'Password',
+    error,
     ...props
 }) => {
 
@@ -20,6 +21,7 @@ const PasswordInput = ({
             value={value}
             onChangeText={onChangeText}
             secureTextEntry={!showPassword}
+            error={error}
             rightElement={
                 <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}

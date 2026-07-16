@@ -372,53 +372,29 @@ const qrCodeScannedDataSync = async () => {
       }
 
       const query = `
-INSERT INTO Dis_Scaned_QR_Data (
-    LocaID,
-    UserId,
-    OrderID,
-    ItemID,
-    St_CustID,
-    Bt_CustId,
-    AgentId,
-    VehicleID,
-    InvId,
-    InvDate,
-    BarCode,
-    PackingTypeId,
-    PackingTypeName,
-    BarCodeQty,
-    ChallanQty,
-    TripID,
-    TripDate,
-    VehicleType,
-    Latitude,
-    Longitude,
-    DeviceTimeAt
-)
-VALUES (
-    ${item.ID || 0},
-    '${item.UserID || ''}',
-    '${item.OrderID || ''}',
-    ${item.ItemID || 0},
-    ${item.St_CustID || 0},
-    ${item.Bt_CustId || 0},
-    ${item.AgentId || 0},
-    '${item.VehicleID || ''}',
-    ${item.InvId || 0},
-    '${item.InvDate || ''}',
-    '${item.BarCode || ''}',
-    ${item.PackingTypeId || 0},
-    '${item.PackingTypeName || ''}',
-    ${item.BarCodeQty || 0},
-    ${item.ChallanQty || 0},
-    ${item.TripID || 0},
-    '${item.TripDate || ''}',
-    '${item.VehicleType || ''}',
-    ${item.Latitude || 0},
-    ${item.Longitude || 0},
-    '${item.CreatedAt || ''}'
-)
-`;
+        EXEC PRC_Dis_Ins_Scanned_QR_Data 
+          @LocaID = ${item.ID || 0},
+          @UserId = '${item.UserID || ''}',
+          @OrderID = '${item.OrderID || ''}',
+          @ItemID = ${item.ItemID || 0},
+          @St_CustID = ${item.St_CustID || 0},
+          @Bt_CustId = ${item.Bt_CustId || 0},
+          @AgentId = ${item.AgentId || 0},
+          @VehicleID = '${item.VehicleID || ''}',
+          @InvId = ${item.InvId || 0},
+          @InvDate = '${item.InvDate || ''}',
+          @BarCode = '${item.BarCode || ''}',
+          @PackingTypeId = ${item.PackingTypeId || 0},
+          @PackingTypeName = '${item.PackingTypeName || ''}',
+          @BarCodeQty = ${item.BarCodeQty || 0},
+          @ChallanQty = ${item.ChallanQty || 0},
+          @TripID = ${item.TripID || 0},
+          @TripDate = '${item.TripDate || ''}',
+          @VehicleType = '${item.VehicleType || ''}',
+          @Latitude = ${item.Latitude || 0},
+          @Longitude = ${item.Longitude || 0},
+          @DeviceTimeAt = '${item.CreatedAt || ''}'
+      `;
       await mssql.executeUpdate(query);
 
       // Mark record as synced in SQLite
