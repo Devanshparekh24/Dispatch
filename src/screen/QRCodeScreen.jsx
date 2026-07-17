@@ -320,6 +320,9 @@ const QRCodeScreen = ({ route }) => {
                         const noOfQty = item.no_of_Barcode || 0;
                         const scannedQty = item.Scanned_Qty || 0;
                         const itemID = item.ItemID || "N/A";
+                        const packageType = item.PackingTypeName || "N/A";
+                        const bagWeight = item?.BarCodeQty
+
 
                         let cardColor = COLORS.white;
 
@@ -336,22 +339,30 @@ const QRCodeScreen = ({ route }) => {
                                 <View
                                     style={{ backgroundColor: cardColor }}
                                     className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '>
-                                    <Text
-                                        adjustsFontSizeToFit
-                                        numberOfLines={1}
-                                        minimumFontScale={0.10}
-                                        className='text-base font-medium text-gray-700'>
-                                        {index + 1}.{' '}{itemName}
-                                    </Text>
+                                    <View>
+
+
+                                        <Text
+                                            adjustsFontSizeToFit
+                                            numberOfLines={1}
+                                            minimumFontScale={0.10}
+                                            className='text-base font-medium text-gray-700'>
+                                            {index + 1}.{' '}{itemName}
+
+
+                                        </Text>
+                                        <Text className="text-xs font-semibold text-gray-500">
+                                            ({packageType} x {bagWeight}Kg)
+                                        </Text></View>
                                     <Text adjustsFontSizeToFit
                                         numberOfLines={1}
                                         minimumFontScale={0.10} className='text-base font-semibold text-blue-600 text-right' >
                                         {noOfQty} / {scannedQty}
                                     </Text>
                                 </View>
-                                <View>
+                                {/* <View>
                                     <Text>{itemID}</Text>
-                                </View>
+                                </View> */}
                             </>
                         );
                     }}

@@ -70,17 +70,24 @@ const HomeScreen = () => {
   const pendingScanne =
     TotalSyncData?.[0]?.TotalQRCode || 0;
 
-  const totalBag = totalBagData?.[0]?.TotalBag || 0;
-  const totalScannBag = totalBagData?.[0]?.TotalScannedBag || 0;
-  const totalPendingBag = totalBagData?.[0]?.TotalPendingBag || 0;
+  const summaryItemData = totalBagData?.[0]
+  console.log("🚀 ~ HomeScreen ~ summaryItemData:", summaryItemData)
+  // Total Bags Data
+  const totalBag = summaryItemData?.TotalBag || 0;
+  const totalScannBag = summaryItemData?.TotalScannedBag || 0;
+  const totalPendingBag = summaryItemData?.TotalPendingBag || 0;
+  const totalWeghitBag = summaryItemData?.TotalBagWeghit || 0;
+  const totalScannWeghitBag = summaryItemData?.TotalScannedBagWeghit || 0;
+  const totalPendingWeghitBag = summaryItemData?.TotalPendingBagWeghit || 0;
 
-  let progress;
+
+  let progressBagQty;
 
   if (totalBag > 0) {
-    progress = totalScannBag / totalBag;
+    progressBagQty = totalScannBag / totalBag;
   }
   else {
-    progress = 0;
+    progressBagQty = 0;
   }
 
   const vehicleData = queryResult?.data || [];
@@ -228,26 +235,26 @@ const HomeScreen = () => {
             <View className=''>
               <Card>
 
-               <View className="flex-row justify-end items-end mx-4 px-4 my-3">
-                    <View className="flex-row items-center">
-                        <Text className="text-base font-semibold mr-3">
-                            <Text className="text-blue-600">{totalScannedData}</Text>
-                            <Text className="text-gray-500"> / </Text>
-                            <Text className="text-red-500">{pendingScanne}</Text>
-                        </Text>
+                <View className="flex-row justify-end items-end mx-4 px-4 my-3">
+                  <View className="flex-row items-center">
+                    <Text className="text-base font-semibold mr-3">
+                      <Text className="text-blue-600">{totalScannedData}</Text>
+                      <Text className="text-gray-500"> / </Text>
+                      <Text className="text-red-500">{pendingScanne}</Text>
+                    </Text>
 
-                        <View>
+                    <View>
 
-                            <MiniButton
-                                title="Sync"
-                                icon="sync"
-                                disabled={isSyncing}
-                                loading={isPending}
-                                onPress={handleServerSync}
-                                containerClassName="px-0"
-                            />
-                        </View>
+                      <MiniButton
+                        title="Sync"
+                        icon="sync"
+                        disabled={isSyncing}
+                        loading={isPending}
+                        onPress={handleServerSync}
+                        containerClassName="px-0"
+                      />
                     </View>
+                  </View>
                 </View>
                 <View className="flex-row">
                   <StatasCard
@@ -275,7 +282,7 @@ const HomeScreen = () => {
                 <View className="flex-1 justify-center items-center mt-4">
                   {/* Progress Bar */}
                   <Progress.Bar
-                    progress={progress}
+                    progress={progressBagQty}
                     width={300}          // controls width
                     height={18}          // controls thickness
                     borderRadius={15}    // controls rounded corners
@@ -287,11 +294,34 @@ const HomeScreen = () => {
 
                   {/* Progress Text */}
                   <Text className="mt-2 text-lg font-semibold text-gray-700">
-                    {totalScannBag} / {totalBag} ({Math.round(progress * 100)}%)
+                    {totalScannBag} / {totalBag} ({Math.round(progressBagQty * 100)}%)
                   </Text>
                 </View>
               </Card>
             </View>
+            <Card>
+              <View className="flex-row">
+                <StatasCard
+                  bg="bg-red-100"
+                  color="text-red-600"
+                  value={totalWeghitBag}
+                  label="Total Weghit"
+                />
+
+                <StatasCard
+                  bg="bg-green-100"
+                  color="text-green-600"
+                  value={totalScannWeghitBag}
+                  label="Scanned Weghit"
+                />
+                <StatasCard
+                  bg="bg-yellow-300"
+                  color="text-yellow-600"
+                  value={totalPendingWeghitBag}
+                  label="Pending Weghit"
+                />
+              </View>
+            </Card>
 
             <View className=''>
               <SearchDropDown

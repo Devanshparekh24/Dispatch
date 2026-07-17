@@ -36,7 +36,7 @@ const SCREENS = {
   // },
    MapWeb: {
     component: MapwebScreen,
-    label: 'Web',
+    label: 'Map',
     icon: 'map',
   },
   Setting: {

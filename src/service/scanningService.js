@@ -78,6 +78,9 @@ const getItemDataScannedInfo = async (CustID, VehicleID) => {
     const localQuery = `SELECT 
                           aa.ItemID,
                           aa.ItemName,
+                          aa.PackingTypeId,
+                          aa.PackingTypeName,
+                          aa.BarCodeQty,
                           COUNT(aa.BarCode) AS no_of_Barcode,
                           (
                               SELECT COUNT(oo.BarCode)
@@ -85,11 +88,12 @@ const getItemDataScannedInfo = async (CustID, VehicleID) => {
                               WHERE oo.St_CustID = aa.St_CustId
                                 AND oo.VehicleID = aa.VehicleID
                                 AND oo.ItemID = aa.ItemID
+                                AND oo.PackingTypeId = aa.PackingTypeId
                           ) AS Scanned_Qty
                         FROM Dis_Barcode_Data_Local AS aa
                         WHERE aa.St_CustId = ?
                           AND aa.VehicleID = ?
-                        GROUP BY aa.ItemID, aa.ItemName`;
+                        GROUP BY aa.ItemID, aa.ItemName,aa.PackingTypeId,aa.PackingTypeName,aa.BarCodeQty`;
     const result = await localConnection.executeQuery(localQuery, [
       CustID,
       VehicleID,
@@ -453,8 +457,6 @@ const getTotalSyncData = async () => {
           FROM Dis_Scaned_QR_Data_Local
           WHERE IsSynced=1          
         ) AS ScannedQRCode
-    
-    
     `;
 
     const result = await connection.executeQuery(query);
@@ -488,7 +490,22 @@ const getTotalBagData = async () => {
           SELECT COUNT(Distinct BarCode)
           FROM Dis_Scaned_QR_Data_Local
         )
-        ) AS TotalPendingBag
+        ) AS TotalPendingBag,
+
+         ( SELECT SUM(BarCodeQty)       
+          FROM Dis_Barcode_Data_Local
+        ) As TotalBagWeghit,
+    
+        ( SELECT SUM(BarCodeQty)       
+          FROM Dis_Scaned_QR_Data_Local
+        ) As TotalScannedBagWeghit,
+    
+        ( 
+          (SELECT SUM(BarCodeQty)       
+          FROM Dis_Barcode_Data_Local) - 
+          (SELECT SUM(BarCodeQty)       
+          FROM Dis_Scaned_QR_Data_Local)
+        ) As TotalPendingBagWeghit
     
     
     `;
