@@ -6,7 +6,9 @@ const StatasCard = ({ bg, color, value, label }) => {
         <>
             <View className="w-1/3 p-2">
                 <View className={`${bg} rounded-xl p-4`}>
-                    <Text className={`${color} text-2xl font-bold`}>
+                    <Text
+                        numberOfLines={1}
+                        className={`${color} text-lg font-bold`}>
                         {value ?? '-'}
                     </Text>
                     <Text className="text-gray-600 text-xs mt-1">

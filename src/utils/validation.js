@@ -38,6 +38,9 @@ const isValidQRCode = (value, minLength = 15) => {
     return /^[0-9]+$/.test(qr) && qr.length >= minLength;
 };
 
+const kgToTones=(kg)=>{
+  return kg/1000;
+}
 export {
   isValidMobile,
   isValidEmail,
@@ -45,5 +48,6 @@ export {
   isEmpty,
   isNumeric,
   isAlphaNumeric,
-  isValidQRCode
+  isValidQRCode,
+  kgToTones
 };

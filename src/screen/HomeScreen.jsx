@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAndroidId } from 'react-native-device-info';
 import { getLocalUsers } from '../service/authService';
@@ -9,7 +9,7 @@ import SearchDropDown from '../components/Input/SearchDropDown';
 import useVechicle from '../hooks/useVechical';
 import useCustomer from '../hooks/useCustomer';
 import { syncVechileTable, barcodeDataSync } from '../service/syncService';
-import { isEmpty } from '../utils/validation';
+import { isEmpty, kgToTones } from '../utils/validation';
 import { printError } from '../utils/helper';
 import { useAuth } from '../context/AuthContex';
 import { useScanningContex } from '../context/ScanningContex'
@@ -27,6 +27,7 @@ import StatasCard from '../components/Card/StatasCard'
 import { useTotalBagData } from '../hooks/useCustomerItemWise'
 import * as Progress from 'react-native-progress';
 import Map from '../components/Map/Map'
+import Ionicons from '@react-native-vector-icons/ionicons';
 
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
@@ -71,7 +72,6 @@ const HomeScreen = () => {
     TotalSyncData?.[0]?.TotalQRCode || 0;
 
   const summaryItemData = totalBagData?.[0]
-  console.log("🚀 ~ HomeScreen ~ summaryItemData:", summaryItemData)
   // Total Bags Data
   const totalBag = summaryItemData?.TotalBag || 0;
   const totalScannBag = summaryItemData?.TotalScannedBag || 0;
@@ -230,21 +230,48 @@ const HomeScreen = () => {
               md_label={userName}
               sm_label={currentVehicleID}
             />
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+            >
+              <View className='mt-4 px-4 gap-3'>
+                <View className=''>
+                  <SearchDropDown
+                    data={formattedVehicles}
+                    value={vehicle}
+                    setValue={setVehicle}
+                    label="Vehicle"
+                    iconName="car-outline"
+                    placeholder='select the vehicle'
+                  />
+                </View>
+                <View>
+                  <FullButton
+                    title="Fetch Data offline"
+                    loading={isSyncing}
+                    disabled={isSyncing || !vehicle}
+                    onPress={handleSyncoffline}
+                  />
+                </View>
+              </View>
+            </KeyboardAvoidingView>
           </View>
           <View className='px-4 py-6 gap-4'>
             <View className=''>
               <Card>
-
-                <View className="flex-row justify-end items-end mx-4 px-4 my-3">
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-row items-center">
+                    <Ionicons name="bag" size={20} color="#3b82f6" style={{ marginRight: 8 }} />
+                    <Text className="font-bold text-gray-700 text-md">Bag Scanning</Text>
+                  </View>
                   <View className="flex-row items-center">
                     <Text className="text-base font-semibold mr-3">
                       <Text className="text-blue-600">{totalScannedData}</Text>
                       <Text className="text-gray-500"> / </Text>
                       <Text className="text-red-500">{pendingScanne}</Text>
                     </Text>
-
                     <View>
-
                       <MiniButton
                         title="Sync"
                         icon="sync"
@@ -300,47 +327,35 @@ const HomeScreen = () => {
               </Card>
             </View>
             <Card>
+              <View className="flex-row justify-between items-center">
+                <View className="flex-row items-center">
+                  <Ionicons name="scale" size={20} color="#3b82f6" style={{ marginRight: 8 }} />
+                  <Text className="font-bold text-gray-700 text-md">Bags Weight</Text><Text className="font-semibold text-gray-600 text-xs">{' '}(Ton)</Text>
+                </View>
+
+              </View>
               <View className="flex-row">
                 <StatasCard
                   bg="bg-red-100"
                   color="text-red-600"
-                  value={totalWeghitBag}
+                  value={kgToTones(totalWeghitBag)}
                   label="Total Weghit"
                 />
 
                 <StatasCard
                   bg="bg-green-100"
                   color="text-green-600"
-                  value={totalScannWeghitBag}
+                  value={kgToTones(totalScannWeghitBag)}
                   label="Scanned Weghit"
                 />
                 <StatasCard
                   bg="bg-yellow-300"
                   color="text-yellow-600"
-                  value={totalPendingWeghitBag}
+                  value={kgToTones(totalPendingWeghitBag)}
                   label="Pending Weghit"
                 />
               </View>
             </Card>
-
-            <View className=''>
-              <SearchDropDown
-                data={formattedVehicles}
-                value={vehicle}
-                setValue={setVehicle}
-                label="Vehicle"
-                iconName="car-outline"
-                placeholder='select the vehicle'
-              />
-            </View>
-            <View>
-              <FullButton
-                title="Fetch Data offline"
-                loading={isSyncing}
-                disabled={isSyncing || !vehicle}
-                onPress={handleSyncoffline}
-              />
-            </View>
           </View>
         </View>
         <View className='px-4'>
@@ -349,6 +364,7 @@ const HomeScreen = () => {
         {/* <AppVersionUpdate /> */}
       </ScrollView>
     </SafeAreaView>
+
   );
 };
 
