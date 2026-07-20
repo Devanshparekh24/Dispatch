@@ -28,7 +28,7 @@ import { useTotalBagData } from '../hooks/useCustomerItemWise'
 import * as Progress from 'react-native-progress';
 import Map from '../components/Map/Map'
 import Ionicons from '@react-native-vector-icons/ionicons';
-
+import { getBatteryLevel } from 'react-native-device-info';
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
@@ -54,6 +54,12 @@ const HomeScreen = () => {
         setUserID(user.UserID || user.userID);
         setMobile(user.Mobile || user.mobile);
         setPassword(user.Password || user.password);
+
+
+        console.log('get battery lvl', await getBatteryLevel());
+        const batteryLvl = await getBatteryLevel();
+        const percentage=Math.round(batteryLvl *100)
+        console.log('battery percentage', `${percentage}%`);
 
         const formattedVehileID = selectedVehileID[0]?.VehicleID || "";
         setCurrentVehicleID(formattedVehileID);

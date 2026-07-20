@@ -545,6 +545,23 @@ const getTotalScannedData = async () => {
   }
 };
 
+const delAllData = async () => {
+  try {
+    const connection = await getSQLiteConnection();
+    const query1 = `DELETE FROM Dis_Barcode_Data_Local`;
+    const query2 = `DELETE FROM Dis_Scaned_QR_Data_Local where IsSynced=1 `;
+    const query3 = `DELETE FROM Vechile_Master_Local `;
+    
+    await connection.executeQuery(query1);
+    await connection.executeQuery(query2);
+    await connection.executeQuery(query3);
+    console.log('Delete All Data 🐱‍🏍');
+    
+  } catch (error) {
+    console.log('🚀 ~ delAllData ~ error:', error);
+  }
+};
+
 export {
   getlocalVechical,
   getlocalBarCodeData,
@@ -556,4 +573,5 @@ export {
   getTotalSyncData,
   getTotalScannedData,
   getTotalBagData,
+  delAllData
 };

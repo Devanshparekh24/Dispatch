@@ -5,6 +5,7 @@ import { ActivityIndicator } from 'react-native-paper';
 const FullButton = ({ title,
     onPress,
     disabled,
+    danger,
     loading,
     color = '#fff',
 }) => {
@@ -12,7 +13,7 @@ const FullButton = ({ title,
         <TouchableOpacity
             onPress={onPress}
             disabled={disabled}
-            className={`py-3 px-4 rounded-lg justify-center items-center ${disabled ? 'bg-gray-400' : 'bg-blue-500'
+            className={`py-3 px-4 rounded-lg justify-center items-center ${danger ? 'bg-red-500' : disabled ? 'bg-gray-400' : 'bg-blue-500'
                 }`}>
             {loading && (
                 <ActivityIndicator color={color} />

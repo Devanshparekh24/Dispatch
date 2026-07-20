@@ -156,11 +156,11 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
       throw new Error('Please sync all bags before changing the vehicle.');
     }
     await releaseVehicle(vehicleID);
-    const existingUser = await existVehileFetch(vehicleID);
+    // const existingUser = await existVehileFetch(vehicleID);
 
-    if (existingUser) {
-      throw new Error(`This vehicle is already assigned to ${existingUser}.`);
-    }
+    // if (existingUser) {
+    //   throw new Error(`This vehicle is already assigned to ${existingUser}.`);
+    // }
     const connect = await isInternet();
     if (!connect) {
       console.log('Internet Is not connected .....');
@@ -171,10 +171,10 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
       console.log('Vehicle not selected...');
       throw new Error('Vehicle not selected...');
     }
-    const serverquery = `select * From Dis_vw_BarCodeData where 
-     CAST(InvDate as date)=cast(GETDATE() as date) and  
-    VehicleID = '${vehicleID}'`;
-
+    const serverquery = `select * From Dis_vw_BarCodeData as aa
+                        where aa.BarCode not in(select bb.BarCode From Dis_Scaned_QR_Data as bb)
+                        and cast(aa.InvDate as date)=cast(GETDATE() as date) 
+                        and VehicleID = '${vehicleID}'`;
     const result = await mssqlConn.executeQuery(serverquery);
     if (!result || result.length === 0) {
       console.log('No vehicle data found on remote server.');
