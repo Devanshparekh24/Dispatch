@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Feather as Icon } from '@react-native-vector-icons/feather';
 import Input from './Input';
 
@@ -19,7 +19,7 @@ const PasswordInput = ({
             label={label}
             placeholder={placeholder}
             value={value}
-            onChangeText={onChangeText}
+            onChangeText={(text) => onChangeText?.(text.replace(/\s/g, ''))}
             secureTextEntry={!showPassword}
             error={error}
             rightElement={

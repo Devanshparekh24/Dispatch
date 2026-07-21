@@ -8,11 +8,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import useDelAllData from '../hooks/useDelAllData'
 import DeviceInfo from 'react-native-device-info';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../context/AuthContex';
 const SettingScreen = () => {
+  const { setPassword } = useAuth();
   const { mutate: mutateDeleteAllData, isLoading: isLoadingDeleteAllData } = useDelAllData()
   const Version = DeviceInfo.getVersion();
 
+
+  const navigation = useNavigation();
   const handleDeleteAllData = () => {
     try {
       showConfirmAlert({
@@ -49,19 +53,41 @@ const SettingScreen = () => {
       console.log("🚀 ~ handleLogout ~ error:", error)
     }
   }
+
+  const handleChangePassword = () => {
+    try {
+      setPassword('');
+      navigation.navigate('ChangePasswordScreen');
+
+    } catch (error) {
+      console.log("🚀 ~ handleChangePassword ~ error:", error)
+
+    }
+  }
+
   return (
-    <SafeAreaView className='bg-white flex-1'>
+    <SafeAreaView className=' flex-1'>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         keyboardShouldPersistTaps="handled"
       >
-        <View className=" justify-center ">
-          <View className="p-4">
-            <FullButton
-              loading={isLoadingDeleteAllData}
-              danger={true} title="Delete All Data" onPress={handleDeleteAllData} />
-          </View>
-        </View>
+
+        <SettingItem
+          icon="key-outline"
+          title="Change Password"
+          subtitle=""
+          onPress={handleChangePassword}
+          
+          showLoader={false}
+        />
+        <SettingItem
+          icon="trash-bin-outline"
+          title="Delete All Data"
+          subtitle=""
+          onPress={handleDeleteAllData}
+          danger={true}
+          showLoader={isLoadingDeleteAllData}
+        />
         <SettingItem
           icon="log-out-outline"
           title="Log out"

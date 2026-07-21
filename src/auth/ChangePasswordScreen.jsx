@@ -24,7 +24,7 @@ const ChangePasswordScreen = () => {
 
 
     const handleUpdatePassword = async () => {
-        if (String(password) !== String(confrimPassword)) {
+        if (String(password).trim() !== String(confrimPassword).trim()) {
             Alert.alert("Password Mismatch", "Password and Confirm Password do not match");
             setPasswordError("Password and Confirm Password do not match");
             return;
@@ -75,8 +75,6 @@ const ChangePasswordScreen = () => {
                 <SafeAreaView className="flex-1 bg-[#F5F5F5]">
 
                     <View className="flex-1 justify-center px-6 py-8">
-
-
                         {/* Logo and Title */}
                         <View className="items-center mb-10">
                             <Image
@@ -84,11 +82,11 @@ const ChangePasswordScreen = () => {
                                 className="w-24 h-24 mb-4"
                                 resizeMode="contain"
                             />
-                            <Text className="text-3xl font-bold text-gray-800 mb-2">
-                                Welcome Back
+                            <Text className="text-xl font-bold text-gray-800 mb-2">
+                                Change Password
                             </Text>
-                            <Text className="text-base text-gray-600 text-center">
-                                Sign in to continue to{' '}
+                            <Text className="text-base font-semibold text-gray-600 text-center">
+                                Change your password to continue to{' '}
                                 <Text className="text-blue-500">{` ${appHeaderName}`} </Text>
                             </Text>
                         </View>

@@ -25,6 +25,7 @@ const QRCodeScreen = ({ route }) => {
     const [sheetIndex, setSheetIndex] = useState(0);
     const [selectedFilter, setSelectedFilter] = useState('pending');
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showFailed, setShowFailed] = useState(false);
     const [zoom, setZoom] = useState(1);
     const baseZoom = useRef(1);
     const bottomSheetRef = useRef(null);
@@ -149,6 +150,10 @@ const QRCodeScreen = ({ route }) => {
                 }, 2500);
 
             } catch (error) {
+                setShowFailed(true);
+                setTimeout(() => {
+                    setShowFailed(false);
+                }, 2000);
                 console.log("🚀 ~ QRCodeScreen ~ error:", error);
                 Vibration.vibrate([100, 100, 100]); // Short vibration error pattern
 
@@ -227,6 +232,20 @@ const QRCodeScreen = ({ route }) => {
                             name="checkmark-circle"
                             size={40}
                             color="#4BB543"
+                        />
+                    </View>
+                )}
+                {showFailed && (
+                    <View
+                        style={{
+                            padding: 10,
+                            borderRadius: 10,
+                        }}
+                    >
+                        <Ionicons
+                            name="close-circle"
+                            size={40}
+                            color="red"
                         />
                     </View>
                 )}
@@ -340,16 +359,12 @@ const QRCodeScreen = ({ route }) => {
                                     style={{ backgroundColor: cardColor }}
                                     className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '>
                                     <View>
-
-
                                         <Text
                                             adjustsFontSizeToFit
                                             numberOfLines={1}
                                             minimumFontScale={0.10}
                                             className='text-base font-medium text-gray-700'>
                                             {index + 1}.{' '}{itemName}
-
-
                                         </Text>
                                         <Text className="text-xs font-semibold text-gray-500">
                                             ({packageType} x {bagWeight}Kg)
@@ -367,8 +382,6 @@ const QRCodeScreen = ({ route }) => {
                         );
                     }}
                 />
-
-
             </BottomSheet>
         </View>
     )
