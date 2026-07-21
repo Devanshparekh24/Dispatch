@@ -430,7 +430,10 @@ const getScannendData = async () => {
 const getSelectVehileData = async () => {
   try {
     const connection = await getSQLiteConnection();
-    const query = 'SELECT distinct VehicleID FROM  Dis_Barcode_Data_Local';
+    const query = `SELECT  aa.VehicleID ,
+                    min(aa.InvDate) as FromDate,
+                    max(aa.InvDate) as ToDate
+                  FROM  Dis_Barcode_Data_Local as aa group by aa.VehicleID `;
     const result = await connection.executeQuery(query);
     if (Array.isArray(result)) {
       return result;

@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 import { getSQLiteConnection, getMSSQLConnection } from '../backend/DB/db';
 import isInternet from '../utils/network';
 import { isEmpty } from '../utils/validation';
+import dayjs from 'dayjs';
 
 let localConnection = getSQLiteConnection();
 
@@ -15,18 +16,7 @@ const syncVechileTable = async () => {
 
     const mssqlConn = await getMSSQLConnection();
 
-    const serverquery = `Select Tm.VehicleID 
-                          From Trip_Master_New As Tm With(Nolock)  
-                          Inner Join Trip_Detail_New As Td With(Nolock) On Td.TripID=Tm.TripID  
-                          Inner Join SaleChallan_New As Sc With(Nolock) On Sc.OrderID=Td.OrderID  
-                          Inner Join SaleChallanDetails_New As Sd With(Nolock) On Sd.ChallanMasterID=Sc.AutoID  
-                          Left Join  
-                          (Select ChallanDetailId,COUNT(BarCode) As NoOfBarcode From WH_SaleChallanBarcode With(Nolock) Group By ChallanDetailId  
-                          ) As Sb On Sb.ChallanDetailId=Sd.AutoID  
-                          Where IsNull(Sc.Cancel_Flag,0)=0 And Sc.DeliveryArrangedBy=4498  
-                          And Sc.ChallanDate=Convert(date,GetDate())  
-                          Group By Tm.VehicleID  
-                          Having Convert(int,Sum(Sd.Pcs))=Sum(IsNull(Sb.NoOfBarcode,0)) `;
+    const serverquery = `select * From Dis_vw_Vehicle`;
     const result = await mssqlConn.executeQuery(serverquery);
 
     if (!result || result.length === 0) {
@@ -148,7 +138,7 @@ const isVehicleChangeAllowed = async () => {
   }
 };
 
-const barcodeDataSync = async (vehicleID, androidID, userID) => {
+const barcodeDataSync = async (vehicleID, androidID, userID,fromDate,ToDate) => {
   try {
     const canChangeVehicle = await isVehicleChangeAllowed();
 
@@ -171,9 +161,11 @@ const barcodeDataSync = async (vehicleID, androidID, userID) => {
       console.log('Vehicle not selected...');
       throw new Error('Vehicle not selected...');
     }
+    const formattedFromDate = dayjs(fromDate).format('YYYY-MM-DD');
+    const formattedToDate = dayjs(ToDate).format('YYYY-MM-DD');
     const serverquery = `select * From Dis_vw_BarCodeData as aa
                         where aa.BarCode not in(select bb.BarCode From Dis_Scaned_QR_Data as bb)
-                        and cast(aa.InvDate as date)=cast(GETDATE() as date) 
+                        and cast(aa.InvDate as date) between '${formattedFromDate}' and '${formattedToDate}' 
                         and VehicleID = '${vehicleID}'`;
     const result = await mssqlConn.executeQuery(serverquery);
     if (!result || result.length === 0) {

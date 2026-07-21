@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const HeaderCard = ({ lg_label, md_label, sm_label }) => {
+const HeaderCard = ({ lg_label, md_label, sm_label ,xs_label}) => {
     return (
         <View>
             <View className="bg-primary-600 shadow-md p-6 rounded-b-3xl pb-24">
@@ -26,8 +26,8 @@ const HeaderCard = ({ lg_label, md_label, sm_label }) => {
                 {
                     sm_label ? (
                         <View className="mt-4">
-
                             <Text className='text-xl font-bold text-white'>{sm_label}</Text>
+                            <Text className='text-xl font-bold text-white'>{xs_label}</Text>
 
                         </View>
                     ) : (<Text className="text-white/70 mt-4">

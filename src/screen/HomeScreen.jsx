@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAndroidId } from 'react-native-device-info';
+import dayjs from 'dayjs';
 import { getLocalUsers } from '../service/authService';
 import { getErrorLog } from '../service/Log';
 import HeaderCard from '../components/Card/HeaderCard';
@@ -29,11 +30,30 @@ import * as Progress from 'react-native-progress';
 import Map from '../components/Map/Map'
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { getBatteryLevel } from 'react-native-device-info';
+import DatePickerInput from '../components/Input/DatePickerInput'
+
 const HomeScreen = () => {
   const [localUsers, setLocalUsers] = useState([]);
   const [vehicle, setVehicle] = useState(null);
   const [errorLog, setErrorLog] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const [syncedDateText, setSyncedDateText] = useState('');
+
+  // const loadSyncedDates = async () => {
+  //   try {
+  //     const from = await AsyncStorage.getItem('syncedFromDate');
+  //     const to = await AsyncStorage.getItem('syncedToDate');
+  //     if (from && to) {
+  //       setSyncedDateText(`Offline: ${from} - ${to}`);
+  //     } else {
+  //       setSyncedDateText('');
+  //     }
+  //   } catch (e) {
+  //     console.error('Error loading synced dates:', e);
+  //   }
+  // };
   const { mobile, setMobile, userID, setUserID, password, setPassword, userName, setUserName } = useAuth();
   const { currentVehicleID, setCurrentVehicleID } = useScanningContex();
   const { data: selectedVehileID, refetch: selectedVehileIDRefetch, isRefetching: selectedVehileIDIsRefetching } = useSelectVehileID();
@@ -58,12 +78,14 @@ const HomeScreen = () => {
 
         console.log('get battery lvl', await getBatteryLevel());
         const batteryLvl = await getBatteryLevel();
-        const percentage=Math.round(batteryLvl *100)
+        const percentage = Math.round(batteryLvl * 100)
         console.log('battery percentage', `${percentage}%`);
 
         const formattedVehileID = selectedVehileID[0]?.VehicleID || "";
         setCurrentVehicleID(formattedVehileID);
       }
+
+
       console.log('[SQLite] User_Local Records:', JSON.stringify(data, null, 2));
     } catch (error) {
       console.error('[SQLite] Error logging local users:', error);
@@ -85,6 +107,11 @@ const HomeScreen = () => {
   const totalWeghitBag = summaryItemData?.TotalBagWeghit || 0;
   const totalScannWeghitBag = summaryItemData?.TotalScannedBagWeghit || 0;
   const totalPendingWeghitBag = summaryItemData?.TotalPendingBagWeghit || 0;
+  //
+
+  const formattedFromDate = selectedVehileID?.[0]?.FromDate || "";
+  console.log("🚀 ~ logLocalUsers ~ formattedFromDate:", formattedFromDate)
+  const formattedToDate = selectedVehileID?.[0]?.ToDate || "";
 
 
   let progressBagQty;
@@ -117,6 +144,13 @@ const HomeScreen = () => {
 
   const handleSyncoffline = async () => {
 
+    if (formattedFromDate && formattedToDate) {
+      if (formattedFromDate < formattedToDate) {
+        Alert.alert('From date should be less than or equal to To date');
+        setIsSyncing(false);
+        return;
+      }
+    }
     setIsSyncing(true);
     try {
       if (isEmpty(vehicle)) {
@@ -125,7 +159,7 @@ const HomeScreen = () => {
         return;
       }
       const androidId = await getAndroidId();
-      await barcodeDataSync(vehicle, androidId, userID);
+      await barcodeDataSync(vehicle, androidId, userID, fromDate, toDate);
       await refetch(); // Refresh dropdown list with newly synced data from SQLite
       await selectedVehileIDRefetch()
       await TotalSyncDataRefetch()
@@ -144,6 +178,7 @@ const HomeScreen = () => {
     useCallback(() => {
       TotalSyncDataRefetch();
       totalBagDataRefetch();
+      // loadSyncedDates();
     }, [TotalSyncDataRefetch, totalBagDataRefetch])
   )
 
@@ -162,6 +197,7 @@ const HomeScreen = () => {
     logLocalUsers();
     ErrorLog();
     loadData();
+    // loadSyncedDates();
   }, [refetch, selectedVehileID]);
 
 
@@ -235,7 +271,7 @@ const HomeScreen = () => {
               lg_label={"Welcome Back✌"}
               md_label={userName}
               sm_label={currentVehicleID}
-            />
+              xs_label={`${dayjs(formattedFromDate).format('DD-MM-YYYY')} - ${dayjs(formattedToDate).format('DD-MM-YYYY')}`} />
             <KeyboardAvoidingView
               style={{ flex: 1 }}
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -252,6 +288,25 @@ const HomeScreen = () => {
                     placeholder='select the vehicle'
                   />
                 </View>
+
+                <View className="flex-row">
+                  <View className="flex-1 mr-2">
+                    <DatePickerInput
+                      label="From Date"
+                      value={fromDate}
+                      onChange={setFromDate}
+                    />
+                  </View>
+
+                  <View className="flex-1 ml-2">
+                    <DatePickerInput
+                      label="To Date"
+                      value={toDate}
+                      onChange={setToDate}
+                    />
+                  </View>
+                </View>
+
                 <View>
                   <FullButton
                     title="Fetch Data offline"
@@ -269,7 +324,12 @@ const HomeScreen = () => {
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center">
                     <Ionicons name="bag" size={20} color="#3b82f6" style={{ marginRight: 8 }} />
-                    <Text className="font-bold text-gray-700 text-md">Bag Scanning</Text>
+                    <View className="flex-col">
+                      <Text className="font-bold text-gray-700 text-md">Bag Scanning</Text>
+                      {syncedDateText ? (
+                        <Text className="text-[10px] text-gray-400 font-medium">{syncedDateText}</Text>
+                      ) : null}
+                    </View>
                   </View>
                   <View className="flex-row items-center">
                     <Text className="text-base font-semibold mr-3">
