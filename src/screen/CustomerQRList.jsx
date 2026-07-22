@@ -277,8 +277,8 @@ const ScanQRCodeScreen = () => {
                                                 <Text className='text-xs text-gray-600'>{vehicleNo}</Text>
                                                 <Text className='text-xs text-gray-600'>{custID}</Text>
                                                 <Text className='text-xs text-gray-600 font-semibold  '>{InvoNo}</Text>
-                                                <Text className='text-xs text-gray-600 font-semibold  '>{Latitude}</Text>
-                                                <Text className='text-xs text-gray-600 font-semibold  '>{Longitude}</Text>
+                                                {/* <Text className='text-xs text-gray-600 font-semibold  '>{Latitude}</Text>
+                                                <Text className='text-xs text-gray-600 font-semibold  '>{Longitude}</Text> */}
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>Qty (kg) : </Text>{total_qty}</Text >
                                                 <Text className='text-xs text-gray-600'><Text className='font-semibold'>No.Of.Item: </Text>{no_of_items}</Text >
                                             </View>
