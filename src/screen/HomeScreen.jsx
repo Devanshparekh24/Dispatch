@@ -144,12 +144,9 @@ const HomeScreen = () => {
 
   const handleSyncoffline = async () => {
 
-    if (formattedFromDate && formattedToDate) {
-      if (formattedFromDate < formattedToDate) {
-        Alert.alert('From date should be less than or equal to To date');
-        setIsSyncing(false);
-        return;
-      }
+    if (new Date(fromDate) > new Date(toDate)) {
+      Alert.alert('Validation', 'From Date cannot be greater than To Date.');
+      return;
     }
     setIsSyncing(true);
     try {
@@ -424,10 +421,10 @@ const HomeScreen = () => {
             </Card>
           </View>
         </View>
-        <View className='px-4'>
+        {/* <View className='px-4'>
           <Map />
-        </View>
-        {/* <AppVersionUpdate /> */}
+        </View> */}
+        <AppVersionUpdate />
       </ScrollView>
     </SafeAreaView>
 

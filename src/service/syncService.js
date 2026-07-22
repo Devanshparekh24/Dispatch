@@ -140,11 +140,11 @@ const isVehicleChangeAllowed = async () => {
 
 const barcodeDataSync = async (vehicleID, androidID, userID,fromDate,ToDate) => {
   try {
-    const canChangeVehicle = await isVehicleChangeAllowed();
+    // const canChangeVehicle = await isVehicleChangeAllowed();
 
-    if (!canChangeVehicle) {
-      throw new Error('Please sync all bags before changing the vehicle.');
-    }
+    // if (!canChangeVehicle) {
+    //   throw new Error('Please sync all bags before changing the vehicle.');
+    // }
     await releaseVehicle(vehicleID);
     // const existingUser = await existVehileFetch(vehicleID);
 

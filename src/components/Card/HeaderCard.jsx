@@ -27,7 +27,7 @@ const HeaderCard = ({ lg_label, md_label, sm_label ,xs_label}) => {
                     sm_label ? (
                         <View className="mt-4">
                             <Text className='text-xl font-bold text-white'>{sm_label}</Text>
-                            <Text className='text-xl font-bold text-white'>{xs_label}</Text>
+                            <Text className='text-sm font-bold text-white'>{xs_label}</Text>
 
                         </View>
                     ) : (<Text className="text-white/70 mt-4">

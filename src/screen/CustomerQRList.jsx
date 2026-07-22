@@ -209,8 +209,13 @@ const ScanQRCodeScreen = () => {
                         placeholder='search customer...'
                     />
                     <FlatList
-                        keyExtractor={(item) => item.St_CustId}
-
+                        keyExtractor={(item) => item.St_CustId.toString()}
+                        initialNumToRender={10}
+                        maxToRenderPerBatch={10}
+                        updateCellsBatchingPeriod={50}
+                        windowSize={7}
+                        removeClippedSubviews={true}
+                        showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
                             () => {
                                 return (

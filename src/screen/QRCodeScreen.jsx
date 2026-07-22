@@ -19,6 +19,55 @@ import useQRCodeSync from '../hooks/useQrCodeSync';
 import isInternet from '../utils/network';
 import { COLORS } from '../constant';
 
+const QRCodeItem = React.memo(({ item, index }) => {
+    const itemName = item.ItemName || "N/A";
+    const noOfQty = item.no_of_Barcode || 0;
+    const scannedQty = item.Scanned_Qty || 0;
+    const packageType = item.PackingTypeName || "N/A";
+    const bagWeight = item?.BarCodeQty;
+
+    let cardColor = COLORS.white;
+
+    if (scannedQty === 0) {
+        cardColor = COLORS.white;
+    } else if (noOfQty === scannedQty) {
+        cardColor = COLORS.success;
+    } else {
+        cardColor = COLORS.warning;
+    }
+
+    return (
+        <View
+            style={{ backgroundColor: cardColor }}
+            className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '
+        >
+            <View>
+                <Text
+                    adjustsFontSizeToFit
+                    numberOfLines={1}
+                    minimumFontScale={0.10}
+                    className='text-base font-medium text-gray-700'
+                >
+                    {index + 1}.{' '}{itemName}
+                </Text>
+                <Text className="text-xs font-semibold text-gray-500">
+                    ({packageType} x {bagWeight}Kg)
+                </Text>
+            </View>
+            <Text
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                minimumFontScale={0.10}
+                className='text-base font-semibold text-blue-600 text-right'
+            >
+                {noOfQty} / {scannedQty}
+            </Text>
+        </View>
+    );
+});
+
+QRCodeItem.displayName = 'QRCodeItem';
+
 const QRCodeScreen = ({ route }) => {
     const [isScanned, setIsScanned] = useState(false);
     const [torch, setTorch] = useState('off');
@@ -195,6 +244,10 @@ const QRCodeScreen = ({ route }) => {
         return true;
     });
 
+    const renderItem = useCallback(({ item, index }) => {
+        return <QRCodeItem item={item} index={index} />;
+    }, []);
+
     return (
         <View style={styles.container}>
             <Camera
@@ -334,53 +387,7 @@ const QRCodeScreen = ({ route }) => {
                     data={filteredData}
                     keyExtractor={(item, index) => item.ItemID}
                     contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 }}
-                    renderItem={({ item, index }) => {
-                        const itemName = item.ItemName || "N/A";
-                        const noOfQty = item.no_of_Barcode || 0;
-                        const scannedQty = item.Scanned_Qty || 0;
-                        const itemID = item.ItemID || "N/A";
-                        const packageType = item.PackingTypeName || "N/A";
-                        const bagWeight = item?.BarCodeQty
-
-
-                        let cardColor = COLORS.white;
-
-                        if (scannedQty === 0) {
-                            cardColor = COLORS.white;
-                        } else if (noOfQty === scannedQty) {
-                            cardColor = COLORS.success;
-                        } else {
-                            cardColor = COLORS.warning;
-                        }
-
-                        return (
-                            <>
-                                <View
-                                    style={{ backgroundColor: cardColor }}
-                                    className='py-2.5 flex-row justify-between items-center border-b border-gray-100 '>
-                                    <View>
-                                        <Text
-                                            adjustsFontSizeToFit
-                                            numberOfLines={1}
-                                            minimumFontScale={0.10}
-                                            className='text-base font-medium text-gray-700'>
-                                            {index + 1}.{' '}{itemName}
-                                        </Text>
-                                        <Text className="text-xs font-semibold text-gray-500">
-                                            ({packageType} x {bagWeight}Kg)
-                                        </Text></View>
-                                    <Text adjustsFontSizeToFit
-                                        numberOfLines={1}
-                                        minimumFontScale={0.10} className='text-base font-semibold text-blue-600 text-right' >
-                                        {noOfQty} / {scannedQty}
-                                    </Text>
-                                </View>
-                                {/* <View>
-                                    <Text>{itemID}</Text>
-                                </View> */}
-                            </>
-                        );
-                    }}
+                    renderItem={renderItem}
                 />
             </BottomSheet>
         </View>
